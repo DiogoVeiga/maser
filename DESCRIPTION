@@ -1,0 +1,28 @@
+Package: maser
+Type: Package
+Title: Map Alternative Splicing Events to transcRiptomes
+Version: 0.0.1
+Authors@R: person("Diogo", "Veiga", email = "Diogo.Veiga@jax.org",
+                  role = c("aut", "cre"))
+Description: This package provides functionalities for annotation and 
+    visualizaton of splicing events.
+Depends: R (>= 3.4.0),
+    ggplot2,
+    GenomicRanges
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Imports:
+    dplyr,
+    GenomicRanges,
+    ggplot2,
+    rtracklayer,
+    reshape2
+Suggests:
+    testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+URL: https://github.com/DiogoVeiga/maser
+BugReports: https://github.com/DiogoVeiga/maser/issues
+RoxygenNote: 6.0.1

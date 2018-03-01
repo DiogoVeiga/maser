@@ -242,3 +242,52 @@ pca <- function(events, type){
 
 
 }
+
+viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI", "MXE"), 
+                                n = 20){
+  
+  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+  if (any(!types %in% as_types)){
+    stop(cat("\"type\" should be one or a combination of the following: ", as_types))
+  }
+  
+  geneList <- c()
+  for (atype in types){
+    annot <- events[[paste0(atype,"_","events")]]
+    geneList <- c(geneList, annot$geneSymbol)
+  }
+  geneList <- unique(geneList)
+  
+  geneList_counts <- data.frame()
+  for (gene in geneList) {
+    gene_counts <- countGeneEvents(events, gene)
+    geneList_counts <- rbind(geneList_counts, gene_counts)
+  }
+  
+  geneList_counts_filt <- dplyr::filter(geneList_counts, type %in% types)
+  
+  res <- dplyr::group_by(geneList_counts_filt, gene)
+  res2 <- dplyr::summarise(res, total = sum(count)) 
+  rankedGenes <- dplyr::arrange(res2, desc(total))
+  
+  genes_plot <- dplyr::filter(geneList_counts_filt, 
+                              gene %in% rankedGenes$gene[1:n])
+  
+  genes_plot$gene <- factor(genes_plot$gene, levels = rankedGenes$gene[1:n])
+  
+  ggplot(genes_plot, aes(x=gene, y=count, colour = type, fill = type)) +
+    geom_bar(stat = "identity") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(size=12, angle = 45, hjust = 1), 
+          axis.text.y = element_text(size=12),
+          axis.title.x = element_text(face="plain", colour="black", size=12),
+          axis.title.y = element_text(face="plain", colour="black", size=12),
+          legend.title=element_blank(),
+          legend.text = element_text(face="plain", colour="black", size=12)) +
+    scale_fill_brewer(palette="BrBG") +
+    scale_color_brewer(palette="BrBG") +
+    ylab("Splicing events") +
+    xlab("Gene")
+  
+  
+}

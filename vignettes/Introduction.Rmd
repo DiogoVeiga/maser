@@ -47,7 +47,7 @@ mats.filt <- filterByCoverage(mats, avg_reads = 5)
 An overview of significant events can be obtained using either `dotplot` or `volcano` functions, specifying FDR levels, minimum change in PSI between conditions and the type of alternative splicing.
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 7, fig.height = 5}
-dotplot(mats.filt, fdr = 0.05, deltaPSI = 0.1, type = "SE")
+# dotplot(mats.filt, fdr = 0.05, deltaPSI = 0.1, type = "SE")
 volcano(mats.filt, fdr = 0.05, deltaPSI = 0.1, type = "SE")
 ```
 
@@ -62,11 +62,16 @@ Global splicing patterns of individual replicates can also be inspected using pr
 pca(mats.filt, type = "RI")
 PSI_levels(mats.filt, type = "RI")
 ```
-
-The function `topEvents` allows to select only events passing FDR and minimum inclusion levels change. 
+The function `topEvents` allows to select statistically significant events given a FDR cutoff and minimum inclusion levels change.  
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 7, fig.height = 5, fig.show='hold'}
 mats.top <- topEvents(mats.filt, fdr = 0.05, deltaPSI = 0.1 )
 dotplot(mats.top, fdr = 0.05, deltaPSI = 0.1, type = "SE")
+```
+
+Also, genes with frequent AS events can be discovered using `viewTopSplicedGenes`. The function rank genes based on the number of events, and a subset of AS types can be specificied. 
+```{r, warning = FALSE, message = FALSE, fig.width = 3, fig.height = 4, fig.show='hold'}
+viewTopSplicedGenes(mats.top, n = 10)
+viewTopSplicedGenes(mats.top, n = 10, types = c("RI"))
 ```
 

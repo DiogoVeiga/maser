@@ -43,7 +43,7 @@ We can remove low coverage events using `filterByCoverage`.
 mats.filt <- filterByCoverage(mats, avg_reads = 5)
 ```
 
-## Global overview of splicing
+## Global overview of splicing changes
 An overview of significant events can be obtained using either `dotplot` or `volcano` functions, specifying FDR levels, minimum change in PSI between conditions and the type of alternative splicing.
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 7, fig.height = 5}
@@ -58,13 +58,13 @@ splicingDistribution(mats.filt, fdr = 0.05, deltaPSI = 0.1)
 
 Global splicing patterns of individual replicates can also be inspected using principal component analysis (PCA) or boxplots of PSI levels.
 
-```{r, warning = FALSE, message = FALSE, fig.width = 7, fig.height = 5, fig.show='hold'}
+```{r, warning = FALSE, message = FALSE, fig.width = 6, fig.height = 5, fig.show='hold'}
 pca(mats.filt, type = "RI")
 PSI_levels(mats.filt, type = "RI")
 ```
-The function `topEvents` allows to select statistically significant events given a FDR cutoff and minimum inclusion levels change.  
+The function `topEvents` allows to select statistically significant events given a FDR cutoff and minimum PSI change. Default values for FDR is 0.05 and deltaPSI is 0.1 (ie. 10% minimum change). 
 
-```{r, warning = FALSE, message = FALSE, fig.width = 7, fig.height = 5, fig.show='hold'}
+```{r, warning = FALSE, message = FALSE, fig.width = 6, fig.height = 5, fig.show='hold'}
 mats.top <- topEvents(mats.filt, fdr = 0.05, deltaPSI = 0.1 )
 dotplot(mats.top, fdr = 0.05, deltaPSI = 0.1, type = "SE")
 ```
@@ -74,4 +74,17 @@ Also, genes with frequent AS events can be discovered using `viewTopSplicedGenes
 viewTopSplicedGenes(mats.top, n = 10)
 viewTopSplicedGenes(mats.top, n = 10, types = c("RI"))
 ```
+
+## Gene-based analysis of splicing
+
+We can select gene specific events using `geneEvents`. For instance, all AS events affecting MIB2 can be selected as below.
+```{r, warning = FALSE, message = FALSE, fig.width = 3, fig.height = 4, fig.show='hold'}
+mats.gene <- geneEvents(mats.filt, geneS = "MIB2", fdr = 0.05, deltaPSI = 0.1 )
+```
+
+Next, PSI levels for exon skipping events affecting MIB2 can be plotted using `PSI_geneEvents`. 
+```{r, warning = FALSE, message = FALSE, fig.width = 5, fig.height = 4, fig.show='hold'}
+PSI_geneEvents(mats.gene, type = "SE", showReplicates = T)
+```
+
 

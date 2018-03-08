@@ -84,7 +84,7 @@ mats.gene <- geneEvents(mats.filt, geneS = "MIB2", fdr = 0.05, deltaPSI = 0.1 )
 
 Next, PSI levels for exon skipping events affecting MIB2 can be plotted using `PSI_geneEvents`. 
 ```{r, warning = FALSE, message = FALSE, fig.width = 5, fig.height = 4, fig.show='hold'}
-PSI_geneEvents(mats.gene, type = "SE", showReplicates = T)
+PSI_geneEvents(mats.gene, type = "SE", show_replicates = T)
 ```
 
 

@@ -17,7 +17,8 @@ Imports:
     GenomicRanges,
     ggplot2,
     rtracklayer,
-    reshape2
+    reshape2,
+    Gviz
 Suggests:
     testthat,
     knitr,

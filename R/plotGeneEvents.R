@@ -187,6 +187,7 @@ plotTranscripts <- function(gene_events, type, event_id, gtf,
                      col.line = NULL, col = NULL,
                      Inclusion = "orange", Skipping = "purple",
                      Retention = "orange", Non_Retention = "purple",
+                     MXE_Exon1 = "orange", MXE_Exon2 = "purple",
                      from = start(range(unlist(eventGr))) - 500,
                      to = end(range(unlist(eventGr))) + 500)  
   }else {
@@ -194,7 +195,8 @@ plotTranscripts <- function(gene_events, type, event_id, gtf,
                           txnTracks$skippingTrack), 
                      col.line = NULL, col = NULL,
                      Inclusion = "orange", Skipping = "purple",
-                     Retention = "orange", Non_Retention = "purple")  
+                     Retention = "orange", Non_Retention = "purple",
+                     MXE_Exon1 = "orange", MXE_Exon2 = "purple")  
   }
   
 }

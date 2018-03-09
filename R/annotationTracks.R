@@ -13,7 +13,7 @@ createAnnotationTrack_event <- function(eventGr, type){
   }
   
   if (type == "MXE"){
-    #event_track <- createAnnotationTrackMXE(eventGr)
+    event_track <- createAnnotationTrackMXE_event(eventGr)
   }
   
   return(event_track)
@@ -38,7 +38,8 @@ createAnnotationTrack_transcripts <- function(eventGr, gtf_exons,
   }
   
   if (type == "MXE"){
-    #event_track <- createAnnotationTrackMXE(eventGr)
+    txn_tracks <- createAnnotationTrackMXE_transcripts(eventGr, gtf_exons,
+                                                      is_strict)
   }
   
   return(txn_tracks)
@@ -228,6 +229,116 @@ createAnnotationTrackRI_transcripts <- function(eventGr, gtf_exons,
   
 }
 
+createAnnotationTrackMXE_transcripts <- function(eventGr, gtf_exons,
+                                                is_strict){
+  
+  # Transcripts overlapping with splicing event 
+  ovl.e1 <- GenomicRanges::findOverlaps(eventGr$exon_1, 
+                                        gtf_exons, type = "any")
+  ovl.e2 <- GenomicRanges::findOverlaps(eventGr$exon_2, 
+                                        gtf_exons, type = "any")
+  ovl.e3 <- GenomicRanges::findOverlaps(eventGr$exon_upstream,
+                                        gtf_exons, type = "any")
+  ovl.e4 <- GenomicRanges::findOverlaps(eventGr$exon_downstream,
+                                        gtf_exons, type = "any")
+  
+  mytx.ids.e1 <- gtf_exons$transcript_id[subjectHits(ovl.e1)]
+  mytx.ids.e2 <- gtf_exons$transcript_id[subjectHits(ovl.e2)]
+  mytx.ids.e3 <- gtf_exons$transcript_id[subjectHits(ovl.e3)]
+  mytx.ids.e4 <- gtf_exons$transcript_id[subjectHits(ovl.e4)]
+  
+  #obtain intron range for inclusion event and skipping event
+  intron.mxe.exon1 <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_1),
+                                             ranges = IRanges(
+                                               start = c(end(eventGr$exon_upstream) + 1,
+                                                         end(eventGr$exon_1) + 1),  
+                                               end = c(start(eventGr$exon_1) - 1,
+                                                       start(eventGr$exon_downstream) -1)
+                                             ),
+                                             strand = strand(eventGr$exon_1)
+  )
+  
+  intron.mxe.exon2 <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_2),
+                                             ranges = IRanges(
+                                               start = c(end(eventGr$exon_upstream) + 1,
+                                                         end(eventGr$exon_2) + 1),  
+                                               end = c(start(eventGr$exon_2) - 1,
+                                                       start(eventGr$exon_downstream) -1)
+                                             ),
+                                             strand = strand(eventGr$exon_2)
+  )
+  
+  #find transcripts with exons overlapping intronic regions
+  ovl.mxe.exon1 <- GenomicRanges::findOverlaps(intron.mxe.exon1, gtf_exons, type = "any")
+  mytx.ids.intron1 <- gtf_exons$transcript_id[subjectHits(ovl.mxe.exon1)]
+  
+  ovl.mxe.exon2 <- GenomicRanges::findOverlaps(intron.mxe.exon2, gtf_exons, type = "any")
+  mytx.ids.intron2 <- gtf_exons$transcript_id[subjectHits(ovl.mxe.exon2)]
+  
+  
+  #decide wich transcripts to plot in inclusion and skipping tracks
+  if (is_strict){
+    mytx.ids.mxe.exon1 <- intersect(mytx.ids.e3, mytx.ids.e4) #has both flanking exons
+    mytx.ids.mxe.exon1 <- intersect(mytx.ids.mxe.exon1, mytx.ids.e1) #and exon1
+    
+    mytx.ids.mxe.exon2 <- intersect(mytx.ids.e3, mytx.ids.e4) #has both flanking exons
+    mytx.ids.mxe.exon2 <- intersect(mytx.ids.mxe.exon2, mytx.ids.e2) #and exon2
+    
+  }else {
+    mytx.ids.mxe.exon1 <- union(mytx.ids.e3, mytx.ids.e4) #has either flanking exons
+    mytx.ids.mxe.exon1 <- intersect(mytx.ids.mxe.exon1, mytx.ids.e1) #and exon 1
+    
+    mytx.ids.mxe.exon2 <- union(mytx.ids.e3, mytx.ids.e4) #has both flanking exons
+    mytx.ids.mxe.exon2 <- intersect(mytx.ids.mxe.exon2, mytx.ids.e2) #and exon2
+  }
+  
+  #remove transcripts with exons in intronic regions
+  mytx.ids.mxe.exon1 <- setdiff(mytx.ids.mxe.exon1, mytx.ids.intron1)
+  mytx.ids.mxe.exon2 <- setdiff(mytx.ids.mxe.exon2, mytx.ids.intron2)
+  
+  
+  # MXE Exon 1 track
+  # Recover exons of transcripts for the MXE Exon 1 track using transcript IDs
+  # AnnotationDbi::keytypes(gtf_txdb)
+  res <- dplyr::filter(as.data.frame(gtf_exons), transcript_id %in% mytx.ids.mxe.exon1)
+  
+  # Create data frame for inclusion track - follow the model from data(geneModels)
+  res.df <- res[, c("seqnames", "start", "end", "strand", "exon_id", "transcript_name")]
+  colnames(res.df) <- c("chromosome","start","end","strand","exon","transcript")
+  
+  if (nrow(res.df) > 0){ 
+    res.df$feature <- "MXE_Exon1"
+    inclusionTrack <- Gviz::GeneRegionTrack(range = res.df, name = "MXE Exon 1", 
+                                            transcriptAnnotation = "transcript")  
+  }else {
+    inclusionTrack <- Gviz::GeneRegionTrack(range = GRanges(), name = "MXE Exon 1", 
+                                            transcriptAnnotation = "transcript")  
+  }
+  
+  # MXE Exon 2 track
+  # Recover exons of transcripts for the MXE Exon 2 track using transcript IDs
+  res <- dplyr::filter(as.data.frame(gtf_exons), transcript_id %in% mytx.ids.mxe.exon2)
+  
+  # Create data frame for inclusion track - follow the model from data(geneModels)
+  res.df <- res[, c("seqnames", "start", "end", "strand", "exon_id", "transcript_name")]
+  colnames(res.df) <- c("chromosome","start","end","strand","exon","transcript")
+  
+  if (nrow(res.df) > 0){
+    res.df$feature <- "MXE_Exon2"
+    skippingTrack <- Gviz::GeneRegionTrack(range = res.df, name = "MXE Exon 2", 
+                                           transcriptAnnotation = "transcript")  
+  }else {
+    skippingTrack <- Gviz::GeneRegionTrack(range = GRanges(), name = "MXE Exon 2", 
+                                           transcriptAnnotation = "transcript")  
+  }
+  
+  txn_tracks <- list("inclusionTrack" = inclusionTrack,
+                     "skippingTrack" = skippingTrack)
+  return(txn_tracks)
+  
+}
+
+
 createAnnotationTrackSE_event <- function(eventGr){
   
   trackGr <- c(unlist(eventGr), unlist(eventGr[2:3]))
@@ -254,6 +365,23 @@ createAnnotationTrackRI_event <- function(eventGr){
                                        groupAnnotation = "group", shape = "box",
                                        stacking = "squish", id = "Intron retention")
   Gviz::feature(event_track) <- rep(c("Retention", "Non_Retention"), c(1, 2))
+  
+  
+  return(event_track)
+  
+}
+
+createAnnotationTrackMXE_event <- function(eventGr){
+  
+  trackGr <- c(eventGr$exon_upstream, eventGr$exon_1, eventGr$exon_downstream,
+               eventGr$exon_upstream, eventGr$exon_2, eventGr$exon_downstream)
+  trackGr$group <- rep(c("MXE_Exon1", "MXE_Exon2"), c(3, 3))
+  trackGr$type <- rep("Mutually Exclusive Exons", 3)
+  
+  event_track <- Gviz::AnnotationTrack(trackGr, name = "Event", 
+                                       groupAnnotation = "group", shape = "box",
+                                       stacking = "squish", id = "Mutually Exclusive Exons")
+  Gviz::feature(event_track) <- rep(c("MXE_Exon1", "MXE_Exon2"), c(3, 3))
   
   
   return(event_track)

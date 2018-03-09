@@ -144,7 +144,7 @@ create_GRanges_MXE <- function(events){
 
     exon_downstream <- GRanges(
         seqnames = events$chr,
-        ranges = IRanges(start = events$downstreamEE+1,
+        ranges = IRanges(start = events$downstreamES+1,
                          end = events$downstreamEE),
         strand = events$strand,
         ID = events$ID,

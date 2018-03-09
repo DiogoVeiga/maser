@@ -1,7 +1,11 @@
 createAnnotationTrack_event <- function(eventGr, type){
   
-  if(type == "A3SS" || type == "A5SS") {
-    #event_track <- createAnnotationTrackASS(eventGr)
+  if(type == "A3SS") {
+    event_track <- createAnnotationTrackA3SS_event(eventGr)
+  }
+  
+  if(type == "A5SS") {
+    event_track <- createAnnotationTrackA5SS_event(eventGr)
   }
   
   if (type == "SE"){
@@ -23,8 +27,12 @@ createAnnotationTrack_event <- function(eventGr, type){
 createAnnotationTrack_transcripts <- function(eventGr, gtf_exons, 
                                               type, is_strict){
   
-  if(type == "A3SS" || type == "A5SS") {
-    #event_track <- createAnnotationTrackASS(eventGr)
+  if(type == "A3SS") {
+    txn_tracks <- createAnnotationTrackA3SS_transcripts(eventGr, gtf_exons)
+  }
+  
+  if(type == "A5SS") {
+    txn_tracks <- createAnnotationTrackA5SS_transcripts(eventGr, gtf_exons)
   }
   
   if (type == "SE"){
@@ -338,6 +346,177 @@ createAnnotationTrackMXE_transcripts <- function(eventGr, gtf_exons,
   
 }
 
+createAnnotationTrackA5SS_transcripts <- function(eventGr, gtf_exons){
+  
+  # Transcripts overlapping with splicing event 
+  ovl.e1 <- GenomicRanges::findOverlaps(eventGr$exon_short, 
+                                        gtf_exons, type = "equal")
+  ovl.e2 <- GenomicRanges::findOverlaps(eventGr$exon_long, 
+                                        gtf_exons, type = "equal")
+  ovl.e3 <- GenomicRanges::findOverlaps(eventGr$exon_flanking, 
+                                        gtf_exons, type = "any")
+  
+  mytx.ids.e1 <- gtf_exons$transcript_id[subjectHits(ovl.e1)]
+  mytx.ids.e2 <- gtf_exons$transcript_id[subjectHits(ovl.e2)]
+  mytx.ids.e3 <- gtf_exons$transcript_id[subjectHits(ovl.e3)]
+  
+  #obtain intron range for short event and long event
+  intron.short <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_short),
+                                            ranges = IRanges(
+                                              start = end(eventGr$exon_short) + 1,  
+                                              end = start(eventGr$exon_flanking) - 1),
+                                            strand = strand(eventGr$exon_short)
+  )
+  
+  intron.long <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_long),
+                                         ranges = IRanges(
+                                           start = end(eventGr$exon_long) + 1,  
+                                           end = start(eventGr$exon_flanking) - 1),
+                                         strand = strand(eventGr$exon_long)
+  )
+  
+  
+  #find transcripts with exons overlapping intronic regions
+  ovl.intron.short <- GenomicRanges::findOverlaps(intron.short, gtf_exons, type = "any")
+  mytx.ids.intron.short <- gtf_exons$transcript_id[subjectHits(ovl.intron.short)]
+  
+  ovl.intron.long <- GenomicRanges::findOverlaps(intron.long, gtf_exons, type = "any")
+  mytx.ids.intron.long <- gtf_exons$transcript_id[subjectHits(ovl.intron.long)]
+  
+  #decide wich transcripts to plot in short and long tracks
+  mytx.ids.short <- intersect(mytx.ids.e1, mytx.ids.e3)
+  mytx.ids.long <- intersect(mytx.ids.e2, mytx.ids.e3)
+  
+  #remove transcripts with exons overlapping intronic regions
+  mytx.ids.short <- setdiff(mytx.ids.short, mytx.ids.intron.short)
+  mytx.ids.long <- setdiff(mytx.ids.long, mytx.ids.intron.long)
+  
+  # Short track
+  # Recover exons of transcripts for the short track using transcript IDs
+  # AnnotationDbi::keytypes(gtf_txdb)
+  res <- dplyr::filter(as.data.frame(gtf_exons), transcript_id %in% mytx.ids.short)
+  
+  # Create data frame for inclusion track - follow the model from data(geneModels)
+  res.df <- res[, c("seqnames", "start", "end", "strand", "exon_id", "transcript_name")]
+  colnames(res.df) <- c("chromosome","start","end","strand","exon","transcript")
+  
+  if (nrow(res.df) > 0){ 
+    res.df$feature <- "A5SS_Short"
+    inclusionTrack <- Gviz::GeneRegionTrack(range = res.df, name = "A5SS Short", 
+                                            transcriptAnnotation = "transcript")  
+  }else {
+    inclusionTrack <- Gviz::GeneRegionTrack(range = GRanges(), name = "A5SS Short", 
+                                            transcriptAnnotation = "transcript")  
+  }
+  
+  # Long track
+  # Recover exons of transcripts for the long track using transcript IDs
+  res <- dplyr::filter(as.data.frame(gtf_exons), transcript_id %in% mytx.ids.long)
+  
+  # Create data frame for inclusion track - follow the model from data(geneModels)
+  res.df <- res[, c("seqnames", "start", "end", "strand", "exon_id", "transcript_name")]
+  colnames(res.df) <- c("chromosome","start","end","strand","exon","transcript")
+  
+  if (nrow(res.df) > 0){
+    res.df$feature <- "A5SS_Long"
+    skippingTrack <- Gviz::GeneRegionTrack(range = res.df, name = "A5SS Long", 
+                                           transcriptAnnotation = "transcript")  
+  }else {
+    skippingTrack <- Gviz::GeneRegionTrack(range = GRanges(), name = "A5SS Long", 
+                                           transcriptAnnotation = "transcript")  
+  }
+  
+  txn_tracks <- list("inclusionTrack" = inclusionTrack,
+                     "skippingTrack" = skippingTrack)
+  return(txn_tracks)
+  
+}
+
+createAnnotationTrackA3SS_transcripts <- function(eventGr, gtf_exons){
+  
+  # Transcripts overlapping with splicing event 
+  ovl.e1 <- GenomicRanges::findOverlaps(eventGr$exon_short, 
+                                        gtf_exons, type = "equal")
+  ovl.e2 <- GenomicRanges::findOverlaps(eventGr$exon_long, 
+                                        gtf_exons, type = "equal")
+  ovl.e3 <- GenomicRanges::findOverlaps(eventGr$exon_flanking, 
+                                        gtf_exons, type = "any")
+  
+  mytx.ids.e1 <- gtf_exons$transcript_id[subjectHits(ovl.e1)]
+  mytx.ids.e2 <- gtf_exons$transcript_id[subjectHits(ovl.e2)]
+  mytx.ids.e3 <- gtf_exons$transcript_id[subjectHits(ovl.e3)]
+  
+  #obtain intron range for short event and long event
+  intron.short <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_short),
+                                         ranges = IRanges(
+                                           start = end(eventGr$exon_flanking) + 1,  
+                                           end = start(eventGr$exon_short) - 1),
+                                         strand = strand(eventGr$exon_short)
+  )
+  
+  intron.long <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_long),
+                                        ranges = IRanges(
+                                          start = end(eventGr$exon_flanking) + 1,  
+                                          end = start(eventGr$exon_long) - 1),
+                                        strand = strand(eventGr$exon_long)
+  )
+  
+  
+  #find transcripts with exons overlapping intronic regions
+  ovl.intron.short <- GenomicRanges::findOverlaps(intron.short, gtf_exons, type = "any")
+  mytx.ids.intron.short <- gtf_exons$transcript_id[subjectHits(ovl.intron.short)]
+  
+  ovl.intron.long <- GenomicRanges::findOverlaps(intron.long, gtf_exons, type = "any")
+  mytx.ids.intron.long <- gtf_exons$transcript_id[subjectHits(ovl.intron.long)]
+  
+  #decide wich transcripts to plot in short and long tracks
+  mytx.ids.short <- intersect(mytx.ids.e1, mytx.ids.e3)
+  mytx.ids.long <- intersect(mytx.ids.e2, mytx.ids.e3)
+  
+  #remove transcripts with exons overlapping intronic regions
+  mytx.ids.short <- setdiff(mytx.ids.short, mytx.ids.intron.short)
+  mytx.ids.long <- setdiff(mytx.ids.long, mytx.ids.intron.long)
+  
+  # Short track
+  # Recover exons of transcripts for the short track using transcript IDs
+  # AnnotationDbi::keytypes(gtf_txdb)
+  res <- dplyr::filter(as.data.frame(gtf_exons), transcript_id %in% mytx.ids.short)
+  
+  # Create data frame for inclusion track - follow the model from data(geneModels)
+  res.df <- res[, c("seqnames", "start", "end", "strand", "exon_id", "transcript_name")]
+  colnames(res.df) <- c("chromosome","start","end","strand","exon","transcript")
+  
+  if (nrow(res.df) > 0){ 
+    res.df$feature <- "A5SS_Short"
+    inclusionTrack <- Gviz::GeneRegionTrack(range = res.df, name = "A5SS Short", 
+                                            transcriptAnnotation = "transcript")  
+  }else {
+    inclusionTrack <- Gviz::GeneRegionTrack(range = GRanges(), name = "A5SS Short", 
+                                            transcriptAnnotation = "transcript")  
+  }
+  
+  # Long track
+  # Recover exons of transcripts for the long track using transcript IDs
+  res <- dplyr::filter(as.data.frame(gtf_exons), transcript_id %in% mytx.ids.long)
+  
+  # Create data frame for inclusion track - follow the model from data(geneModels)
+  res.df <- res[, c("seqnames", "start", "end", "strand", "exon_id", "transcript_name")]
+  colnames(res.df) <- c("chromosome","start","end","strand","exon","transcript")
+  
+  if (nrow(res.df) > 0){
+    res.df$feature <- "A5SS_Long"
+    skippingTrack <- Gviz::GeneRegionTrack(range = res.df, name = "A5SS Long", 
+                                           transcriptAnnotation = "transcript")  
+  }else {
+    skippingTrack <- Gviz::GeneRegionTrack(range = GRanges(), name = "A5SS Long", 
+                                           transcriptAnnotation = "transcript")  
+  }
+  
+  txn_tracks <- list("inclusionTrack" = inclusionTrack,
+                     "skippingTrack" = skippingTrack)
+  return(txn_tracks)
+  
+}
 
 createAnnotationTrackSE_event <- function(eventGr){
   
@@ -382,6 +561,40 @@ createAnnotationTrackMXE_event <- function(eventGr){
                                        groupAnnotation = "group", shape = "box",
                                        stacking = "squish", id = "Mutually Exclusive Exons")
   Gviz::feature(event_track) <- rep(c("MXE_Exon1", "MXE_Exon2"), c(3, 3))
+  
+  
+  return(event_track)
+  
+}
+
+createAnnotationTrackA5SS_event <- function(eventGr){
+  
+  trackGr <- c(eventGr$exon_short, eventGr$exon_flanking,
+               eventGr$exon_long, eventGr$exon_flanking)
+  trackGr$group <- rep(c("A5SS Short", "A5SS Long"), c(2, 2))
+  trackGr$type <- rep("A5SS", 4)
+  
+  event_track <- Gviz::AnnotationTrack(trackGr, name = "Event", 
+                                       groupAnnotation = "group", shape = "box",
+                                       stacking = "squish", id = "A5SS")
+  Gviz::feature(event_track) <- rep(c("A5SS_Short", "A5SS_Long"), c(2, 2))
+  
+  
+  return(event_track)
+  
+}
+
+createAnnotationTrackA3SS_event <- function(eventGr){
+  
+  trackGr <- c(eventGr$exon_flanking, eventGr$exon_short,
+               eventGr$exon_flanking, eventGr$exon_long)
+  trackGr$group <- rep(c("A3SS Short", "A3SS Long"), c(2, 2))
+  trackGr$type <- rep("A3SS", 4)
+  
+  event_track <- Gviz::AnnotationTrack(trackGr, name = "Event", 
+                                       groupAnnotation = "group", shape = "box",
+                                       stacking = "squish", id = "A3SS")
+  Gviz::feature(event_track) <- rep(c("A3SS_Short", "A3SS_Long"), c(2, 2))
   
   
   return(event_track)

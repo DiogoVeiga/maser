@@ -188,6 +188,8 @@ plotTranscripts <- function(gene_events, type, event_id, gtf,
                      Inclusion = "orange", Skipping = "purple",
                      Retention = "orange", Non_Retention = "purple",
                      MXE_Exon1 = "orange", MXE_Exon2 = "purple",
+                     A5SS_Short = "orange", A5SS_Long = "purple",
+                     A3SS_Short = "orange", A3SS_Long = "purple",
                      from = start(range(unlist(eventGr))) - 500,
                      to = end(range(unlist(eventGr))) + 500)  
   }else {
@@ -196,8 +198,10 @@ plotTranscripts <- function(gene_events, type, event_id, gtf,
                      col.line = NULL, col = NULL,
                      Inclusion = "orange", Skipping = "purple",
                      Retention = "orange", Non_Retention = "purple",
-                     MXE_Exon1 = "orange", MXE_Exon2 = "purple")  
+                     MXE_Exon1 = "orange", MXE_Exon2 = "purple",
+                     A5SS_Short = "orange", A5SS_Long = "purple",
+                     A3SS_Short = "orange", A3SS_Long = "purple")  
   }
-  
+
 }
 

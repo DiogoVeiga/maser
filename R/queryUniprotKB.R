@@ -124,3 +124,19 @@ urlTracksUniprotKB <- function(){
   
   return(track_df)
 }
+
+# internal function
+overlappingFeatures <- function(feature_gr, eventGr){
+  
+  #Define region around splicing event
+  region <- range(unlist(eventGr))
+  start(region) <- start(region) - 10
+  end(region) <- end(region) + 10
+  genome(region) <- "hg38"
+  
+  ov <- findOverlaps(eventGr, feature_gr)
+  ov_features <- feature_gr[subjectHits(ov)]
+  
+  return(ov_features)
+  
+}

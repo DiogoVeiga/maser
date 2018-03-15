@@ -600,3 +600,50 @@ createAnnotationTrackA3SS_event <- function(eventGr){
   return(event_track)
   
 }
+
+createUniprotUCSCtrack_localization <- function(eventGr, genome){
+  
+  uniprotTracks <- list()
+  
+  session <- rtracklayer::browserSession("UCSC")
+  rtracklayer::genome(session) <- genome
+  
+  #tableNames(ucscTableQuery(mySession, track="uniprot"))
+  # Tables to query in the Uniprot track
+  # Creates a track for each table related to cell localization
+  tables_uniprot <- c("unipLocExtra", "unipLocTransMemb", 
+                      "unipLocCytopl")
+  names_uniprot <- c("Extra", "TransMemb", 
+                      "Cytop")
+  
+  #Define region around splicing event
+  region <- range(unlist(eventGr))
+  start(region) <- start(region) - 10
+  end(region) <- end(region) + 10
+  genome(region) <- "hg38"
+  
+  for(i in 1:length(tables_uniprot)){
+    
+    query <- ucscTableQuery(session, track = "uniprot", table = tables_uniprot[i],
+                            range = region)
+    query_gr <- rtracklayer::track(query)
+    query_table <- rtracklayer::getTable(query)
+    
+    if (length(query_gr) > 0 ){
+      
+      track <- Gviz::AnnotationTrack(range = query_gr, genome = genome, 
+                                     name = names_uniprot[i], 
+                                     id = query_gr$name, 
+                                     showFeatureId = TRUE,
+                                     fill = query_gr$itemRgb, shape = "arrow")  
+        
+    }else {
+      track <- Gviz::AnnotationTrack(range = GRanges(), name = names_uniprot[i])
+    }
+    
+    uniprotTracks[[tables_uniprot[i]]] <- track  
+  }
+  
+  return(uniprotTracks)  
+
+}

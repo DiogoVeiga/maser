@@ -601,6 +601,7 @@ createAnnotationTrackA3SS_event <- function(eventGr){
   
 }
 
+#deprecated rtracklayer too slow - modify this function to use createGRangesUniprotKB
 createUniprotUCSCtrack_localization <- function(eventGr, genome){
   
   uniprotTracks <- list()
@@ -646,4 +647,32 @@ createUniprotUCSCtrack_localization <- function(eventGr, genome){
   
   return(uniprotTracks)  
 
+}
+
+createUniprotKBtracks <- function(eventGr, features){
+  
+  uniprotTracks <- list()
+  
+  for(i in 1:length(features)){
+    
+    feature_gr <- createGRangesUniprotKBtrack(features[i])
+    ovl_gr <- overlappingFeatures(feature_gr, eventGr)
+    
+    if (length(ovl_gr) > 0 ){
+      
+      track <- Gviz::AnnotationTrack(range = ovl_gr, 
+                                     name = features[i], 
+                                     id = ovl_gr$Name, 
+                                     showFeatureId = TRUE,
+                                     fill = "#006400", shape = "arrow")  
+      
+    }else {
+      track <- Gviz::AnnotationTrack(range = GRanges(), name = features[i])
+    }
+    
+    uniprotTracks[[features[i]]] <- track  
+  }
+  
+  return(uniprotTracks)  
+  
 }

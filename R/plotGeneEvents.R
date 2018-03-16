@@ -209,6 +209,62 @@ plotTranscripts <- function(gene_events, type, event_id, gtf,
 plotUniprotKBFeatures <- function(gene_events, type, event_id, gtf,
                                   features, is_strict = FALSE, zoom = FALSE,
                                   show_transcripts = FALSE){
+  
+  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+  if (!type %in% as_types){
+    stop(cat("\"type\" should be one of the following: ", as_types))
+  }
+  
+  annot <- gene_events[[paste0(type,"_","events")]]
+  if (length(unique(annot$geneSymbol)) > 1){
+    stop(cat("Multiple genes found. Use geneEvents() to select gene-specific AS events."))
+  }
+  
+  # Genomic ranges of alternative splicing events
+  grl <- gene_events[[paste0(type,"_","gr")]]
+  idx.event <- grep(as.numeric(event_id), grl[[1]]$ID)
+  
+  eventGr <- GRangesList()
+  for (feature in names(grl)){
+    eventGr[[paste0(feature)]] <- grl[[paste0(feature)]][idx.event]
+  }
+  
+  eventTrack <- createAnnotationTrack_event(eventGr, type)
+  
+  gtf_exons <- gtf[gtf$type=="exon",]
+  uniprotTracks <- createUniprotKBtracks(eventGr, features)
+  
+  if (show_transcripts){
+    txnTracks <- createAnnotationTrack_transcripts(eventGr, gtf_exons,
+                                                   type, is_strict)
+    trackList <- c(list(eventTrack, txnTracks$inclusionTrack, 
+                      txnTracks$skippingTrack),
+                   uniprotTracks)
+  }else {
+    trackList <- c(list(eventTrack), uniprotTracks)
+  }
+  
+  if (zoom){
+    Gviz::plotTracks(trackList, 
+                     col.line = NULL, col = NULL,
+                     Inclusion = "orange", Skipping = "purple",
+                     Retention = "orange", Non_Retention = "purple",
+                     MXE_Exon1 = "orange", MXE_Exon2 = "purple",
+                     A5SS_Short = "orange", A5SS_Long = "purple",
+                     A3SS_Short = "orange", A3SS_Long = "purple",
+                     from = start(range(unlist(eventGr))) - 500,
+                     to = end(range(unlist(eventGr))) + 500)  
+  }else {
+    Gviz::plotTracks(trackList, 
+                     col.line = NULL, col = NULL,
+                     Inclusion = "orange", Skipping = "purple",
+                     Retention = "orange", Non_Retention = "purple",
+                     MXE_Exon1 = "orange", MXE_Exon2 = "purple",
+                     A5SS_Short = "orange", A5SS_Long = "purple",
+                     A3SS_Short = "orange", A3SS_Long = "purple")  
+  }
+  
+  
 }
 
 # deprecated - uses UCSC rtracklayer too slow

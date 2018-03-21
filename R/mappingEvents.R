@@ -1,7 +1,12 @@
+#internal function? called inside mapTranscriptsEvents
+mapTranscriptsToProtein <- function(){
+  
+}
+
 
 # User accessible function
 # Will add transcript IDs to all events
-mapTransriptsToEvents <- function(events, gtf, is_strict = TRUE){
+mapTranscriptsToEvents <- function(events, gtf, is_strict = TRUE){
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
   gtf_exons <- gtf[gtf$type=="exon",]
@@ -13,6 +18,10 @@ mapTransriptsToEvents <- function(events, gtf, is_strict = TRUE){
     
     # Retrieve Events annotation
     annot <- events[[paste0(type,"_","events")]]
+    
+    if (nrow(annot) == 0){
+      next
+    }
     
     # Retrieve Events gene ranges
     grl <- events[[paste0(type,"_","gr")]]

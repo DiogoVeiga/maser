@@ -1,4 +1,90 @@
 
+# User accessible function
+# Will add transcript IDs to all events
+mapTransriptsToEvents <- function(events, gtf, is_strict = TRUE){
+  
+  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+  gtf_exons <- gtf[gtf$type=="exon",]
+  
+  # Add transcripts to events using mapping functions based on sequence overlap 
+  events_with_txn <- events
+  
+  for (type in as_types){
+    
+    # Retrieve Events annotation
+    annot <- events[[paste0(type,"_","events")]]
+    
+    # Retrieve Events gene ranges
+    grl <- events[[paste0(type,"_","gr")]]
+    
+    list_txn_a <- c()
+    list_txn_b <- c()
+    
+    for (i in 1:nrow(annot)) {
+      
+      # Genomic ranges of alternative splicing events
+      eventGr <- GRangesList()
+      for (feature in names(grl)){
+        eventGr[[paste0(feature)]] <- grl[[paste0(feature)]][i]
+      }
+      
+      if(type == "SE") {
+        tx_ids <- mapTranscriptsSEevent(eventGr, gtf_exons, is_strict)
+        list_txn_a <- c(list_txn_a, paste(tx_ids$txn_3exons, collapse = ",") )
+        list_txn_b <- c(list_txn_b, paste(tx_ids$txn_2exons, collapse = ",") )
+      }
+      
+      if(type == "MXE") {
+        tx_ids <- mapTranscriptsMXEevent(eventGr, gtf_exons, is_strict)
+        list_txn_a <- c(list_txn_a, paste(tx_ids$txn_mxe_exon1, collapse = ",") )
+        list_txn_b <- c(list_txn_b, paste(tx_ids$txn_mxe_exon2, collapse = ",") )
+      }
+      
+      if(type == "RI") {
+        tx_ids <- mapTranscriptsRIevent(eventGr, gtf_exons, is_strict)
+        list_txn_a <- c(list_txn_a, paste(tx_ids$txn_nonRetention, collapse = ",") )
+        list_txn_b <- c(list_txn_b, paste(tx_ids$txn_retention, collapse = ",") )
+      }
+      
+      if(type == "A5SS") {
+        
+        #reverse strand becomes A3SS
+        if (as.character(strand(eventGr[1])) == "+"){
+          tx_ids <- mapTranscriptsA5SSevent(eventGr, gtf_exons)  
+        }else{
+          tx_ids <- mapTranscriptsA3SSevent(eventGr, gtf_exons)  
+        }
+        
+        list_txn_a <- c(list_txn_a, paste(tx_ids$txn_short, collapse = ",") )
+        list_txn_b <- c(list_txn_b, paste(tx_ids$txn_long, collapse = ",") )
+      }
+      
+      if(type == "A3SS") {
+        
+        #reverse strand becomes A5SS
+        if (as.character(strand(eventGr[1])) == "+"){
+          tx_ids <- mapTranscriptsA3SSevent(eventGr, gtf_exons)  
+        }else{
+          tx_ids <- mapTranscriptsA5SSevent(eventGr, gtf_exons)  
+        }
+
+        list_txn_a <- c(list_txn_a, paste(tx_ids$txn_short, collapse = ",") )
+        list_txn_b <- c(list_txn_b, paste(tx_ids$txn_long, collapse = ",") )
+      }
+    } #for all events in annot
+    
+    annot[[names(tx_ids)[1]]] <- list_txn_a
+    annot[[names(tx_ids)[2]]] <- list_txn_b
+    
+    events_with_txn[[paste0(type,"_","events")]] <- annot
+      
+  
+  } #for each event type
+  
+  return(events_with_txn)
+  
+}
+
 mapTranscriptsSEevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   
   tx_ids <- list()
@@ -111,7 +197,7 @@ mapTranscriptsRIevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   
 }
 
-mapTranscriptsRIevent <- function(eventGr, gtf_exons, is_strict = TRUE){
+mapTranscriptsMXEevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   
   tx_ids <- list()
   
@@ -270,8 +356,7 @@ mapTranscriptsA3SSevent <- function(eventGr, gtf_exons){
                                           start = end(eventGr$exon_flanking) + 1,  
                                           end = start(eventGr$exon_long) - 1),
                                         strand = strand(eventGr$exon_long)
-  )
-  
+  )  
   
   #find transcripts with exons overlapping intronic regions
   ovl.intron.short <- GenomicRanges::findOverlaps(intron.short, gtf_exons, type = "any")

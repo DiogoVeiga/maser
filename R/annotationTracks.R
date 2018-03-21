@@ -154,7 +154,7 @@ createAnnotationTrackRI_transcripts <- function(eventGr, gtf_exons,
 createAnnotationTrackMXE_transcripts <- function(eventGr, gtf_exons,
                                                 is_strict){
   
-  tx_ids <- mapTranscriptsRIevent(eventGr, gtf_exons, is_strict)
+  tx_ids <- mapTranscriptsMXEevent(eventGr, gtf_exons, is_strict)
 
   # MXE Exon 1 track
   # Recover exons of transcripts for the MXE Exon 1 track using transcript IDs
@@ -201,7 +201,12 @@ createAnnotationTrackMXE_transcripts <- function(eventGr, gtf_exons,
 
 createAnnotationTrackA5SS_transcripts <- function(eventGr, gtf_exons){
   
-  tx_ids <- mapTranscriptsA5SSevent(eventGr, gtf_exons)
+  #reverse strand becomes A3SS
+  if (as.character(strand(eventGr[1])) == "+"){
+    tx_ids <- mapTranscriptsA5SSevent(eventGr, gtf_exons)  
+  }else{
+    tx_ids <- mapTranscriptsA3SSevent(eventGr, gtf_exons)  
+  }
   
   # Short track
   # Recover exons of transcripts for the short track using transcript IDs
@@ -248,7 +253,12 @@ createAnnotationTrackA5SS_transcripts <- function(eventGr, gtf_exons){
 
 createAnnotationTrackA3SS_transcripts <- function(eventGr, gtf_exons){
   
-  tx_ids <- mapTranscriptsA3SSevent(eventGr, gtf_exons)
+  #reverse strand becomes A5SS
+  if (as.character(strand(eventGr[1])) == "+"){
+    tx_ids <- mapTranscriptsA3SSevent(eventGr, gtf_exons)  
+  }else{
+    tx_ids <- mapTranscriptsA5SSevent(eventGr, gtf_exons)  
+  }
   
   # Short track
   # Recover exons of transcripts for the short track using transcript IDs
@@ -261,11 +271,11 @@ createAnnotationTrackA3SS_transcripts <- function(eventGr, gtf_exons){
   colnames(res.df) <- c("chromosome","start","end","strand","exon","transcript")
   
   if (nrow(res.df) > 0){ 
-    res.df$feature <- "A5SS_Short"
-    inclusionTrack <- Gviz::GeneRegionTrack(range = res.df, name = "A5SS Short", 
+    res.df$feature <- "A3SS_Short"
+    inclusionTrack <- Gviz::GeneRegionTrack(range = res.df, name = "A3SS Short", 
                                             transcriptAnnotation = "transcript")  
   }else {
-    inclusionTrack <- Gviz::GeneRegionTrack(range = GRanges(), name = "A5SS Short", 
+    inclusionTrack <- Gviz::GeneRegionTrack(range = GRanges(), name = "A3SS Short", 
                                             transcriptAnnotation = "transcript")  
   }
   
@@ -279,11 +289,11 @@ createAnnotationTrackA3SS_transcripts <- function(eventGr, gtf_exons){
   colnames(res.df) <- c("chromosome","start","end","strand","exon","transcript")
   
   if (nrow(res.df) > 0){
-    res.df$feature <- "A5SS_Long"
-    skippingTrack <- Gviz::GeneRegionTrack(range = res.df, name = "A5SS Long", 
+    res.df$feature <- "A3SS_Long"
+    skippingTrack <- Gviz::GeneRegionTrack(range = res.df, name = "A3SS Long", 
                                            transcriptAnnotation = "transcript")  
   }else {
-    skippingTrack <- Gviz::GeneRegionTrack(range = GRanges(), name = "A5SS Long", 
+    skippingTrack <- Gviz::GeneRegionTrack(range = GRanges(), name = "A3SS Long", 
                                            transcriptAnnotation = "transcript")  
   }
   

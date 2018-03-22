@@ -1,5 +1,67 @@
+#internal function
+mapENSTtoUniprotKB <- function(enst_ids){
+  
+  if (enst_ids == ""){
+    return(c(""))
+  }
+  
+  aux <- strsplit(enst_ids,",")[[1]]
+  
+  enst_trans <- rep("NA", length(aux))
+  unipKB_id <- rep("NA", length(aux))
+  
+  tokens <- strsplit(aux, "\\.")
+  
+  for (i in 1:length(aux)) {
+    enst_trans[i] <- tokens[[i]][[1]]  
+  }
+  
+  idx.map <- match(enst_trans, UKB_ENST_map$ENST_ID)
+  
+  return(as.vector(UKB_ENST_map$UniprotKB_ID[idx.map]))
+  
+}
+
 #internal function? called inside mapTranscriptsEvents
-mapTranscriptsToProtein <- function(){
+mapProteinsToEvents <- function(events){
+  
+  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+  
+  # Add UniprotKB ID
+  events_with_ptn <- events
+  
+  for (type in as_types){
+    
+    # Retrieve Events annotation
+    annot <- events[[paste0(type,"_","events")]]
+    idx.cols <- grep("^txn_", colnames(annot))
+    
+    if (nrow(annot) == 0){
+      next
+    }
+    
+    list_ptn_a <- c()
+    list_ptn_b <- c()
+    
+    for (i in 1:nrow(annot)) {
+      
+      
+      list_ptn_a <- c(list_ptn_a, paste(mapENSTtoUniprotKB(annot[i,idx.cols[1]]), 
+                                        collapse = ","))
+      list_ptn_b <- c(list_ptn_b, paste(mapENSTtoUniprotKB(annot[i,idx.cols[2]]), 
+                                        collapse = ","))
+      
+    } #for all events in annot
+    
+    annot[["list_ptn_a"]] <- list_ptn_a
+    annot[["list_ptn_b"]] <- list_ptn_b
+    
+    events_with_ptn[[paste0(type,"_","events")]] <- annot
+    
+    
+  } #for each AS type
+  
+  return(events_with_ptn)
   
 }
 

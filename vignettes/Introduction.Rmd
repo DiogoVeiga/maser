@@ -65,7 +65,7 @@ PSI_levels(mats.filt, type = "RI")
 The function `topEvents` allows to select statistically significant events given a FDR cutoff and minimum PSI change. Default values for FDR is 0.05 and deltaPSI is 0.1 (ie. 10% minimum change). 
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 6, fig.height = 5, fig.show='hold'}
-mats.top <- topEvents(mats.filt, fdr = 0.05, deltaPSI = 0.1 )
+mats.top <- topEvents(mats.filt, fdr = 0.05, deltaPSI = 0.3 )
 dotplot(mats.top, fdr = 0.05, deltaPSI = 0.1, type = "SE")
 ```
 

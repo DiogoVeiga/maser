@@ -299,3 +299,22 @@ summary.maser <- function(x){
   print.maser(x)
 }
 
+is.maser <- function(x){
+  
+  attributes <- c("A3SS_counts", "A3SS_PSI", "n_cond1", "n_cond2", "conditions",
+                  "A3SS_stats", "A3SS_gr", "A3SS_events", "A5SS_counts", 
+                  "A5SS_PSI",  "A5SS_stats", "A5SS_gr", "A5SS_events",
+                  "MXE_counts", "MXE_PSI", "MXE_stats", "MXE_gr", "MXE_events",
+                  "RI_counts", "RI_PSI", "RI_stats", "RI_gr", "RI_events",
+                  "SE_counts", "SE_PSI", "SE_stats", "SE_gr", "SE_events")
+  
+  #check if all elements are allowed attributes, and that all attributes are present
+  # and has been created using the constructor maser()
+  if (any(!names(x) %in% attributes)  || any(!attributes %in% names(x)) || 
+      !class(x) == "maser"){
+    return(FALSE)
+  }else{
+    return(TRUE)    
+  }
+
+}

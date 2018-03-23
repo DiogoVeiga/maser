@@ -181,7 +181,8 @@ create_GRanges <- function(events, type){
 
 }
 
-importEvents <- function(path, cond_labels,
+#create maser object by importing rMATS events
+maser <- function(path, cond_labels,
                          rtype = "ReadsOnTargetAndJunction"){
 
     rmats_out <- list.files(path, pattern = rtype, full.names = F)
@@ -253,12 +254,48 @@ importEvents <- function(path, cond_labels,
         mats[[paste0(type,"_","events")]] <-
             events[ , c("ID", "GeneID", "geneSymbol")]
 
-        cat("Reading ", f, type, nrow(events), " events\n")
+        cat("Importing ", f, " \n")
 
 
     }
 
+    class(mats) <- "maser"
     return(mats)
 
+}
+
+
+#summary.maser <- function(x) "maser"
+#print.maser <- function(x) "maser"
+
+print.maser <- function(x){
+  
+  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+  counts <- rep(0, length(as_types))
+  total <- 0
+  line_events <- ""
+  
+  for (type in as_types) {
+    PSI <- x[[paste0(type,"_","PSI")]]
+    nevents <- nrow(PSI)
+    line_events <- paste0(line_events, 
+                          type, ".......... ", nevents, " events\n")
+    total <- total + nevents
+  }
+  
+  line1 <- paste0("A maser object with ", total, " splicing events.\n\n")
+  line2 <- paste0("Samples description: \n", "Label=", x$conditions[1], "     n=", x$n_cond1, 
+                  " replicates\n")
+  line3 <- paste0( "Label=", x$conditions[2], "     n=", x$n_cond1, 
+                  " replicates\n\n")
+  line4 <- paste0("Splicing events: \n")
+  
+  cat(paste0(line1, line2, line3, line4, line_events))
+  
+}
+
+summary.maser <- function(x){
+
+  print.maser(x)
 }
 

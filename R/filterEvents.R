@@ -41,7 +41,7 @@ filterByCoverage <- function(events, avg_reads = 5){
         events_filt[[paste0(type,"_","events")]] <-
                     dplyr::filter(annot, ID %in% res_id)
 
-        cat("Selecting  ", type, length(res_id), " events\n")
+        #cat("Selecting  ", type, length(res_id), " events\n")
 
     } # for each event type
 
@@ -88,7 +88,7 @@ topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
         events_top[[paste0(type,"_","events")]] <- dplyr::filter(annot,
                                                                  ID %in% res$ID)
 
-        cat("Selecting  ", type, length(res$ID), " events\n")
+        #cat("Selecting  ", type, length(res$ID), " events\n")
 
     } #each event type
 
@@ -143,7 +143,7 @@ geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
     events_top[[paste0(type,"_","events")]] <- dplyr::filter(annot,
                                                              ID %in% keepIDs)
     
-    cat("Selecting  ", type, length(keepIDs), " events\n")
+    #cat("Selecting  ", type, length(keepIDs), " events\n")
     
   } #each event type
   

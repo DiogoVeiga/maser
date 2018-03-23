@@ -35,12 +35,13 @@ library(maser)
 # path to Hypoxia data
 path <- system.file("extdata", file.path("MATS_output"),
                     package = "maser")
-mats <- importEvents(path, c("Hypoxia 0h", "Hypoxia 24h"))
+hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+hypoxia
 ```
 
 We can remove low coverage events using `filterByCoverage`.
 ```{r, warning = FALSE, message = FALSE}
-mats.filt <- filterByCoverage(mats, avg_reads = 5)
+hypoxia.filt <- filterByCoverage(hypoxia, avg_reads = 5)
 ```
 
 ## Global overview of splicing changes
@@ -48,43 +49,45 @@ An overview of significant events can be obtained using either `dotplot` or `vol
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 7, fig.height = 5}
 # dotplot(mats.filt, fdr = 0.05, deltaPSI = 0.1, type = "SE")
-volcano(mats.filt, fdr = 0.05, deltaPSI = 0.1, type = "SE")
+volcano(hypoxia.filt, fdr = 0.05, deltaPSI = 0.1, type = "SE")
 ```
 
 The distribution of signficant events in each conditions can be plotted using `splicingDistribution` and desired significance thresholds. 
 ```{r, warning = FALSE, message = FALSE, fig.width = 7, fig.height = 3}
-splicingDistribution(mats.filt, fdr = 0.05, deltaPSI = 0.1)
+splicingDistribution(hypoxia.filt, fdr = 0.05, deltaPSI = 0.1)
 ```
 
 Global splicing patterns of individual replicates can also be inspected using principal component analysis (PCA) or boxplots of PSI levels.
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 6, fig.height = 5, fig.show='hold'}
-pca(mats.filt, type = "RI")
-PSI_levels(mats.filt, type = "RI")
+pca(hypoxia.filt, type = "RI")
+PSI_levels(hypoxia.filt, type = "RI")
 ```
 The function `topEvents` allows to select statistically significant events given a FDR cutoff and minimum PSI change. Default values for FDR is 0.05 and deltaPSI is 0.1 (ie. 10% minimum change). 
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 6, fig.height = 5, fig.show='hold'}
-mats.top <- topEvents(mats.filt, fdr = 0.05, deltaPSI = 0.3 )
-dotplot(mats.top, fdr = 0.05, deltaPSI = 0.1, type = "SE")
+hypoxia.top <- topEvents(hypoxia.filt, fdr = 0.05, deltaPSI = 0.3 )
+hypoxia.top
+dotplot(hypoxia.top, fdr = 0.05, deltaPSI = 0.1, type = "SE")
 ```
 
 Also, genes with frequent AS events can be discovered using `viewTopSplicedGenes`. The function rank genes based on the number of events, and a subset of AS types can be specificied. 
 ```{r, warning = FALSE, message = FALSE, fig.width = 3, fig.height = 4, fig.show='hold'}
-viewTopSplicedGenes(mats.top, n = 10)
-viewTopSplicedGenes(mats.top, n = 10, types = c("RI"))
+viewTopSplicedGenes(hypoxia.top, n = 10)
+viewTopSplicedGenes(hypoxia.top, n = 10, types = c("RI"))
 ```
 
 ## Gene-based analysis of splicing
 
 We can select gene specific events using `geneEvents`. For instance, all AS events affecting MIB2 can be selected as below.
 ```{r, warning = FALSE, message = FALSE, fig.width = 3, fig.height = 4, fig.show='hold'}
-mats.gene <- geneEvents(mats.filt, geneS = "MIB2", fdr = 0.05, deltaPSI = 0.1 )
+hypoxia_mib2 <- geneEvents(hypoxia.filt, geneS = "MIB2", fdr = 0.05, deltaPSI = 0.1 )
+print(hypoxia_mib2)
 ```
 
-Next, PSI levels for exon skipping events affecting MIB2 can be plotted using `PSI_geneEvents`. 
+Next, PSI levels for exon skipping events affecting MIB2 can be plotted using `plotGenePSI`. 
 ```{r, warning = FALSE, message = FALSE, fig.width = 5, fig.height = 4, fig.show='hold'}
-PSI_geneEvents(mats.gene, type = "SE", show_replicates = T)
+plotGenePSI(hypoxia_mib2, type = "SE", show_replicates = T)
 ```
 
 **Code below needs description.**
@@ -104,39 +107,36 @@ gtf_genc <- rtracklayer::readGFF("/Users/dveiga/tools/Gencode/gencode.v25.annota
 gtf_genc_gr <- as(gtf_genc, "GRanges")
 
 # analyzing exon skipping
-mats.gene <- geneEvents(mats.filt, geneS = "TCF7L2", fdr = 0.05, deltaPSI = 0.1 )
-plotTranscripts(mats.gene, type = "SE", event_id = 37903, 
+hypoxia_gene <- geneEvents(hypoxia.filt, geneS = "TCF7L2", fdr = 0.05, deltaPSI = 0.1 )
+plotTranscripts(hypoxia_gene, type = "SE", event_id = 37903, 
                 gtf = gtf_genc_gr, is_strict = T, zoom = F)
 
 
 #investigating intron retention
-mats.gene <- geneEvents(mats.filt, geneS = "MIB2", fdr = 0.05, deltaPSI = 0.1 )
-PSI_geneEvents(mats.gene, type = "RI", show_replicates = T)
-plotTranscripts(mats.gene, type = "RI", event_id = 2508, 
+hypoxia_gene <- geneEvents(hypoxia.filt, geneS = "MIB2", fdr = 0.05, deltaPSI = 0.1 )
+plotGenePSI(hypoxia_gene, type = "RI", show_replicates = T)
+plotTranscripts(hypoxia_gene, type = "RI", event_id = 2508, 
                 gtf = gtf_genc_gr, is_strict = T, zoom = T)
 
-
-
-plotUniprotKBFeatures(mats.gene, "RI", 2508, gtf_genc_gr, features)
 # investigating MXE
-viewTopSplicedGenes(mats.top, n = 10, types = c("MXE"))
-mats.gene <- geneEvents(mats.filt, geneS = "TCF7L2", fdr = 0.05, deltaPSI = 0.1 )
-PSI_geneEvents(mats.gene, type = "MXE", show_replicates = T)
-plotTranscripts(mats.gene, type = "MXE", event_id = 2435, 
+viewTopSplicedGenes(hypoxia.top, n = 10, types = c("MXE")) #should be replaced by display()
+mats_gene <- geneEvents(hypoxia.filt, geneS = "TCF7L2", fdr = 0.05, deltaPSI = 0.1 )
+plotGenePSI(mats_gene, type = "MXE", show_replicates = T)
+plotTranscripts(mats_gene, type = "MXE", event_id = 2435, 
                 gtf = gtf_genc_gr, is_strict = T, zoom = F)
 
 # investigating A5SS
-viewTopSplicedGenes(mats.top, n = 10, types = c("A5SS"))
-mats.gene <- geneEvents(mats.filt, geneS = "BCS1L", fdr = 0.05, deltaPSI = 0.1 )
-PSI_geneEvents(mats.gene, type = "A5SS", show_replicates = T)
-plotTranscripts(mats.gene, type = "A5SS", event_id = 3988, 
+viewTopSplicedGenes(hypoxia.top, n = 10, types = c("A5SS"))
+mats_gene <- geneEvents(hypoxia.filt, geneS = "BCS1L", fdr = 0.05, deltaPSI = 0.1 )
+plotGenePSI(mats_gene, type = "A5SS", show_replicates = T)
+plotTranscripts(mats_gene, type = "A5SS", event_id = 3988, 
                 gtf = gtf_genc_gr, zoom = T)
-plotUniprotKBFeatures(mats.gene, "A5SS", 3988, gtf_genc_gr, features)
+#plotUniprotKBFeatures(mats_gene, "A5SS", 3988, gtf_genc_gr, features)
 
-mats.gene <- geneEvents(mats.filt, geneS = "CEP170", fdr = 0.05, deltaPSI = 0.1 )
-PSI_geneEvents(mats.gene, type = "A5SS", show_replicates = T)
+mats_gene <- geneEvents(mats.filt, geneS = "CEP170", fdr = 0.05, deltaPSI = 0.1 )
+plotGenePSI(mats_gene, type = "A5SS", show_replicates = T)
 
-plotTranscripts(mats.gene, type = "A5SS", event_id = 2511, 
+plotTranscripts(mats_gene, type = "A5SS", event_id = 2511, 
                 gtf = gtf_genc_gr, zoom = F)
 
 # investigating A3SS
@@ -164,10 +164,10 @@ plotTranscripts(mats.gene, type = "A3SS", event_id = 2128,
 
 # Splicing events mapped to protein features
 
-mats.gene <- geneEvents(mats.filt, geneS = "MIB2", fdr = 0.05, deltaPSI = 0.1 )
+mats_gene <- geneEvents(hypoxia.filt, geneS = "MIB2", fdr = 0.05, deltaPSI = 0.1 )
 availableTracksUniprotKB()
 features <- c("domain", "transmem", "mutagen")
-plotUniprotKBFeatures(mats.gene, type = "RI", event_id = 2508, 
+plotUniprotKBFeatures(mats_gene, type = "RI", event_id = 2508, 
                       features = features, gtf = gtf_genc_gr, is_strict = T, zoom = T)
 
 mats.gene <- geneEvents(mats.filt, geneS = "TCF7L2", fdr = 0.05, deltaPSI = 0.1 )
@@ -180,5 +180,6 @@ mats.gene <- geneEvents(mats.filt, geneS = "STK36", fdr = 0.05, deltaPSI = 0.1 )
 plotUniprotKBFeatures(mats.gene, type = "A3SS", event_id = 148, 
                       features = features, gtf = gtf_genc_gr, is_strict = T, zoom = F)
 
+plotUniprotKBFeatures(hypoxia_gene, "RI", 2508, gtf_genc_gr, features)
 ```
 

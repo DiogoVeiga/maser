@@ -1,5 +1,5 @@
 
-PSI_geneEvents <- function(events, type, show_replicates = TRUE){
+plotGenePSI <- function(events, type, show_replicates = TRUE){
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
   if (!type %in% as_types){

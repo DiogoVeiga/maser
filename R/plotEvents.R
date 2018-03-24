@@ -291,3 +291,71 @@ viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI", "M
   
   
 }
+
+display <- function(events, type){
+  
+  if(!is.maser(events)){
+    stop("Parameter events has to be a maser object.")
+  }
+  
+  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+  if (!type %in% as_types){
+    stop(cat("\"type\" should be one of the following: ", as_types))
+  }
+  
+  data <- asDataFrame(events, type)
+  DT::datatable(data, options = list(
+                        pageLength = 25,
+                        filter = "none",
+                        searchHighlight = TRUE,
+                        rownames = FALSE,
+                        style = "bootstrap"
+                        ),
+                escape = FALSE,
+                rownames = FALSE,
+                selection = "none",
+                filter = 'top'
+                )
+  
+}
+
+asDataFrame <- function(events, type){
+  
+  annot <- events[[paste0(type,"_","events")]]
+  stats <- events[[paste0(type,"_","stats")]]
+  PSI <- events[[paste0(type,"_","PSI")]]
+  grl <- events[[paste0(type,"_","gr")]]
+  
+  df <- annot
+  df <- cbind(df, stats[,2:4])
+  
+  PSI_1 <- c("NA", nrow(df))
+  PSI_2 <- c("NA", nrow(df))
+  
+  idx.cond1 <- seq(1, events$n_cond1, 1)
+  idx.cond2 <- seq(events$n_cond1+1, events$n_cond1+events$n_cond2, 1)
+  
+  for (i in 1:nrow(df)) {
+    PSI_1[i] <- paste(PSI[i, idx.cond1], collapse = ",")
+    PSI_2[i] <- paste(PSI[i, idx.cond2], collapse = ",")
+  } 
+  
+  df <- cbind(df, PSI_1 = PSI_1, PSI_2 = PSI_2)
+  
+  exon_df <- data.frame(Chr = as.character(seqnames(grl[[1]])),
+                        Strand = as.character(strand(grl[[1]])))
+  
+  for (i in 1:length(names(grl))) {
+    res <- as.data.frame(grl[[i]])
+    coord <- paste0(res$start, "-", res$end)  
+    label <- names(grl[i])
+    exon_df <- cbind(exon_df, Exon = coord)
+  }
+  
+  colnames(exon_df) <- c("Chr", "Strand", names(grl))
+  
+  df <- cbind(df, exon_df)
+  return(df)
+
+}
+  

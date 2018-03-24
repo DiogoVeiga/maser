@@ -18,7 +18,8 @@ Imports:
     ggplot2,
     rtracklayer,
     reshape2,
-    Gviz
+    Gviz,
+    DT
 Suggests:
     testthat,
     knitr,

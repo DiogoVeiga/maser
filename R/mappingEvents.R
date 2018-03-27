@@ -1,3 +1,67 @@
+
+mapProteinFeaturesToEvents <- function(events, features){
+  
+  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+  
+  # Add UniprotKB features annotation
+  events_with_features <- events
+  
+  # Create GRanges for each UniprotKB feature in features argument
+  features_Gr <- GRangesList()
+  for (i in 1:length(features)) {
+    features_Gr[[ features[i] ]] <- createGRangesUniprotKBtrack(features[i])
+  }
+  
+  for (type in as_types){
+    
+    # Retrieve Events annotation
+    annot <- events[[paste0(type,"_","events")]]
+    grl <- events[[paste0(type,"_","gr")]]
+    idx.cols <- grep("^list_ptn_", colnames(annot))
+    
+    if (nrow(annot) == 0){
+      next
+    }
+    
+    #Create matrix for storing results
+    annot_uniprotkb <- matrix("NA", nrow = nrow(annot), ncol = length(features))
+    colnames(annot_uniprotkb) <- features
+    
+    for (i in 1:nrow(annot)) {
+      
+      # Genomic ranges of alternative splicing event
+      eventGr <- GRangesList()
+      for (exon in names(grl)){
+        eventGr[[paste0(exon)]] <- grl[[paste0(exon)]][i]
+      }
+      
+      protein_ids <- unique(c(annot[i, idx.cols[1]], annot[i, idx.cols[2]]))
+      
+      
+      for (j in 1:length(features)) {
+        ovl_gr <- overlappingFeatures(features_Gr[[j]], eventGr)
+        ovl_gr_filt <- ovl_gr[ovl_gr$Uniprot_ID %in% protein_ids, ] 
+        
+        aux <- unique(as.character(ovl_gr_filt$Name))
+        aux <- gsub(" ", "", aux)
+        res <- paste0(aux, collapse = ",")
+        if (!res == ""){
+          annot_uniprotkb[i,j] <- res  
+        }
+        
+      } #all features
+      
+      
+    }#all events
+    
+    #write annotation to maser object
+    events_with_features[[paste0(type,"_","events")]] <- cbind(annot, annot_uniprotkb)
+
+  }#all types
+  
+  return(events_with_features)
+}
+
 #internal function
 mapENSTtoUniprotKB <- function(enst_ids){
   
@@ -67,7 +131,7 @@ mapProteinsToEvents <- function(events){
 
 
 # User accessible function
-# Will add transcript IDs to all events
+# Will add transcript IDs and protein IDs to all events
 mapTranscriptsToEvents <- function(events, gtf, is_strict = TRUE){
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
@@ -152,7 +216,9 @@ mapTranscriptsToEvents <- function(events, gtf, is_strict = TRUE){
   
   } #for each event type
   
-  return(events_with_txn)
+  events_with_ptn <- mapProteinsToEvents(events_with_txn)
+  
+  return(events_with_ptn)
   
 }
 

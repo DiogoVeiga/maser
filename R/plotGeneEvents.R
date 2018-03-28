@@ -157,6 +157,14 @@ plotTranscripts_old_txdb <- function(gene_events, type, event_id, gtf_txdb,
 plotTranscripts <- function(gene_events, type, event_id, gtf, 
                             is_strict = FALSE, zoom = FALSE){
   
+  if (!class(gtf) == "GRanges"){
+    stop(cat("\"gtf\" should be a GRanges class."))
+  }
+  gtf <- GenomeInfoDb::keepSeqlevels(gtf, c(paste0(seq(1:22)), "X", "Y"),
+                                     pruning.mode = "coarse")
+  seqlevels(gtf, pruning.mode="coarse") <- c(paste0("chr", seq(1:22)),
+                                             "chrX", "chrY")
+
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
   if (!type %in% as_types){
     stop(cat("\"type\" should be one of the following: ", as_types))
@@ -209,6 +217,14 @@ plotTranscripts <- function(gene_events, type, event_id, gtf,
 plotUniprotKBFeatures <- function(gene_events, type, event_id, gtf,
                                   features, is_strict = FALSE, zoom = FALSE,
                                   show_transcripts = FALSE){
+  
+  if (!class(gtf) == "GRanges"){
+    stop(cat("\"gtf\" should be a GRanges class."))
+  }
+  gtf <- GenomeInfoDb::keepSeqlevels(gtf, c(paste0(seq(1:22)), "X", "Y"),
+                                     pruning.mode = "coarse")
+  seqlevels(gtf, pruning.mode="coarse") <- c(paste0("chr", seq(1:22)),
+                                             "chrX", "chrY")
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
   if (!type %in% as_types){

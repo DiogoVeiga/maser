@@ -23,7 +23,8 @@ Imports:
 Suggests:
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    BiocStyle
 VignetteBuilder: knitr
 URL: https://github.com/DiogoVeiga/maser
 BugReports: https://github.com/DiogoVeiga/maser/issues

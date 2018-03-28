@@ -254,7 +254,7 @@ maser <- function(path, cond_labels,
     mats[[paste0(type,"_","events")]] <-
       events[ , c("ID", "GeneID", "geneSymbol")]
     
-    cat("Importing ", f, " \n")
+    #cat("Importing ", f, " \n")
     
     
   }

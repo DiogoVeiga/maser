@@ -1,0 +1,111 @@
+---
+title: "Mapping splice events to protein features"
+shorttitle: "Mapping splice events to protein features"
+author: "Diogo Veiga"
+package: maser
+date: "`r Sys.Date()`"
+output:
+  BiocStyle::html_document:
+    toc_float: true  
+vignette: >
+  %\VignetteIndexEntry{Mapping splicing to protein features}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+
+The key feature of `r Rpackage("maser")` is mapping of splicing events to protein features provided [UniprotKB](http://www.uniprot.org/).  
+
+Features such as protein domains, motifs and mutation sites can be annotated in batch for splicing events and visualized along side the genomic location of splicing.  
+
+
+# Batch annotation
+
+## Create the maser object
+We illustrate the workflow using the hypoxia dataset from the previous vignette.
+
+```{r, warning = FALSE, message = FALSE}
+library(maser)
+
+# path to Hypoxia data
+path <- system.file("extdata", file.path("MATS_output"),
+                    package = "maser")
+hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+
+# Remove low coverage events and get significant events
+hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
+hypoxia_top <- topEvents(hypoxia_filt)
+
+```
+
+Available UniprotKB features can be queried using `availableFeaturesUniprotKB()`.
+
+```{r, warning = FALSE, message = FALSE, eval=FALSE}
+head(availableFeaturesUniprotKB(), 10)
+```
+
+```{r, warning = FALSE, message = FALSE, echo=FALSE}
+knitr::kable(
+  head(availableFeaturesUniprotKB(), 10)
+)
+
+```
+
+## Mapping transcripts and protein to events 
+The function `mapTranscriptsToEvents()` will add both transcript and protein IDs to all events in the maser object. First, transcripts that matching the pattern of the splice event are retrieved using `r Biocpkg("GenomicRanges")`. Then the transcript is mapped to its corresponding protein in Uniprot.  
+
+`mapTranscriptsToEvents()` requires an Ensembl or Gencode GTF using the hg38 build of the human genome. Ensembl GTFs can be retrieved using `r Biocpkg("AnnotationHub")` package as below.
+
+```{r, warning = FALSE, message = FALSE}
+ah <- AnnotationHub::AnnotationHub()
+ah <- AnnotationHub::subset(ah, species == "Homo sapiens")
+qhs <- AnnotationHub::query(ah, c("Ensembl", "gene", "annotation", "grch38"))
+ens_gtf <- qhs[["AH51014"]] #Homo_sapiens.GRCh38.85.gtf
+```
+
+```{r, warning = FALSE, message = FALSE}
+hypoxia_top <- mapTranscriptsToEvents(hypoxia_top, gtf = ens_gtf)
+```
+
+If the mapping worked correctly, ENST and Uniprot identifiers will be added to events. `NA` values indicates non-protein coding transcripts.
+
+```{r, warning = FALSE, message = FALSE, eval=FALSE}
+head(annot(hypoxia_top, "SE"))
+```
+
+```{r, warning = FALSE, message = FALSE, echo=FALSE}
+knitr::kable(
+  head(annot(hypoxia_top, "SE"))
+)
+```
+
+## Feature annotation
+
+Now we are ready to for batch annotation using `mapProteinFeaturesToEvents()`, indicating any combination of valid features. The function retrieves the latest annotation from the public UniprotKB FTP, and overlaps splice events to protein features which have been mapped with hg38 genomic coordinates.
+
+```{r, warning = FALSE, message = FALSE}
+features <- c("domain", "transmem", "mutagen", "topo-dom", "motif", "signal", "DNA-bind")
+
+hypoxia_annot <- mapProteinFeaturesToEvents(hypoxia_top, features)
+
+```
+
+Feature annotation can be checked in a web browser using `display()` or accessed using `annot()`.  
+
+```{r, warning = FALSE, message = FALSE, eval = FALSE}
+display(hypoxia_annot, "SE")
+uniprot <- annot(hypoxia_annot, "SE")
+```
+
+```{r, warning = FALSE, message = FALSE}
+table(uniprot$domain)
+```
+
+plotUniprotKBFeatures(mats_gene, type = "SE", event_id = 37903, 
+                      features = features, gtf = gtf_genc_gr, 
+                      is_strict = T, zoom = F,
+                      show_transcripts = T)
+
+
+

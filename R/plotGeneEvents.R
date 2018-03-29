@@ -1,6 +1,10 @@
 
 plotGenePSI <- function(events, type, show_replicates = TRUE){
   
+  if(!is.maser(events)){
+    stop("Parameter events has to be a maser object.")
+  }
+  
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
   if (!type %in% as_types){
     stop(cat("\"type\" should be one of the following: ", as_types))
@@ -157,6 +161,10 @@ plotTranscripts_old_txdb <- function(gene_events, type, event_id, gtf_txdb,
 plotTranscripts <- function(gene_events, type, event_id, gtf, 
                             is_strict = FALSE, zoom = FALSE){
   
+  if(!is.maser(gene_events)){
+    stop("Parameter events has to be a maser object.")
+  }
+  
   if (!class(gtf) == "GRanges"){
     stop(cat("\"gtf\" should be a GRanges class."))
   }
@@ -217,6 +225,10 @@ plotTranscripts <- function(gene_events, type, event_id, gtf,
 plotUniprotKBFeatures <- function(gene_events, type, event_id, gtf,
                                   features, is_strict = FALSE, zoom = FALSE,
                                   show_transcripts = FALSE){
+  
+  if(!is.maser(gene_events)){
+    stop("Parameter events has to be a maser object.")
+  }
   
   if (!class(gtf) == "GRanges"){
     stop(cat("\"gtf\" should be a GRanges class."))

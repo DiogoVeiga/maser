@@ -134,8 +134,23 @@ mapProteinsToEvents <- function(events){
 # Will add transcript IDs and protein IDs to all events
 mapTranscriptsToEvents <- function(events, gtf, is_strict = TRUE){
   
-  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+  if(!is.maser(events)){
+    stop("Parameter events has to be a maser object.")
+  }
+  
+  if (!class(gtf) == "GRanges"){
+    stop(cat("\"gtf\" should be a GRanges object."))
+  }
+  gtf <- GenomeInfoDb::keepSeqlevels(gtf, c(paste0(seq(1:22)), "X", "Y"),
+                                     pruning.mode = "coarse")
+  seqlevels(gtf, pruning.mode="coarse") <- c(paste0("chr", seq(1:22)),
+                                             "chrX", "chrY")
   gtf_exons <- gtf[gtf$type=="exon",]
+  
+  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+  if (!type %in% as_types){
+    stop(cat("\"type\" should be one of the following: ", as_types))
+  }
   
   # Add transcripts to events using mapping functions based on sequence overlap 
   events_with_txn <- events

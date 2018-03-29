@@ -17,12 +17,12 @@ filterByCoverage <- function(events, avg_reads = 5){
 
         # filter read counts matrix
         events_filt[[paste0(type,"_","counts")]] <-
-                            counts[ rownames(counts) %in% res_id, ]
+                  counts[ rownames(counts) %in% res_id, , drop = FALSE]
 
         # filter PSI matrix
         PSI <- events[[paste0(type,"_","PSI")]]
         events_filt[[paste0(type,"_","PSI")]] <-
-                            PSI[ rownames(PSI) %in% res_id, ]
+                    PSI[ rownames(PSI) %in% res_id, , drop = FALSE]
 
         # filter rMATS stats
         stats <- events[[paste0(type,"_","stats")]]
@@ -70,11 +70,13 @@ topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
 
         # filter read counts matrix
         counts <- events[[paste0(type,"_","counts")]]
-        events_top[[paste0(type,"_","counts")]] <- counts[ rownames(counts) %in% res$ID, ]
+        events_top[[paste0(type,"_","counts")]] <- 
+            counts[ rownames(counts) %in% res$ID, , drop = FALSE]
 
         # filter PSI matrix
         PSI <- events[[paste0(type,"_","PSI")]]
-        events_top[[paste0(type,"_","PSI")]] <- PSI[ rownames(PSI) %in% res$ID, ]
+        events_top[[paste0(type,"_","PSI")]] <- 
+                PSI[ rownames(PSI) %in% res$ID, , drop = FALSE]
 
         # filter rMATS stats
         events_top[[paste0(type,"_","stats")]] <- dplyr::filter(stats,
@@ -130,15 +132,17 @@ geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
     
     # filter read counts matrix
     counts <- events[[paste0(type,"_","counts")]]
-    events_top[[paste0(type,"_","counts")]] <- counts[ rownames(counts) %in% keepIDs, ]
+    events_top[[paste0(type,"_","counts")]] <- 
+            counts[rownames(counts) %in% keepIDs, , drop = FALSE]
     
     # filter PSI matrix
     PSI <- events[[paste0(type,"_","PSI")]]
-    events_top[[paste0(type,"_","PSI")]] <- PSI[ rownames(PSI) %in% keepIDs, ]
+    events_top[[paste0(type,"_","PSI")]] <- 
+            PSI[ rownames(PSI) %in% keepIDs, , drop = FALSE]
     
     # filter rMATS stats
-    events_top[[paste0(type,"_","stats")]] <- dplyr::filter(stats,
-                                                            ID %in% keepIDs)
+    events_top[[paste0(type,"_","stats")]] <- 
+                dplyr::filter(stats, ID %in% keepIDs)
     
     # Filter Genomic ranges of alternative splicing events
     grl <- events[[paste0(type,"_","gr")]]
@@ -152,16 +156,11 @@ geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
     events_top[[paste0(type,"_","gr")]] <- grl_new
     
     # Filter Event annotation
-    events_top[[paste0(type,"_","events")]] <- dplyr::filter(annot,
-                                                             ID %in% keepIDs)
-    
+    events_top[[paste0(type,"_","events")]] <- 
+                    dplyr::filter(annot, ID %in% keepIDs)
     #cat("Selecting  ", type, length(keepIDs), " events\n")
     
   } #each event type
-  
-  # Number of samples condition 1 and 2
-  events_top[["n_cond1"]] <- events[["n_cond1"]]
-  events_top[["n_cond2"]] <- events[["n_cond2"]]
   
   return(events_top)
   

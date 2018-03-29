@@ -80,8 +80,16 @@ hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 The function `topEvents()` allows to select statistically significant events given a FDR cutoff and minimum PSI change. Default values are `fdr = 0.05` and `deltaPSI = 0.1` (ie. 10% minimum change). 
 
 ```{r, warning = FALSE, message = FALSE}
-hypoxia_top <- topEvents(hypoxia_filt, fdr = 0.05, deltaPSI = 0.2)
+hypoxia_top <- topEvents(hypoxia_filt, fdr = 0.05, deltaPSI = 0.1)
 hypoxia_top
+
+```
+
+Events in a maser object can be queried using an interactive data table provided by `display()`, allowing to look up event information such as gene names, ids and PSI differences.
+
+```{r, warning = FALSE, message = FALSE}
+display(hypoxia_top, "SE")
+
 ```
 
 Also, gene specific events can be selected using `geneEvents()`. For instance, there are 8 splicing changes affecting MIB2 as seen below.
@@ -124,18 +132,82 @@ splicingDistribution(hypoxia_filt, fdr = 0.05, deltaPSI = 0.1)
 
 # Genomic visualization of splicing events
 
-Users can use `r Rpackage("maser")` to visualize transcripts affected by splicing. The core function for genomic visualization is `plotTranscripts()`. This function will identify transcripts that match the pattern of the splicing variant using `r Biocpkg("GenomicRanges")`, and will use `r Biocpkg("Gviz")` for visualization of the location of splicing event.  
+Users can use `r Rpackage("maser")` to visualize transcripts affected by splicing. The core function for transcripts visualization is `plotTranscripts()`. This function will identify transcripts that match the pattern of the splicing variant using `r Biocpkg("GenomicRanges")`, and will use `r Biocpkg("Gviz")` for visualization of the location of splicing event.  
 
 `plotTranscripts()` requires an Ensembl or Gencode GTF using the hg38 build of the human genome. Ensembl GTFs can be retrieved using `r Biocpkg("AnnotationHub")` as below. Several releases are available, and `r Rpackage("maser")` is compatible with any version using the hg38 build.  
 
-Below is the snippet for retrieving Ensembl GTF release 85 using `r Biocpkg("AnnotationHub")`. 
+Below is the code snippet for retrieving the Ensembl GTF release 85 using `r Biocpkg("AnnotationHub")`. 
 ```{r, warning = FALSE, message = FALSE}
 ah <- AnnotationHub::AnnotationHub()
 ah <- AnnotationHub::subset(ah, species == "Homo sapiens")
 qhs <- AnnotationHub::query(ah, c("Ensembl", "gene", "annotation", "grch38"))
-gtf <- qhs[["AH51014"]] #Homo_sapiens.GRCh38.85.gtf
+ens_gtf <- qhs[["AH51014"]] #Homo_sapiens.GRCh38.85.gtf
 ```
 
 Alternatively, GTFs can be downloaded from the [Ensembl FTP site](ftp://ftp.ensembl.org/pub/release-91/gtf/homo_sapiens) and imported using `readGFF()` from the `r Biocpkg("rtracklayer")` package.
 
-Describe the use of `plotTranscripts()` for each splicing type, and zoom on and off.
+## Exon skipping
+
+The most common type of splicing event involves a cassette exon that is either expressed or skipped. The splicing factor SRSF6 undergoes splicing during hypoxia by expressing an alternative exon. `plotTranscripts` identify the switch from isoform *SRSF6-001* to the isoform *SRSF6-002* after 24hr hypoxia.  
+
+
+```{r, warning = FALSE, message = FALSE}
+srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6", fdr = 0.05, deltaPSI = 0.1 )
+plotGenePSI(srsf6_events, "SE")
+plotTranscripts(srsf6_events, type = "SE", event_id = 33209, 
+                gtf = ens_gtf, zoom = F)
+
+```
+
+The *event* track displays the location of the exon skipping event. The *inclusion* track shows any transcripts that contains the cassette exon as well as flanking upstream and downstream exons. The *skipping* track displays transcripts with flanking exons but missing the cassette exon.  
+
+Exon skipping might impact multiple transcripts, which can be detected using `plotTranscripts()`.
+
+```{r, warning = FALSE, message = FALSE}
+mcm3_events <- geneEvents(hypoxia_filt, geneS = "MCM3", fdr = 0.05, deltaPSI = 0.1 )
+plotTranscripts(mcm3_events, type = "SE", event_id = 11867, 
+                gtf = ens_gtf, zoom = F)
+
+```
+
+## Intron retention
+
+Intron retention is another common type of splice event that are usually associated to lack of protein translation. In this case, the *Retention* and *Non-retention* tracks will display any transcripts harboring and skipping the intron, respectively.
+
+```{r, warning = FALSE, message = FALSE}
+stat2_events <- geneEvents(hypoxia_filt, geneS = "STAT2", fdr = 0.05, deltaPSI = 0.1 )
+plotTranscripts(stat2_events, type = "RI", event_id = 3785, 
+                gtf = ens_gtf, zoom = F)
+
+```
+
+## Mutually exclusive exons
+
+This event refers to adjacent exons that are mutually exclusive, i.e. are not expressed together. There are 36 MXE events in the hypoxia dataset, including one affecting the *IL32* gene. Tracks will display transcripts harboring the first or second mutually exclusive exons.
+
+```{r, warning = FALSE, message = FALSE}
+il32_events <- geneEvents(hypoxia_filt, geneS = "IL32", fdr = 0.05, deltaPSI = 0.1 )
+plotTranscripts(il32_events, type = "MXE", event_id = 1136, 
+                gtf = ens_gtf, zoom = F)
+```
+
+## Alternative 3' and 5' exons
+
+Alternative 3' and 5' start sites of exons will lead to expression of longer or shorter exons. It might be helpful to set `zoom = T` identify the exact location of the splicing site. 
+
+```{r, warning = FALSE, message = FALSE}
+#A5SS event
+bcs1l_gene <- geneEvents(hypoxia_filt, geneS = "BCS1L", fdr = 0.05, deltaPSI = 0.1 )
+plotTranscripts(bcs1l_gene, type = "A5SS", event_id = 3988, 
+                gtf = ens_gtf, zoom = T)
+
+```
+
+Note that for genes on the reverse strand, the A5SS becomes an A3SS event.
+
+```{r, warning = FALSE, message = FALSE}
+#A3SS event
+elovl1_gene <- geneEvents(hypoxia_filt, geneS = "ELOVL1")
+plotTranscripts(elovl1_gene, type = "A3SS", event_id = 3030, 
+                gtf = ens_gtf, zoom = F)
+```

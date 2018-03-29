@@ -305,7 +305,7 @@ display <- function(events, type){
   
   data <- asDataFrame(events, type)
   DT::datatable(data, options = list(
-                        pageLength = 25,
+                        pageLength = 10,
                         filter = "none",
                         searchHighlight = TRUE,
                         rownames = FALSE,

@@ -66,7 +66,7 @@ downloadUniprotKBtrack <- function(track_name, destfolder = getwd()){
   bed.gr <- as(bed, "GRanges")
 }
 
-availableTracksUniprotKB <- function(){
+availableFeaturesUniprotKB <- function(){
   
   trackMetadata <- "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/genome_annotation_tracks/UP000005640_9606_tracks.txt"
   data <- readLines(trackMetadata)

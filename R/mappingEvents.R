@@ -1,9 +1,32 @@
 
-mapProteinFeaturesToEvents <- function(events, features){
+mapProteinFeaturesToEvents <- function(events, tracks, by = "feature"){
+  
+  if (!by %in% c("feature", "category")){
+    stop(cat("\"by\" arg is invalid."))
+  }
+  
+  df <- availableFeaturesUniprotKB()
+  
+  if(by == "features"){
+    
+    if (!any(tracks %in% as.vector(df$Name))){
+      stop(cat("\"tracks\" arg is invalid."))
+    }
+    features <- tracks
+  }
+  
+  if(by == "category"){
+    
+    if (!any(tracks %in% as.vector(df$Category))){
+      stop(cat("\"tracks\" arg is invalid."))
+    }
+    
+    df_filt <- dplyr::filter(df, Category %in% tracks)
+    features <- as.vector(df$Name)
+  }
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  
-  # Add UniprotKB features annotation
+    # Add UniprotKB features annotation
   events_with_features <- events
   
   # Create GRanges for each UniprotKB feature in features argument

@@ -16,8 +16,12 @@ createGRangesUniprotKBtrack <- function(track_name){
   
   name <- rep("NA", length(res))
   for (i in 1:length(res)) {
-    #name <- c(name, res[[1]][[2]])
-    name[i] <- res[[i]][[2]]
+    if (length(unlist(res[i])) > 1){
+      name[i] <- paste(bed$Uniprot_ID[i], res[[i]][[2]])  
+    }else{
+      name[i] <- paste(bed$Uniprot_ID[i], "NA")  
+    }
+    
   }
   bed <- cbind(bed, Name = name)
   bed.gr <- as(bed, "GRanges")
@@ -89,8 +93,33 @@ availableFeaturesUniprotKB <- function(){
                       data.frame(Name = trackName, Description = trackDesc))
 
   }
-    
-  return(track_df)
+  
+  track_df_filt <- dplyr::filter(track_df, 
+                                 !Name %in% c("non_std_aa", "peptide",
+                                            "UP000005640_9606_proteome",
+                                            "UP000005640_9606_variants"))
+  
+  dm_sites <- c("act-site", "binding", "Ca-binding", "coiled", "DNA-bind",
+                "domain", "metal", "motif", "NP bind", "region", "repeat",
+                "site", "Zn-fing")
+  mp <- c("chain", "signal", "transit", "propep", "init_meth")
+  mut <- c("mutagen")
+  ptm <- c("carbohyd", "crosslnk", "disulfide", "lipid", "mod-res")
+  sf <- c("helix", "turn", "strand")
+  topo <- c("intramem", "topo-dom", "transmem")
+  
+  category <- rep("NA", nrow(track_df_filt))
+  
+  category[track_df_filt$Name %in% dm_sites] <- "Domain_and_Sites"
+  category[track_df_filt$Name %in% mp] <- "Molecule_Processing"
+  category[track_df_filt$Name %in% mut] <- "Mutagenesis"
+  category[track_df_filt$Name %in% ptm] <- "PTM"
+  category[track_df_filt$Name %in% sf] <- "Structural_Features"
+  category[track_df_filt$Name %in% topo] <- "Topology"
+  
+  track_df_filt <- cbind(track_df_filt, Category = category)
+  
+  return(track_df_filt)
 }
 
 # internal function

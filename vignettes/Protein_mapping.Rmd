@@ -15,14 +15,14 @@ vignette: >
 
 # Introduction
 
-The key feature of `r Rpackage("maser")` is mapping of splicing events to protein features provided [UniprotKB](http://www.uniprot.org/).  
+The major functionality provided by `r Rpackage("maser")` is mapping of splicing events to [UniprotKB](http://www.uniprot.org/) protein features.  
 
 Features such as protein domains, motifs and mutation sites can be annotated in batch for splicing events and visualized along side the genomic location of splicing.  
 
 
-# Batch annotation
+# Batch annotation of protein features
 
-## Create the maser object
+## Creating the maser object
 We illustrate the workflow using the hypoxia dataset from the previous vignette.
 
 ```{r, warning = FALSE, message = FALSE}
@@ -35,7 +35,7 @@ hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 
 # Remove low coverage events and get significant events
 hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
-hypoxia_top <- topEvents(hypoxia_filt)
+hypoxia_top <- topEvents(hypoxia_filt, deltaPSI = 0.2)
 
 ```
 
@@ -82,16 +82,21 @@ knitr::kable(
 
 ## Feature annotation
 
-Now we are ready to for batch annotation using `mapProteinFeaturesToEvents()`, indicating any combination of valid features. The function retrieves the latest annotation from the public UniprotKB FTP, and overlaps splice events to protein features which have been mapped with hg38 genomic coordinates.
+Now we are ready for batch annotation using `mapProteinFeaturesToEvents()`. The function retrieves the latest annotation from the public UniprotKB FTP, and overlaps splice events to protein features which have been mapped with hg38 genomic coordinates. UniprotKB features are grouped into categories.  
+
+Multiple transcripts (and therefore multiple proteins) might be affected by the splice event. The annotation will indicate both the feature description and protein ID for which the annotation has been assigned. 
+
+The batch annotation can be executed either by feature or category. If categories are provided, all features within the category group will be included for annotation. This may take a long time to process if dealing with a high number of splice events.
 
 ```{r, warning = FALSE, message = FALSE}
 features <- c("domain", "transmem", "mutagen", "topo-dom", "motif", "signal", "DNA-bind")
+categories <- c("Domain_and_Sites", "Mutagenesis")
 
-hypoxia_annot <- mapProteinFeaturesToEvents(hypoxia_top, features)
+hypoxia_annot <- mapProteinFeaturesToEvents(hypoxia_top, categories, by = "category")
 
 ```
 
-Feature annotation can be checked in a web browser using `display()` or accessed using `annot()`.  
+Feature annotation can be interactively displayed in a web browser using `display()` or retrieved as a `data.frame` using `annot()`.  
 
 ```{r, warning = FALSE, message = FALSE, eval = FALSE}
 display(hypoxia_annot, "SE")
@@ -102,10 +107,28 @@ uniprot <- annot(hypoxia_annot, "SE")
 table(uniprot$domain)
 ```
 
-plotUniprotKBFeatures(mats_gene, type = "SE", event_id = 37903, 
-                      features = features, gtf = gtf_genc_gr, 
-                      is_strict = T, zoom = F,
+```{r, warning = FALSE, message = FALSE}
+
+ripk2_events <- geneEvents(hypoxia_annot, "RIPK2")
+plotUniprotKBFeatures(ripk2_events, type = "SE", event_id = 14319, 
+                      features = c("domain", "mutagen"), gtf = ens_gtf, 
+                      zoom = F,
                       show_transcripts = T)
+
+```
+
+```{r, warning = FALSE, message = FALSE}
+
+bmpr2_events <- geneEvents(hypoxia_annot, "BMPR2")
+plotUniprotKBFeatures(bmpr2_events, type = "SE", event_id = 25501, 
+                      features = c("domain", "topo-dom"), gtf = ens_gtf, 
+                      zoom = F,
+                      show_transcripts = T)
+
+```
+
+
+
 
 
 

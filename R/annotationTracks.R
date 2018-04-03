@@ -310,11 +310,12 @@ createAnnotationTrackSE_event <- function(eventGr){
   trackGr$type <- rep("Exon skipping", 5)
   
   event_track <- Gviz::AnnotationTrack(trackGr, name = "Event", 
-                                       groupAnnotation = "group", shape = "box",
-                                       stacking = "squish", id = "Exon skipping")
+                                       groupAnnotation = "group", 
+                                       shape = "box",
+                                       stacking = "squish", 
+                                       id = "Exon skipping")
   Gviz::feature(event_track) <- rep(c("Inclusion", "Skipping"), c(3, 2))
-  
-  
+
   return(event_track)
   
 }
@@ -456,7 +457,7 @@ createUniprotKBtracks <- function(eventGr, features, protein_ids){
                                      id = ovl_gr_filt_uniq$Name, 
                                      showFeatureId = TRUE,
                                      fontcolor.feature = "darkblue",
-                                     #fill = "#006400", 
+                                     #fill = "aliceblue", 
                                      shape = "arrow")  
       
     }else {
@@ -467,5 +468,21 @@ createUniprotKBtracks <- function(eventGr, features, protein_ids){
   }
   
   return(uniprotTracks)  
+  
+}
+
+
+
+createPSITrack_event <- function(eventGr, PSI_event, groups){
+  
+  trackGr <- range(unlist(eventGr))
+  values(trackGr) <- PSI_event 
+  psi_track <- Gviz::DataTrack(trackGr, 
+                               name = "PSI", 
+                               groups = groups,
+                               legend = TRUE,
+                               type = c("boxplot"),
+                               colors = c("blue", "red"))
+  return(psi_track)
   
 }

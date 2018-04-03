@@ -74,7 +74,7 @@ plotGenePSI <- function(events, type, show_replicates = TRUE){
 }
 
 
-plotTranscripts_old_txdb <- function(gene_events, type, event_id, gtf_txdb, 
+plotTranscripts_old_txdb <- function(events, type, event_id, gtf_txdb, 
                             is_strict = FALSE){
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
@@ -82,13 +82,13 @@ plotTranscripts_old_txdb <- function(gene_events, type, event_id, gtf_txdb,
     stop(cat("\"type\" should be one of the following: ", as_types))
   }
   
-  annot <- gene_events[[paste0(type,"_","events")]]
+  annot <- events[[paste0(type,"_","events")]]
   if (length(unique(annot$geneSymbol)) > 1){
     stop(cat("Multiple genes found. Use geneEvents() to select gene-specific AS events."))
   }
   
   # Genomic ranges of alternative splicing events
-  grl <- gene_events[[paste0(type,"_","gr")]]
+  grl <- events[[paste0(type,"_","gr")]]
   idx.event <- grep(as.numeric(event_id), grl[[1]]$ID)
   
   eventGr <- GRangesList()
@@ -158,10 +158,11 @@ plotTranscripts_old_txdb <- function(gene_events, type, event_id, gtf_txdb,
 }
 
 
-plotTranscripts <- function(gene_events, type, event_id, gtf, 
-                            is_strict = FALSE, zoom = FALSE){
+plotTranscripts <- function(events, type, event_id, gtf, 
+                            is_strict = FALSE, zoom = FALSE,
+                            show_PSI = FALSE){
   
-  if(!is.maser(gene_events)){
+  if(!is.maser(events)){
     stop("Parameter events has to be a maser object.")
   }
   
@@ -178,28 +179,44 @@ plotTranscripts <- function(gene_events, type, event_id, gtf,
     stop(cat("\"type\" should be one of the following: ", as_types))
   }
   
-  annot <- gene_events[[paste0(type,"_","events")]]
+  annot <- events[[paste0(type,"_","events")]]
   if (length(unique(annot$geneSymbol)) > 1){
     stop(cat("Multiple genes found. Use geneEvents() to select gene-specific AS events."))
   }
   
+  #gene_event <- filterByEventId(events, event_id, "SE")
+  
   # Genomic ranges of alternative splicing events
-  grl <- gene_events[[paste0(type,"_","gr")]]
+  grl <- events[[paste0(type,"_","gr")]]
   idx.event <- grep(as.numeric(event_id), grl[[1]]$ID)
   
   eventGr <- GRangesList()
   for (feature in names(grl)){
     eventGr[[paste0(feature)]] <- grl[[paste0(feature)]][idx.event]
   }
-  
   eventTrack <- createAnnotationTrack_event(eventGr, type)
   
   gtf_exons <- gtf[gtf$type=="exon",]
   txnTracks <- createAnnotationTrack_transcripts(eventGr, gtf_exons,
                                             type, is_strict)
+  
+  if (show_PSI){
+    PSI <- events[[paste0(type,"_","PSI")]]
+    PSI_event <- PSI[idx.event, , drop = FALSE]
+    groups <- factor(c(rep(events$conditions[1], events$n_cond1),
+                       rep(events$conditions[2], events$n_cond2)),
+                     levels = events$conditions)
+    psiTrack <- createPSITrack_event(eventGr, PSI_event, groups)  
+    trackList <- list(psiTrack, eventTrack, txnTracks$inclusionTrack, 
+                      txnTracks$skippingTrack)  
+  }else{
+    trackList <- list(eventTrack, txnTracks$inclusionTrack, 
+                      txnTracks$skippingTrack)  
+  }
+  
+  
   if (zoom){
-    Gviz::plotTracks(list(eventTrack, txnTracks$inclusionTrack, 
-                          txnTracks$skippingTrack), 
+    Gviz::plotTracks(trackList, 
                      col.line = NULL, col = NULL,
                      Inclusion = "orange", Skipping = "purple",
                      Retention = "orange", Non_Retention = "purple",
@@ -209,8 +226,7 @@ plotTranscripts <- function(gene_events, type, event_id, gtf,
                      from = start(range(unlist(eventGr))) - 500,
                      to = end(range(unlist(eventGr))) + 500)  
   }else {
-    Gviz::plotTracks(list(eventTrack, txnTracks$inclusionTrack, 
-                          txnTracks$skippingTrack), 
+    Gviz::plotTracks(trackList,
                      col.line = NULL, col = NULL,
                      Inclusion = "orange", Skipping = "purple",
                      Retention = "orange", Non_Retention = "purple",
@@ -222,11 +238,11 @@ plotTranscripts <- function(gene_events, type, event_id, gtf,
 }
 
 
-plotUniprotKBFeatures <- function(gene_events, type, event_id, gtf,
+plotUniprotKBFeatures <- function(events, type, event_id, gtf,
                                   features, is_strict = FALSE, zoom = FALSE,
                                   show_transcripts = FALSE){
   
-  if(!is.maser(gene_events)){
+  if(!is.maser(events)){
     stop("Parameter events has to be a maser object.")
   }
   
@@ -243,13 +259,14 @@ plotUniprotKBFeatures <- function(gene_events, type, event_id, gtf,
     stop(cat("\"type\" should be one of the following: ", as_types))
   }
   
-  annot <- gene_events[[paste0(type,"_","events")]]
+  annot <- events[[paste0(type,"_","events")]]
   if (length(unique(annot$geneSymbol)) > 1){
     stop(cat("Multiple genes found. Use geneEvents() to select gene-specific AS events."))
   }
   
+
   # Genomic ranges of alternative splicing events
-  grl <- gene_events[[paste0(type,"_","gr")]]
+  grl <- events[[paste0(type,"_","gr")]]
   idx.event <- grep(as.numeric(event_id), annot$ID)
   
   eventGr <- GRangesList()
@@ -298,7 +315,7 @@ plotUniprotKBFeatures <- function(gene_events, type, event_id, gtf,
 }
 
 # deprecated - uses UCSC rtracklayer too slow
-plotUniprotUCSCFeatures <- function(gene_events, type, event_id, gtf, 
+plotUniprotUCSCFeatures <- function(events, type, event_id, gtf, 
                             is_strict = FALSE, zoom = FALSE, 
                             show_transcripts = FALSE){
   
@@ -307,13 +324,13 @@ plotUniprotUCSCFeatures <- function(gene_events, type, event_id, gtf,
     stop(cat("\"type\" should be one of the following: ", as_types))
   }
   
-  annot <- gene_events[[paste0(type,"_","events")]]
+  annot <- events[[paste0(type,"_","events")]]
   if (length(unique(annot$geneSymbol)) > 1){
     stop(cat("Multiple genes found. Use geneEvents() to select gene-specific AS events."))
   }
   
   # Genomic ranges of alternative splicing events
-  grl <- gene_events[[paste0(type,"_","gr")]]
+  grl <- events[[paste0(type,"_","gr")]]
   idx.event <- grep(as.numeric(event_id), grl[[1]]$ID)
   
   eventGr <- GRangesList()

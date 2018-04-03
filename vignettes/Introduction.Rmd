@@ -155,7 +155,7 @@ The most common type of splicing event involves a cassette exon that is either e
 srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6", fdr = 0.05, deltaPSI = 0.1 )
 plotGenePSI(srsf6_events, "SE")
 plotTranscripts(srsf6_events, type = "SE", event_id = 33209, 
-                gtf = ens_gtf, zoom = F)
+                gtf = ens_gtf, zoom = F, show_PSI = T)
 
 ```
 

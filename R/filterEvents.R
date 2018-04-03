@@ -1,3 +1,63 @@
+filterByEventId <- function(events, event_id, type){
+  
+  if(!is.maser(events)){
+    stop("Parameter events has to be a maser object.")
+  }
+  
+  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+  if (!type %in% as_types){
+    stop(cat("\"type\" should be one of the following: ", as_types))
+  }
+  
+  event_filt <- list()
+  
+  annot <- events[[paste0(type,"_","events")]]
+  idx.event <- grep(as.numeric(event_id), annot$ID)
+  
+  if(length(idx.event)==0){
+    stop(cat("Event id not found."))
+  }
+  
+  # filter read counts matrix
+  counts <- events[[paste0(type,"_","counts")]]
+  events_filt[[paste0(type,"_","counts")]] <-
+    counts[ rownames(counts) %in% event_id, , drop = FALSE]
+  
+  # filter PSI matrix
+  PSI <- events[[paste0(type,"_","PSI")]]
+  events_filt[[paste0(type,"_","PSI")]] <-
+    PSI[ rownames(PSI) %in% event_id, , drop = FALSE]
+  
+  # filter rMATS stats
+  stats <- events[[paste0(type,"_","stats")]]
+  events_filt[[paste0(type,"_","stats")]] <- dplyr::filter(stats,
+                                                           ID %in% event_id)
+  
+  # Filter Genomic ranges of alternative splicing events
+  grl <- events[[paste0(type,"_","gr")]]
+  grl_new <- grl
+  for (exon in names(grl)) {
+    
+    exon.gr <- grl[[exon]]
+    grl_new[[exon]] <- exon.gr[exon.gr$ID %in% event_id, ]
+    
+  }
+  events_filt[[paste0(type,"_","gr")]] <- grl_new
+  
+  # Filter Event annotation
+  annot <- events[[paste0(type,"_","events")]]
+  events_filt[[paste0(type,"_","events")]] <-
+    dplyr::filter(annot, ID %in% event_id)
+  
+  
+  events_filt[["n_cond1"]] <- events$n_cond1
+  events_filt[["n_cond2"]] <- events$n_cond2
+  events_filt[["conditions"]] <- events$conditions
+  
+  class(events_filt) <- "maser"
+  return(events_filt)
+  
+}
 
 filterByCoverage <- function(events, avg_reads = 5){
     

@@ -250,7 +250,7 @@ plotUniprotKBFeatures <- function(gene_events, type, event_id, gtf,
   
   # Genomic ranges of alternative splicing events
   grl <- gene_events[[paste0(type,"_","gr")]]
-  idx.event <- grep(as.numeric(event_id), grl[[1]]$ID)
+  idx.event <- grep(as.numeric(event_id), annot$ID)
   
   eventGr <- GRangesList()
   for (feature in names(grl)){
@@ -260,7 +260,9 @@ plotUniprotKBFeatures <- function(gene_events, type, event_id, gtf,
   eventTrack <- createAnnotationTrack_event(eventGr, type)
   
   gtf_exons <- gtf[gtf$type=="exon",]
-  uniprotTracks <- createUniprotKBtracks(eventGr, features)
+  idx.cols <- grep("^list_ptn_", colnames(annot))
+  protein_ids <- unique(c(annot[idx.event, idx.cols[1]], annot[idx.event, idx.cols[2]]))
+  uniprotTracks <- createUniprotKBtracks(eventGr, features, protein_ids)
   
   if (show_transcripts){
     txnTracks <- createAnnotationTrack_transcripts(eventGr, gtf_exons,

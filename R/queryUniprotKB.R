@@ -17,11 +17,10 @@ createGRangesUniprotKBtrack <- function(track_name){
   name <- rep("NA", length(res))
   for (i in 1:length(res)) {
     if (length(unlist(res[i])) > 1){
-      name[i] <- paste(bed$Uniprot_ID[i], res[[i]][[2]])  
+      name[i] <- paste0(bed$Uniprot_ID[i], ":", res[[i]][[2]])
     }else{
-      name[i] <- paste(bed$Uniprot_ID[i], "NA")  
+      name[i] <- paste0(bed$Uniprot_ID[i], ":", "NA")
     }
-    
   }
   bed <- cbind(bed, Name = name)
   bed.gr <- as(bed, "GRanges")

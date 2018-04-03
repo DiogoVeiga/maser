@@ -434,7 +434,7 @@ createUniprotUCSCtrack_localization <- function(eventGr, genome){
 
 }
 
-createUniprotKBtracks <- function(eventGr, features){
+createUniprotKBtracks <- function(eventGr, features, protein_ids){
   
   uniprotTracks <- list()
   
@@ -442,14 +442,22 @@ createUniprotKBtracks <- function(eventGr, features){
     
     feature_gr <- createGRangesUniprotKBtrack(features[i])
     ovl_gr <- overlappingFeatures(feature_gr, eventGr)
+    ovl_gr_filt <- ovl_gr[ovl_gr$Uniprot_ID %in% protein_ids, ] 
     
-    if (length(ovl_gr) > 0 ){
+    uniq_features <- match(unique(as.vector(ovl_gr_filt$Name)), 
+                        as.vector(ovl_gr_filt$Name))
+    
+    ovl_gr_filt_uniq <- ovl_gr_filt[i, ]
+    
+    if (length(ovl_gr_filt_uniq) > 0 ){
       
-      track <- Gviz::AnnotationTrack(range = ovl_gr, 
+      track <- Gviz::AnnotationTrack(range = ovl_gr_filt_uniq, 
                                      name = features[i], 
-                                     id = ovl_gr$Name, 
+                                     id = ovl_gr_filt_uniq$Name, 
                                      showFeatureId = TRUE,
-                                     fill = "#006400", shape = "arrow")  
+                                     fontcolor.feature = "darkblue",
+                                     #fill = "#006400", 
+                                     shape = "arrow")  
       
     }else {
       track <- Gviz::AnnotationTrack(range = GRanges(), name = features[i])

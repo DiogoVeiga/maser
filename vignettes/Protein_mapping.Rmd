@@ -90,9 +90,14 @@ The batch annotation can be executed either by feature or category. If categorie
 
 ```{r, warning = FALSE, message = FALSE}
 features <- c("domain", "transmem", "mutagen", "topo-dom", "motif", "signal", "DNA-bind")
-categories <- c("Domain_and_Sites", "Mutagenesis")
+categories_all <- c("Domain_and_Sites", "Mutagenesis", "Molecule_Processing",
+                "PTM", "Structural_Features", "Topology")
+
+categories <- c("Domain_and_Sites", "Mutagenesis", "Molecule_Processing", "Topology")
 
 hypoxia_annot <- mapProteinFeaturesToEvents(hypoxia_top, categories, by = "category")
+
+system.time({ hypoxia_annot <- mapProteinFeaturesToEvents(hypoxia_top, categories, by = "category") })
 
 ```
 
@@ -107,10 +112,18 @@ uniprot <- annot(hypoxia_annot, "SE")
 table(uniprot$domain)
 ```
 
+Cassette exon is in the kinase domain of RIPK2 (O43353). On the other hand, annotate mutations are in the upstream and downstream exons.
+
+
 ```{r, warning = FALSE, message = FALSE}
 
 ripk2_events <- geneEvents(hypoxia_annot, "RIPK2")
 plotUniprotKBFeatures(ripk2_events, type = "SE", event_id = 14319, 
+                      features = c("domain", "mutagen"), gtf = ens_gtf, 
+                      zoom = F,
+                      show_transcripts = T)
+
+plotUniprotKBFeatures(ripk2_events_annot, type = "SE", event_id = 14319, 
                       features = c("domain", "mutagen"), gtf = ens_gtf, 
                       zoom = F,
                       show_transcripts = T)

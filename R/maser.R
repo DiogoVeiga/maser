@@ -181,7 +181,16 @@ create_GRanges <- function(events, type){
   
 }
 
-#create maser object by importing rMATS events
+#' Create a maser object by importing rMATS splice events.
+#' 
+#' @param path a character specifiying the folder containing rMATS output files.
+#' @param cond_labels a character vector of length 2 describing labels for experimental conditions.
+#' @param rtype a character indicating the read type. Possible values are \code{c("ReadsOnTargetAndJunction", "JunctionCountOnly")}. 
+#' @return A maser object.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' @export
 maser <- function(path, cond_labels,
                   rtype = "ReadsOnTargetAndJunction"){
   
@@ -268,6 +277,14 @@ maser <- function(path, cond_labels,
 #summary.maser <- function(x) "maser"
 #print.maser <- function(x) "maser"
 
+#' Print a maser object.
+#' 
+#' @param x a maser object.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' print(hypoxia)
+#' @export
 print.maser <- function(x){
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
@@ -359,6 +376,17 @@ asDataFrame <- function(events, type){
   
 }
 
+#' Retrieve PSI (percent spliced in) values from a maser object.
+#' 
+#' @param events a maser object.
+#' @param type a character indicating the splice type. Possible values 
+#' are  \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}. 
+#' @return a data.frame.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' head(PSI(hypoxia, "SE"))
+#' @export
 PSI <- function(events, type){
   
   if(!is.maser(events)){
@@ -374,6 +402,17 @@ PSI <- function(events, type){
   
 }
 
+#' Retrieve raw read counts values from a maser object.
+#' 
+#' @param events a maser object.
+#' @param type a character indicating the splice type. Possible values 
+#' are  \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}. 
+#' @return a data.frame.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' head(counts(hypoxia, "SE"))
+#' @export
 counts <- function(events, type){
   
   if(!is.maser(events)){
@@ -389,6 +428,17 @@ counts <- function(events, type){
   
 }
 
+#' Retrieve annotation of splice events from a maser object.
+#' 
+#' @param events a maser object.
+#' @param type a character indicating the splice type. Possible values 
+#' are  \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}. 
+#' @return a data.frame.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' head(annot(hypoxia, "SE"))
+#' @export
 annot <- function(events, type){
   
   if(!is.maser(events)){
@@ -404,6 +454,17 @@ annot <- function(events, type){
   
 }
 
+#' Retrieve rMATS stats of differential splicing from a maser object.
+#' 
+#' @param events a maser object.
+#' @param type a character indicating the splice type. Possible values 
+#' are  \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}. 
+#' @return a data.frame.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' head(stats(hypoxia, "SE"))
+#' @export
 stats <- function(events, type){
   
   if(!is.maser(events)){

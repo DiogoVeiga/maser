@@ -482,7 +482,8 @@ createPSITrack_event <- function(eventGr, PSI_event, groups){
                                groups = groups,
                                legend = TRUE,
                                type = c("boxplot"),
-                               colors = c("blue", "red"))
+                               fill = c("blue", "red"),
+                               col = c("blue", "red"))
   return(psi_track)
   
 }

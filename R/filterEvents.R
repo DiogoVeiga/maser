@@ -59,6 +59,17 @@ filterByEventId <- function(events, event_id, type){
   
 }
 
+#' Filter splice events based on coverage.
+#' 
+#' @param events a maser object.
+#' @param avg_reads numeric, average number of reads covering the splice event.
+#' @return a maser object.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
+#' @export
+
 filterByCoverage <- function(events, avg_reads = 5){
     
     if(!is.maser(events)){
@@ -113,6 +124,18 @@ filterByCoverage <- function(events, avg_reads = 5){
 
 }
 
+#' Filter splice events based on false discovery rate and PSI change.
+#' 
+#' @param events a maser object.
+#' @param fdr numeric, FDR (False Discovery Rate) cutoff.
+#' @param deltaPSI numeric, absolute minimum PSI (Percent spliced-in) change
+#' @return a maser object.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' ## To select all events with minimum 10% change in PSI, and FDR lower than 0.01 
+#' hypoxia_top <- topEvents(hypoxia, fdr = 0.01, deltaPSI = 0.1)
+#' @export
 topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
     
     if(!is.maser(events)){
@@ -170,6 +193,18 @@ topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
 
 }
 
+#' Retrieve splice events for a given gene.
+#' 
+#' @param events a maser object.
+#' @param geneS a character indicating the gene symbol.
+#' @param fdr numeric, FDR cutoff.
+#' @param deltaPSI numeric, minimum PSI change. 
+#' @return a maser object.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' hypoxia_mib2 <- geneEvents(hypoxia_filt, geneS = "MIB2", fdr = 0.05, deltaPSI = 0.1)
+#' @export
 geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
   
   if(!is.maser(events)){

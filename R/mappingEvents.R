@@ -1,3 +1,4 @@
+#' @export
 
 mapProteinFeaturesToEvents <- function(events, tracks, by = "feature"){
   
@@ -155,6 +156,8 @@ mapProteinsToEvents <- function(events){
 
 # User accessible function
 # Will add transcript IDs and protein IDs to all events
+#' @export
+
 mapTranscriptsToEvents <- function(events, gtf, is_strict = TRUE){
   
   if(!is.maser(events)){

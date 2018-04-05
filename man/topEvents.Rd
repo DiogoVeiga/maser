@@ -2,7 +2,7 @@
 % Please edit documentation in R/filterEvents.R
 \name{topEvents}
 \alias{topEvents}
-\title{Filter splice events based on FDR and/or PSI change.}
+\title{Filter splice events based on false discovery rate and PSI change.}
 \usage{
 topEvents(events, fdr = 0.05, deltaPSI = 0.1)
 }
@@ -17,7 +17,7 @@ topEvents(events, fdr = 0.05, deltaPSI = 0.1)
 a maser object.
 }
 \description{
-Filter splice events based on FDR and/or PSI change.
+Filter splice events based on false discovery rate and PSI change.
 }
 \examples{
 path <- system.file("extdata", file.path("MATS_output"), package = "maser")

@@ -1,4 +1,16 @@
-PSI_levels <- function(events, type){
+#' Boxplots of PSI distributions by splicing type.
+#' 
+#' @param events a maser object.
+#' @param type character indicating splice type. Possible values are
+#'    \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}
+#' @return a ggplot object.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
+#' boxplot_PSI_levels(hypoxia_filt, type = "RI")
+#' @export
+boxplot_PSI_levels <- function(events, type){
 
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
     if (!type %in% as_types){
@@ -40,6 +52,18 @@ PSI_levels <- function(events, type){
 
 }
 
+#' Proportion of events by splicing type.
+#' 
+#' @param events a maser object.
+#' @param fdr numeric, FDR (False Discovery Rate) cutoff.
+#' @param deltaPSI numeric, absolute minimum PSI (Percent spliced-in) change
+#' @return a ggplot object.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
+#' splicingDistribution(hypoxia_filt)
+#' @export
 splicingDistribution <- function(events, fdr = 0.05, deltaPSI = 0.1){
 
     # Plot distribution of splicing events per condition
@@ -89,6 +113,20 @@ splicingDistribution <- function(events, fdr = 0.05, deltaPSI = 0.1){
 
 }
 
+#' Volcano plot of splicing events.
+#' 
+#' @param events a maser object.
+#' @param type character indicating splice type. Possible values are
+#'    \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}
+#' @param fdr numeric, FDR (False Discovery Rate) cutoff.
+#' @param deltaPSI numeric, absolute minimum PSI (Percent spliced-in) change
+#' @return a ggplot object.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
+#' volcano(hypoxia_filt, type = "SE")
+#' @export
 volcano <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
 
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
@@ -137,7 +175,20 @@ volcano <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
              y = "Delta PSI" )
 }
 
-
+#' Dotplot representation of splicing events.
+#' 
+#' @param events a maser object.
+#' @param type character indicating splice type. Possible values are
+#'    \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}
+#' @param fdr numeric, FDR (False Discovery Rate) cutoff.
+#' @param deltaPSI numeric, absolute minimum PSI (Percent spliced-in) change
+#' @return a ggplot object.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
+#' dotplot(hypoxia_filt, type = "SE")
+#' @export
 dotplot <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
 
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
@@ -186,6 +237,18 @@ dotplot <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
                        y = paste("Average", events$conditions[2]) )
 }
 
+#' Prinicipal component analysis of PSI distributions.
+#' 
+#' @param events a maser object.
+#' @param type character indicating splice type. Possible values are
+#'    \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}
+#' @return a ggplot object.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
+#' pca(hypoxia_filt, type = "RI")
+#' @export
 pca <- function(events, type){
 
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
@@ -292,6 +355,19 @@ viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI", "M
   
 }
 
+#' Visualization of splice events annotation using an interactive data table.
+#' 
+#' @param events a maser object.
+#' @param type character indicating splice type. Possible values are
+#'    \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}
+#' @return a datatables object.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
+#' hypoxia_top <- topEvents(hypoxia_filt)
+#' display(hypoxia_top, type = "SE")
+#' @export
 display <- function(events, type){
   
   if(!is.maser(events)){

@@ -111,7 +111,7 @@ Significant events in each condition will be highlighted.
 volcano(hypoxia_filt, fdr = 0.05, deltaPSI = 0.1, type = "SE")
 ```
 
-If only significant events should be plotted, then use use `topEvents` to select events.
+If only significant events should be plotted, then use `topEvents()` combined with `volcano()` or `dotplot()` for visualization.
 ```{r, warning = FALSE, message = FALSE}
 dotplot(hypoxia_top, type = "SE")
 ```
@@ -120,7 +120,7 @@ Splicing patterns of individual replicates can also be inspected using principal
 
 ```{r, warning = FALSE, message = FALSE, fig.small = TRUE}
 pca(hypoxia_filt, type = "RI")
-PSI_levels(hypoxia_filt, type = "RI")
+boxplot_PSI_levels(hypoxia_filt, type = "RI")
 ```
 
 The breakdown of splicing types can be plotted using `splicingDistribution()` and desired significance thresholds. For instance, we can see the increase of intron retention after 24h of hypoxia.
@@ -154,7 +154,7 @@ The most common type of splicing event involves a cassette exon that is either e
 ```{r, warning = FALSE, message = FALSE}
 srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6", fdr = 0.05, deltaPSI = 0.1 )
 plotGenePSI(srsf6_events, "SE")
-plotTranscripts(srsf6_events, type = "SE", event_id = 33209, 
+plotTranscripts(srsf6_events, type = "SE", event_id = 33209,
                 gtf = ens_gtf, zoom = F, show_PSI = T)
 
 ```

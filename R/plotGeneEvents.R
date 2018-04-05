@@ -1,3 +1,4 @@
+#' @export
 
 plotGenePSI <- function(events, type, show_replicates = TRUE){
   
@@ -158,6 +159,8 @@ plotTranscripts_old_txdb <- function(events, type, event_id, gtf_txdb,
 }
 
 
+#' @export
+
 plotTranscripts <- function(events, type, event_id, gtf, 
                             is_strict = FALSE, zoom = FALSE,
                             show_PSI = FALSE){
@@ -183,8 +186,6 @@ plotTranscripts <- function(events, type, event_id, gtf,
   if (length(unique(annot$geneSymbol)) > 1){
     stop(cat("Multiple genes found. Use geneEvents() to select gene-specific AS events."))
   }
-  
-  #gene_event <- filterByEventId(events, event_id, "SE")
   
   # Genomic ranges of alternative splicing events
   grl <- events[[paste0(type,"_","gr")]]
@@ -237,6 +238,7 @@ plotTranscripts <- function(events, type, event_id, gtf,
 
 }
 
+#' @export
 
 plotUniprotKBFeatures <- function(events, type, event_id, gtf,
                                   features, is_strict = FALSE, zoom = FALSE,

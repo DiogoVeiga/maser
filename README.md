@@ -1,2 +1,2 @@
 # maseR
-Map Alternative Splicing Events to transcRiptomes
+Mapping Alternative Splicing Events to pRoteins

@@ -1,3 +1,16 @@
+#' Boxplots of Percent spliced-in levels for gene events.
+#' 
+#' @param events a maser object.
+#' @param type character indicating splice type. Possible values are
+#'    \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}
+#' @param show_replicates logical, add data points for individual replicates     
+#' @return a ggplot object.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
+#' hypoxia_mib2 <- geneEvents(hypoxia_filt, geneS = "MIB2")
+#' plotGenePSI(hypoxia_mib2, type = "SE", show_replicates = T)
 #' @export
 
 plotGenePSI <- function(events, type, show_replicates = TRUE){
@@ -159,11 +172,80 @@ plotTranscripts_old_txdb <- function(events, type, event_id, gtf_txdb,
 }
 
 
+#' Mapping and visualization of Ensembl transcripts affected by splicing.
+#' 
+#' @param events a maser object.
+#' @param type character indicating splice type. Possible values are
+#'    \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}.
+#' @param event_id numeric, event identifier.
+#' @param gtf a \code{GRanges}, Ensembl or Gencode GTF using the hg38 build of the human genome.
+#' @param zoom logical, zoom to the genomic coordinates of the splice event.
+#' @param show_PSI logical, display the PSI track.     
+#' @return a Gviz object.
+#' @details This is a wrapper function for performing both mapping and visualization
+#'  of Ensembl transcripts that are compatible with the splice event. This function
+#'  calls \code{\link{mapTranscriptsToEvents}} for transcript mapping, which in 
+#'  turn uses \code{\link[GenomicRanges:findOverlaps]{GenomicRanges}} for transcript
+#'  overlapping. The \code{\link[Gviz:plotTracks]{GViz}} package is used for creating
+#'  annotation tracks for genomic visualization of splice events. 
+#'  
+#'  Each type of splice event requires a specific pattern matching (described below),
+#'  and a customized \code{Gviz} plot is created for each splicing type.
+#'   
+#'   \describe{
+#'     \item{\strong{Exon skipping}}{}
+#'     \item{Inclusion track}{Transcript(s) overlapping the cassette exon, as well 
+#'                            both flanking exons (i.e upstream and downstream exons).}
+#'     \item{Skipping track}{Transcript(s) overlapping both flanking exons but not the
+#'                            cassettte exon.}
+#'   }
+#'   
+#'   \describe{
+#'     \item{\strong{Intron retention}}{}
+#'     \item{Retention track}{Transcript(s) overlapping exactly the retained intron.}
+#'     \item{Skipping track}{Transcript(s) where intron is spliced out and overlapping
+#'                              both flanking exons.}
+#'   }
+#'   
+#'   \describe{
+#'   \item{\strong{Mutually exclusive exons}}{}
+#'     \item{Exon1 track}{Transcript(s) overlapping the first exon and both 
+#'                       flanking exons.}
+#'     \item{Exon2 track}{Transcript(s) overlapping the second exon and both
+#'                        flanking exons.}
+#'   }
+#'   
+#'   \describe{
+#'     \item{\strong{Alternative 3' and 5' splice sites}}{}
+#'     \item{Short exon track}{Transcript(s) overlapping both short and 
+#'                        downstream exons.}
+#'     \item{Long exon track}{Transcript(s) overlapping both long and downstream 
+#'                           exons.}
+#'   }
+#'   
+#' @examples
+#' ## Create the maser object
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
+#' 
+#' ## Retrieve Ensembl GTF annotation
+#' ah <- AnnotationHub::AnnotationHub() 
+#' ens_gtf <- qhs[["AH51014"]] #Homo_sapiens.GRCh38.85.gtf 
+#' 
+#' ## Retrieve gene specific splice events
+#' srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6")
+#' 
+#' ## Plot exon skipping event
+#' plotTranscripts(srsf6_events, type = "SE", event_id = 33209, gtf = ens_gtf)
+#' 
+#' @seealso \code{\link{mapTranscriptsToEvents}}
 #' @export
 
 plotTranscripts <- function(events, type, event_id, gtf, 
-                            is_strict = FALSE, zoom = FALSE,
-                            show_PSI = FALSE){
+                            zoom = FALSE, show_PSI = TRUE){
+  
+  is_strict = TRUE #affects exon skipping, MXE, RI
   
   if(!is.maser(events)){
     stop("Parameter events has to be a maser object.")

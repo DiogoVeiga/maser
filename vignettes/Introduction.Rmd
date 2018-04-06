@@ -172,7 +172,7 @@ plotTranscripts(mcm3_events, type = "SE", event_id = 11867,
 
 ## Intron retention
 
-Intron retention is another common type of splice event that are usually associated to lack of protein translation. In this case, the *Retention* and *Non-retention* tracks will display any transcripts harboring and skipping the intron, respectively.
+Intron retention is another common type of splice event that are usually associated to decreased protein translation. In this case, the *Retention* and *Non-retention* tracks will display any transcripts harboring and skipping the intron, respectively.
 
 ```{r, warning = FALSE, message = FALSE}
 stat2_events <- geneEvents(hypoxia_filt, geneS = "STAT2", fdr = 0.05, deltaPSI = 0.1 )

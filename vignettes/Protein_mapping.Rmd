@@ -53,7 +53,7 @@ knitr::kable(
 ```
 
 ## Mapping transcripts and protein to events 
-The function `mapTranscriptsToEvents()` will add both transcript and protein IDs to all events in the maser object. First, transcripts that matching the pattern of the splice event are retrieved using `r Biocpkg("GenomicRanges")`. Then the transcript is mapped to its corresponding protein in Uniprot.  
+The function `mapTranscriptsToEvents()` will add both transcript and protein IDs to all events in the maser object. First, transcripts overlapping exons involved in the the splice event are retrieved using `r Biocpkg("GenomicRanges")`. Then the transcript is mapped to its corresponding protein in Uniprot.  
 
 `mapTranscriptsToEvents()` requires an Ensembl or Gencode GTF using the hg38 build of the human genome. Ensembl GTFs can be retrieved using `r Biocpkg("AnnotationHub")` package as below.
 

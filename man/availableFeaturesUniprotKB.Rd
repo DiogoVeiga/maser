@@ -2,7 +2,7 @@
 % Please edit documentation in R/queryUniprotKB.R
 \name{availableFeaturesUniprotKB}
 \alias{availableFeaturesUniprotKB}
-\title{Query available protein features in UniprotKB.}
+\title{Query available human protein features in UniprotKB.}
 \usage{
 availableFeaturesUniprotKB()
 }
@@ -10,7 +10,7 @@ availableFeaturesUniprotKB()
 a data.frame.
 }
 \description{
-Query available protein features in UniprotKB.
+Query available human protein features in UniprotKB.
 }
 \examples{
 head(availableFeaturesUniprotKB(), 10)

@@ -320,11 +320,63 @@ plotTranscripts <- function(events, type, event_id, gtf,
 
 }
 
+
+#' Mapping and visualization of UniprotKB protein features affected by splicing.
+#' 
+#' @param events a maser object.
+#' @param type character indicating splice type. Possible values are
+#'    \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}.
+#' @param event_id numeric, event identifier.
+#' @param gtf a \code{GRanges}, Ensembl or Gencode GTF using the hg38 build of the human genome.
+#' @param features a character vector indicating valid UniprotKB features.
+#' @param zoom logical, zoom to the genomic coordinates of the splice event.
+#' @param show_transcripts logical, display transcripts track.
+#' @return a Gviz object.
+#' @details This is a wrapper function for performing both mapping and visualization
+#'  of protein features affected by the splice event. This function
+#'  calls \code{\link{mapProteinFeaturesToEvents}} for mapping of protein features to 
+#'  splice events. 
+#'  
+#' The \code{\link[Gviz:plotTracks]{GViz}} package is used for creating
+#'  annotation tracks for genomic visualization. 
+#' 
+#' Multiple protein annotation tracks can be created using the \code{features}
+#' argument.
+#' 
+#' @examples
+#' ## Create the maser object
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
+#' 
+#' ## Retrieve Ensembl GTF annotation
+#' ah <- AnnotationHub::AnnotationHub() 
+#' ens_gtf <- qhs[["AH51014"]] #Homo_sapiens.GRCh38.85.gtf 
+#' 
+#' ## Retrieve gene specific splice events
+#' srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6")
+#' 
+#' ## Map splicing events to transcripts
+#' srsf6_mapped <- mapTranscriptsToEvents(srsf6_events, ens_gtf)
+#' 
+#' ## Annotate splice events with protein features
+#' categories <- c("Domain_and_Sites", "Topology")
+#' srsf6_annot <- mapProteinFeaturesToEvents(srsf6_mapped, categories, by="category")
+#' head(annot(srsf6_annot, "SE"))
+#' 
+#' ## Plot splice event, transcripts and protein features
+#' plotUniprotKBFeatures(srsf6_annot, "SE", event_id = 33209, gtf = ens_gtf, 
+#'   features = c("domain", "chain", "mod-res"), show_transcripts = T)
+#' 
+#' @seealso \code{\link{mapProteinFeaturesToEvents}}
 #' @export
 
+
 plotUniprotKBFeatures <- function(events, type, event_id, gtf,
-                                  features, is_strict = FALSE, zoom = FALSE,
+                                  features, zoom = FALSE,
                                   show_transcripts = FALSE){
+  
+  is_strict = FALSE
   
   if(!is.maser(events)){
     stop("Parameter events has to be a maser object.")
@@ -398,7 +450,7 @@ plotUniprotKBFeatures <- function(events, type, event_id, gtf,
   
 }
 
-# deprecated - uses UCSC rtracklayer too slow
+# deprecated - uses UCSC rtracklayer but too slow
 plotUniprotUCSCFeatures <- function(events, type, event_id, gtf, 
                             is_strict = FALSE, zoom = FALSE, 
                             show_transcripts = FALSE){

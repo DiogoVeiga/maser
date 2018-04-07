@@ -69,7 +69,7 @@ downloadUniprotKBtrack <- function(track_name, destfolder = getwd()){
   bed.gr <- as(bed, "GRanges")
 }
 
-#' Query available protein features in UniprotKB.
+#' Query available human protein features in UniprotKB.
 #' 
 #' @return a data.frame.
 #' @examples
@@ -127,7 +127,6 @@ availableFeaturesUniprotKB <- function(){
   return(track_df_filt)
 }
 
-# internal function
 urlTracksUniprotKB <- function(){
   
   trackMetadata <- "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/genome_annotation_tracks/UP000005640_9606_tracks.txt"
@@ -161,7 +160,6 @@ urlTracksUniprotKB <- function(){
   return(track_df)
 }
 
-# internal function
 overlappingFeatures <- function(feature_gr, eventGr){
   
   #Define region around splicing event

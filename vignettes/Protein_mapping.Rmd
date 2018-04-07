@@ -82,7 +82,7 @@ knitr::kable(
 
 ## Feature annotation
 
-Now we are ready for batch annotation using `mapProteinFeaturesToEvents()`. The function retrieves the latest annotation from the public UniprotKB FTP, and overlaps splice events to protein features which have been mapped with hg38 genomic coordinates. UniprotKB features are grouped into categories.  
+Now we are ready for batch annotation using `mapProteinFeaturesToEvents()`. The function retrieves the latest annotation from the public UniprotKB FTP, and overlaps splice events to genomic coordinates of protein features. UniprotKB features are grouped into categories.  
 
 Multiple transcripts (and therefore multiple proteins) might be affected by the splice event. The annotation will indicate both the feature description and protein ID for which the annotation has been assigned. 
 

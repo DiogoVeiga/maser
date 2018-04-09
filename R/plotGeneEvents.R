@@ -189,7 +189,7 @@ plotTranscripts_old_txdb <- function(events, type, event_id, gtf_txdb,
 #'  overlapping. The \code{\link[Gviz:plotTracks]{GViz}} package is used for creating
 #'  annotation tracks for genomic visualization of splice events. 
 #'  
-#'  Each type of splice event requires a specific pattern matching (described below),
+#'  Each type of splice event requires a specific overlapping rule (described below),
 #'  and a customized \code{Gviz} plot is created for each splicing type.
 #'   
 #'   \describe{
@@ -289,7 +289,7 @@ plotTranscripts <- function(events, type, event_id, gtf,
     groups <- factor(c(rep(events$conditions[1], events$n_cond1),
                        rep(events$conditions[2], events$n_cond2)),
                      levels = events$conditions)
-    psiTrack <- createPSITrack_event(eventGr, PSI_event, groups)  
+    psiTrack <- createPSITrack_event(eventGr, PSI_event, groups, type, zoom)  
     trackList <- list(psiTrack, eventTrack, txnTracks$inclusionTrack, 
                       txnTracks$skippingTrack)  
   }else{

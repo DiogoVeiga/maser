@@ -1,7 +1,7 @@
 Package: maser
 Type: Package
 Title: Map Alternative Splicing Events to pRoteins
-Version: 0.0.99
+Version: 0.99.0
 Authors@R: person("Diogo", "Veiga", email = "Diogo.Veiga@jax.org",
                   role = c("aut", "cre"))
 Description: This package provides functionalities for annotation and 

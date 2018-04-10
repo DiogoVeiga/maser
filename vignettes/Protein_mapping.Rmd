@@ -1,6 +1,6 @@
 ---
-title: "Mapping splice events to protein features"
-shorttitle: "Mapping splice events to protein features"
+title: "Mapping protein features to splice events"
+shorttitle: "Mapping protein features to splice events"
 author: "Diogo Veiga"
 package: maser
 date: "`r Sys.Date()`"
@@ -8,19 +8,19 @@ output:
   BiocStyle::html_document:
     toc_float: true  
 vignette: >
-  %\VignetteIndexEntry{Mapping splicing to protein features}
+  %\VignetteIndexEntry{Mapping protein features to splice events}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-# Introduction
+# Overview of protein annotation
+In this vignette, we describe a `r Rpackage("maser")` workflow for annotation and visualization of protein features affected by splicing. 
 
-The major functionality provided by `r Rpackage("maser")` is mapping of splicing events to [UniprotKB](http://www.uniprot.org/) protein features.  
+Integration of protein features to splicing events may reveal the impact of alternative splicing on protein function. We developed `r Rpackage("maser")` to enable systematic mapping of protein annotation from [UniprotKB](http://www.uniprot.org/) to splice events.  
 
-Features such as protein domains, motifs and mutation sites can be annotated in batch for splicing events and visualized along side the genomic location of splicing.  
+Protein features can be annotated and visualized along with transcripts affected by the splice event. In this manner, `r Rpackage("maser")` can identify whether the splicing is affecting regions of interest containing known domains or motifs, mutations, post-translational modification and other described protein structural features.
 
-
-# Batch annotation of protein features
+# Annotation of protein features
 
 ## Creating the maser object
 We illustrate the workflow using the hypoxia dataset from the previous vignette.
@@ -28,18 +28,17 @@ We illustrate the workflow using the hypoxia dataset from the previous vignette.
 ```{r, warning = FALSE, message = FALSE}
 library(maser)
 
-# path to Hypoxia data
+# Creating maser object using hypoxia dataset
 path <- system.file("extdata", file.path("MATS_output"),
                     package = "maser")
 hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 
-# Remove low coverage events and get significant events
+# Remove low coverage events
 hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
-hypoxia_top <- topEvents(hypoxia_filt, deltaPSI = 0.2)
 
 ```
-
-Available UniprotKB features can be queried using `availableFeaturesUniprotKB()`.
+## Query available protein features at Uniprot
+Available UniprotKB protein annotation can be queried using `availableFeaturesUniprotKB()`. Currently there are 30 distinct features grouped into broader categories, including *Domain and Sites, PTM (Post-translational modifications), Molecule Processing, Topology, Mutagenesis and Structural Features*.  
 
 ```{r, warning = FALSE, message = FALSE, eval=FALSE}
 head(availableFeaturesUniprotKB(), 10)
@@ -52,10 +51,15 @@ knitr::kable(
 
 ```
 
-## Mapping transcripts and protein to events 
-The function `mapTranscriptsToEvents()` will add both transcript and protein IDs to all events in the maser object. First, transcripts overlapping exons involved in the the splice event are retrieved using `r Biocpkg("GenomicRanges")`. Then the transcript is mapped to its corresponding protein in Uniprot.  
+## Steps for annotation
+Protein feature annotation of splice events is performed in two steps.
 
-`mapTranscriptsToEvents()` requires an Ensembl or Gencode GTF using the hg38 build of the human genome. Ensembl GTFs can be retrieved using `r Biocpkg("AnnotationHub")` package as below.
+1. Use `mapTranscriptsToEvents()` to add both transcript and protein IDs to all events in the maser object.
+2. Use `mapProteinFeaturesToEvents()` for annotation specifying UniprotKB features or categories.
+
+`mapTranscriptsToEvents()` identifies transcripts compatible with the splicing event by overlapping exons involved in splicing to the gene models provided in the Ensembl GTF. Each type of splice event applies a specific overlapping rule (described in the Introduction vignette). The function also maps transcripts to their corresponding protein identifiers in Uniprot when available.
+
+`mapTranscriptsToEvents()` requires an Ensembl or Gencode GTF using the hg38 build of the human genome. Ensembl GTFs can be retrieved using `r Biocpkg("AnnotationHub")` as below. Several releases are available, and `r Rpackage("maser")` is compatible with any version using the hg38 build.
 
 ```{r, warning = FALSE, message = FALSE}
 ah <- AnnotationHub::AnnotationHub()
@@ -64,82 +68,113 @@ qhs <- AnnotationHub::query(ah, c("Ensembl", "gene", "annotation", "grch38"))
 ens_gtf <- qhs[["AH51014"]] #Homo_sapiens.GRCh38.85.gtf
 ```
 
+In the second step, `mapProteinFeaturesToEvents()` retrieves data from UniprotKB and overlaps splice events to genomic coordinates of protein features. 
+
+
+## SRSF6 example
+
+The splicing factor SRSF6 undergoes splicing during hypoxia by expressing an alternative exon. We will annotate the exon skipping event with domain, sites and topology information. The first step is to obtain a maser object containing SRSF6 splicing information, and then map transcripts to splice events.
+
 ```{r, warning = FALSE, message = FALSE}
-hypoxia_top <- mapTranscriptsToEvents(hypoxia_top, gtf = ens_gtf)
+# Retrieve gene specific splice events
+srsf6_events <- geneEvents(hypoxia_filt, "SRSF6")
+srsf6_events
+
 ```
 
-If the mapping worked correctly, ENST and Uniprot identifiers will be added to events. `NA` values indicates non-protein coding transcripts.
+```{r, warning = FALSE, message = FALSE}
+# Map transcripts to splice events
+srsf6_mapped <- mapTranscriptsToEvents(srsf6_events, ens_gtf)
+
+```
+
+If transcript mapping worked correctly, Ensembl and Uniprot identifiers will be added to splice events. Possible `NA` values indicates non-protein coding transcripts. In this case, the splicing involves two Ensembl transcripts coding for the Q13247 isoform of SRSF6. 
 
 ```{r, warning = FALSE, message = FALSE, eval=FALSE}
-head(annot(hypoxia_top, "SE"))
+head(annot(srsf6_mapped, "SE"))
 ```
 
 ```{r, warning = FALSE, message = FALSE, echo=FALSE}
 knitr::kable(
-  head(annot(hypoxia_top, "SE"))
+  head(annot(srsf6_mapped, "SE"))
 )
 ```
 
-## Feature annotation
+Now we are ready to call `mapProteinFeaturesToEvents()` for annotation. Feature annotation can be interactively displayed in a web browser using `display()` or retrieved as a `data.frame` using `annot()`.  
 
-Now we are ready for batch annotation using `mapProteinFeaturesToEvents()`. The function retrieves the latest annotation from the public UniprotKB FTP, and overlaps splice events to genomic coordinates of protein features. UniprotKB features are grouped into categories.  
-
-Multiple transcripts (and therefore multiple proteins) might be affected by the splice event. The annotation will indicate both the feature description and protein ID for which the annotation has been assigned. 
-
-The batch annotation can be executed either by feature or category. If categories are provided, all features within the category group will be included for annotation. This may take a long time to process if dealing with a high number of splice events.
+`mapProteinFeaturesToEvents()` will add extra columns describing the feature name, feature description and protein identifiers for which the annotation has been assigned. Possible `NA` values indicate the particular feature is not annotated for the splice event.
 
 ```{r, warning = FALSE, message = FALSE}
-features <- c("domain", "transmem", "mutagen", "topo-dom", "motif", "signal", "DNA-bind")
-categories_all <- c("Domain_and_Sites", "Mutagenesis", "Molecule_Processing",
-                "PTM", "Structural_Features", "Topology")
-
-categories <- c("Domain_and_Sites", "Mutagenesis", "Molecule_Processing", "Topology")
-
-hypoxia_annot <- mapProteinFeaturesToEvents(hypoxia_top, categories, by = "category")
-
-system.time({ hypoxia_annot <- mapProteinFeaturesToEvents(hypoxia_top, categories, by = "category") })
+# Annotate splice events with protein features
+srsf6_annot <- mapProteinFeaturesToEvents(srsf6_mapped, c("Domain_and_Sites", "Topology"), by="category")
 
 ```
 
-Feature annotation can be interactively displayed in a web browser using `display()` or retrieved as a `data.frame` using `annot()`.  
+```{r, warning = FALSE, message = FALSE, eval=FALSE}
+head(annot(srsf6_annot, "SE"))
+```
 
-```{r, warning = FALSE, message = FALSE, eval = FALSE}
-display(hypoxia_annot, "SE")
-uniprot <- annot(hypoxia_annot, "SE")
+```{r, warning = FALSE, message = FALSE, echo=FALSE}
+knitr::kable(
+  head(annot(srsf6_annot, "SE"))
+)
+
+```
+
+By inspecting the results, we see that the SRSF6 exon skipping event is annotated with the Uniprot features **domain, chain and mod-res (modidifed residue)**. Visualization of the splice event, transcripts and protein features is performed with `plotUniprotKBFeatures()`. In this example, exons in the splice event overlap the	Serine/arginine-rich splicing factor 6 region of the protein, while the upstream exon and downstream exons are overlapping the RRM1 and RRM2 domains of SRSF6, respectively. 
+
+```{r, warning = FALSE, message = FALSE}
+# Plot splice event, transcripts and protein features
+plotUniprotKBFeatures(srsf6_annot, "SE", event_id = 33209, gtf = ens_gtf, 
+   features = c("domain", "chain", "mod-res"), show_transcripts = T)
+
+```
+
+## RIPK2 example
+
+RIPK2 has an exon skipping event in the hypoxia dataset. Following the example above, we map transcripts to splice events and annotate protein features overlapping the splice event. We find out that the alternative exon overlaps the kinase domain of the protein, thus possibly changing the configuration of this domain during hypoxia. The ATP and proton acceptor binding sites are overlapping exons flanking the alternative exon.  
+
+
+```{r, warning = FALSE, message = FALSE}
+
+ripk2_events <- geneEvents(hypoxia_filt, "RIPK2")
+ripk2_mapped <- mapTranscriptsToEvents(ripk2_events, ens_gtf)
+ripk2_annot <- mapProteinFeaturesToEvents(ripk2_mapped, 
+                                          tracks = c("Domain_and_Sites"), 
+                                          by = "category")
+
 ```
 
 ```{r, warning = FALSE, message = FALSE}
-table(uniprot$domain)
+plotUniprotKBFeatures(ripk2_annot, type = "SE", event_id = 14319, 
+                      features = c("domain", "binding", "act-site"), gtf = ens_gtf, 
+                      zoom = F, show_transcripts = T)
+
 ```
 
-Cassette exon is in the kinase domain of RIPK2 (O43353). On the other hand, annotate mutations are in the upstream and downstream exons.
+## BMPR2 example
 
+BMPR2 is plasma membrane protein that also undergoes splicing in the hypoxia dataset. After transcript mapping and annotation, we find ou that alternative exon is located in the cytoplasmic portion of the protein, and next to kinase domain. Setting `zoom = TRUE` might be useful for a detailed analysis.
 
 ```{r, warning = FALSE, message = FALSE}
 
-ripk2_events <- geneEvents(hypoxia_annot, "RIPK2")
-plotUniprotKBFeatures(ripk2_events, type = "SE", event_id = 14319, 
-                      features = c("domain", "mutagen"), gtf = ens_gtf, 
+bmpr2_events <- geneEvents(hypoxia_filt, "BMPR2")
+bmpr2_mapped <- mapTranscriptsToEvents(bmpr2_events, ens_gtf)
+bmrp2_annot <- mapProteinFeaturesToEvents(bmpr2_mapped, 
+                           tracks = c("Domain_and_Sites",
+                                      "Topology"), 
+                           by = "category")
+
+```
+
+```{r, warning = FALSE, message = FALSE}
+plotUniprotKBFeatures(bmpr2_mapped, type = "SE", event_id = 25501, 
+                      features = c("domain", "topo-dom", "mod-res"), 
+                      gtf = ens_gtf, 
                       zoom = F,
                       show_transcripts = T)
 
-plotUniprotKBFeatures(ripk2_events_annot, type = "SE", event_id = 14319, 
-                      features = c("domain", "mutagen"), gtf = ens_gtf, 
-                      zoom = F,
-                      show_transcripts = T)
-
 ```
-
-```{r, warning = FALSE, message = FALSE}
-
-bmpr2_events <- geneEvents(hypoxia_annot, "BMPR2")
-plotUniprotKBFeatures(bmpr2_events, type = "SE", event_id = 25501, 
-                      features = c("domain", "topo-dom"), gtf = ens_gtf, 
-                      zoom = F,
-                      show_transcripts = T)
-
-```
-
 
 
 

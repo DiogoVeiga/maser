@@ -34,7 +34,7 @@ This is a wrapper function for performing both mapping and visualization
  overlapping. The \code{\link[Gviz:plotTracks]{GViz}} package is used for creating
  annotation tracks for genomic visualization of splice events. 
  
- Each type of splice event requires a specific pattern matching (described below),
+ Each type of splice event requires a specific overlapping rule (described below),
  and a customized \code{Gviz} plot is created for each splicing type.
   
   \describe{

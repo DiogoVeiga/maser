@@ -24,5 +24,6 @@ Retrieve splice events for a given gene.
 \examples{
 path <- system.file("extdata", file.path("MATS_output"), package = "maser")
 hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
-hypoxia_mib2 <- geneEvents(hypoxia_filt, geneS = "MIB2", fdr = 0.05, deltaPSI = 0.1)
+hypoxia_mib2 <- geneEvents(hypoxia_filt, geneS = "MIB2", fdr = 0.05, 
+deltaPSI = 0.1)
 }

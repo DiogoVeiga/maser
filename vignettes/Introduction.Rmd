@@ -21,8 +21,7 @@ knitr::opts_chunk$set(
 ```
 
 # Overview of maser
-Alternative splicing occurs in most human genes and novel splice isoforms may be associated to disease or tissue specific functions. However, functional interpretation of splicing requires 
-the integration of heterogeneous data sources such as transcriptomic and proteomic information. 
+Alternative splicing occurs in most human genes and novel splice isoforms may be associated to disease or tissue specific functions. However, functional interpretation of splicing requires the integration of heterogeneous data sources such as transcriptomic and proteomic information. 
 
 We developed **maser** (**M**apping **A**lternative **S**plicing **E**vents to p**R**oteins) package to enable functional characterization of splicing in both transcriptomic and proteomic contexts. Overall, `r Rpackage("maser")` allows a detailed analysis of splice events identified by [rMATS](http://rnaseq-mats.sourceforge.net/) by implementing the following functionalities:
 

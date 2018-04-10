@@ -281,9 +281,6 @@ mapTranscriptsToEvents <- function(events, gtf, is_strict = TRUE){
   gtf_exons <- gtf[gtf$type=="exon",]
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  if (!type %in% as_types){
-    stop(cat("\"type\" should be one of the following: ", as_types))
-  }
   
   # Add transcripts to events using mapping functions based on sequence overlap 
   events_with_txn <- events

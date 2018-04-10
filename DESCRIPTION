@@ -5,7 +5,7 @@ Version: 0.99.0
 Authors@R: person("Diogo", "Veiga", email = "Diogo.Veiga@jax.org",
                   role = c("aut", "cre"))
 Description: This package provides functionalities for annotation and 
-    visualizaton of splicing events.
+    visualizaton of alternative splice events.
 Depends: R (>= 3.4.0),
     ggplot2,
     GenomicRanges
@@ -14,8 +14,6 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     dplyr,
-    GenomicRanges,
-    ggplot2,
     rtracklayer,
     reshape2,
     Gviz,

@@ -48,7 +48,8 @@ hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 
 ## Retrieve Ensembl GTF annotation
-ah <- AnnotationHub::AnnotationHub() 
+ah <- AnnotationHub::AnnotationHub()
+qhs <- AnnotationHub::query(ah, c("Ensembl", "gene", "annotation", "grch38")) 
 ens_gtf <- qhs[["AH51014"]] #Homo_sapiens.GRCh38.85.gtf 
 
 ## Retrieve gene specific splice events

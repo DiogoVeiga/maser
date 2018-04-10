@@ -218,7 +218,9 @@ maser <- function(path, cond_labels,
                         ncol = length(inc1[[1]]) +
                           length(inc2[[1]]))
     for (i in 1:length(inc1)) {
-      reads.mat[i, ] <- c(as.numeric(inc1[[i]]), as.numeric(inc2[[i]]) )
+      reads.mat[i, ] <- suppressWarnings(
+                      c(as.numeric(inc1[[i]]), as.numeric(inc2[[i]]) )
+                      )
     }
     rownames(reads.mat) <- events$ID
     col_names <- c(paste0(cond_labels[1], "_",
@@ -238,7 +240,9 @@ maser <- function(path, cond_labels,
                           length(inc2[[1]]))
     
     for (i in 1:length(inc1)) {
-      reads.mat[i, ] <- c(as.numeric(inc1[[i]]), as.numeric(inc2[[i]]) )
+      reads.mat[i, ] <- suppressWarnings(
+                          c(as.numeric(inc1[[i]]), as.numeric(inc2[[i]]) )
+                        )
     }
     rownames(reads.mat) <- events$ID
     colnames(reads.mat) <- col_names

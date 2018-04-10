@@ -25,7 +25,8 @@
 #' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 #' 
 #' ## Retrieve Ensembl GTF annotation
-#' ah <- AnnotationHub::AnnotationHub() 
+#' ah <- AnnotationHub::AnnotationHub()
+#' qhs <- AnnotationHub::query(ah, c("Ensembl", "gene", "annotation", "grch38"))  
 #' ens_gtf <- qhs[["AH51014"]] #Homo_sapiens.GRCh38.85.gtf 
 #' 
 #' ## Retrieve gene specific splice events
@@ -253,7 +254,8 @@ mapProteinsToEvents <- function(events){
 #' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 #' 
 #' ## Retrieve Ensembl GTF annotation
-#' ah <- AnnotationHub::AnnotationHub() 
+#' ah <- AnnotationHub::AnnotationHub()
+#' qhs <- AnnotationHub::query(ah, c("Ensembl", "gene", "annotation", "grch38")) 
 #' ens_gtf <- qhs[["AH51014"]] #Homo_sapiens.GRCh38.85.gtf 
 #' 
 #' ## Retrieve gene specific splice events
@@ -265,7 +267,9 @@ mapProteinsToEvents <- function(events){
 #' 
 #' @seealso \code{\link{plotTranscripts}}
 #' @export
-mapTranscriptsToEvents <- function(events, gtf, is_strict = TRUE){
+mapTranscriptsToEvents <- function(events, gtf){
+  
+  is_strict = TRUE
   
   if(!is.maser(events)){
     stop("Parameter events has to be a maser object.")

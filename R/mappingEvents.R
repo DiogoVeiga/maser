@@ -24,10 +24,10 @@
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 #' 
-#' ## Retrieve Ensembl GTF annotation
-#' ah <- AnnotationHub::AnnotationHub()
-#' qhs <- AnnotationHub::query(ah, c("Ensembl", "gene", "annotation", "grch38"))  
-#' ens_gtf <- qhs[["AH51014"]] #Homo_sapiens.GRCh38.85.gtf 
+#' ## Ensembl GTF annotation for SRSF6
+#' gtf_path <- system.file("extdata", file.path("GTF", "SRSF6_Ensembl85.gtf"),
+#'  package = "maser")
+#' ens_gtf <- rtracklayer::import.gff(gtf_path)
 #' 
 #' ## Retrieve gene specific splice events
 #' srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6")
@@ -36,7 +36,7 @@
 #' srsf6_mapped <- mapTranscriptsToEvents(srsf6_events, ens_gtf)
 #' 
 #' ## Annotate splice events with protein domains
-#' srsf6_annot <- mapProteinFeaturesToEvents(srsf6_mapped, "domain")
+#' srsf6_annot <- mapProteinFeaturesToEvents(srsf6_mapped, tracks = "domain")
 #' head(annot(srsf6_annot, "SE"))
 #' 
 #' @seealso \code{\link{plotUniprotKBFeatures}}
@@ -52,7 +52,7 @@ mapProteinFeaturesToEvents <- function(events, tracks, by = "feature"){
   
   df <- availableFeaturesUniprotKB()
   
-  if(by == "features"){
+  if(by == "feature"){
     
     if (!any(tracks %in% as.vector(df$Name))){
       stop(cat("\"tracks\" arg is invalid."))
@@ -250,11 +250,11 @@ mapProteinsToEvents <- function(events){
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 #' 
-#' ## Retrieve Ensembl GTF annotation
-#' ah <- AnnotationHub::AnnotationHub()
-#' qhs <- AnnotationHub::query(ah, c("Ensembl", "gene", "annotation", "grch38")) 
-#' ens_gtf <- qhs[["AH51014"]] #Homo_sapiens.GRCh38.85.gtf 
-#' 
+#' ## Ensembl GTF annotation for SRSF6
+#' gtf_path <- system.file("extdata", file.path("GTF", "SRSF6_Ensembl85.gtf"),
+#'  package = "maser")
+#' ens_gtf <- rtracklayer::import.gff(gtf_path)
+#'  
 #' ## Retrieve gene specific splice events
 #' srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6")
 #' 
@@ -277,10 +277,8 @@ mapTranscriptsToEvents <- function(events, gtf){
   if (!class(gtf) == "GRanges"){
     stop(cat("\"gtf\" should be a GRanges object."))
   }
-  gtf <- GenomeInfoDb::keepSeqlevels(gtf, c(paste0(seq(1:22)), "X", "Y"),
-                                     pruning.mode = "coarse")
-  seqlevels(gtf, pruning.mode="coarse") <- c(paste0("chr", seq(1:22)),
-                                             "chrX", "chrY")
+  
+  #GenomeInfoDb::seqlevels(gtf) <- paste0("chr", seqlevels(gtf))
   gtf_exons <- gtf[gtf$type=="exon",]
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")

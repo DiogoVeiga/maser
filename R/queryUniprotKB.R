@@ -24,8 +24,9 @@ createGRangesUniprotKBtrack <- function(track_name){
   }
   bed <- cbind(bed, Name = name)
   bed.gr <- as(bed, "GRanges")
+  
   genome(bed.gr) <- "hg38"
-  seqlevels(bed.gr, pruning.mode="coarse") <- c(paste0("chr", seq(1:22)), "chrX", "chrY")
+  GenomeInfoDb::seqlevels(bed.gr) <- gsub("chr", "", seqlevels(bed.gr))
   
   
   return(bed.gr)

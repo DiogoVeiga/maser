@@ -2,7 +2,7 @@
 create_GRanges_ASS <- function(events){
   
   exon_long <- GRanges(
-    seqnames = events$chr,
+    seqnames = sub("chr", "", events$chr),
     ranges = IRanges(start = events$longExonStart_0base+1,
                      end = events$longExonEnd),
     strand = events$strand,
@@ -11,7 +11,7 @@ create_GRanges_ASS <- function(events){
     geneSymbol = events$geneSymbol
   )
   exon_short <- GRanges(
-    seqnames = events$chr,
+    seqnames = sub("chr", "", events$chr),
     ranges = IRanges(start = events$shortES+1,
                      end = events$shortEE),
     strand = events$strand,
@@ -21,7 +21,7 @@ create_GRanges_ASS <- function(events){
     
   )
   exon_flanking <- GRanges(
-    seqnames = events$chr,
+    seqnames = sub("chr", "", events$chr),
     ranges = IRanges(start = events$flankingES+1,
                      end = events$flankingEE),
     strand = events$strand,
@@ -37,7 +37,7 @@ create_GRanges_ASS <- function(events){
 create_GRanges_ES <- function(events){
   
   exon_target <- GRanges(
-    seqnames = events$chr,
+    seqnames = sub("chr", "", events$chr),
     ranges = IRanges(start = events$exonStart_0base+1,
                      end = events$exonEnd),
     strand = events$strand,
@@ -47,7 +47,7 @@ create_GRanges_ES <- function(events){
   )
   
   exon_upstream <- GRanges(
-    seqnames = events$chr,
+    seqnames = sub("chr", "", events$chr),
     ranges = IRanges(start = events$upstreamES+1,
                      end = events$upstreamEE),
     strand = events$strand,
@@ -57,7 +57,7 @@ create_GRanges_ES <- function(events){
   )
   
   exon_downstream <- GRanges(
-    seqnames = events$chr,
+    seqnames = sub("chr", "", events$chr),
     ranges = IRanges(start = events$downstreamES+1,
                      end = events$downstreamEE),
     strand = events$strand,
@@ -75,7 +75,7 @@ create_GRanges_ES <- function(events){
 create_GRanges_IR <- function(events){
   
   exon_ir <- GRanges(
-    seqnames = events$chr,
+    seqnames = sub("chr", "", events$chr),
     ranges = IRanges(start = events$riExonStart_0base+1,
                      end = events$riExonEnd),
     strand = events$strand,
@@ -85,7 +85,7 @@ create_GRanges_IR <- function(events){
   )
   
   exon_upstream <- GRanges(
-    seqnames = events$chr,
+    seqnames = sub("chr", "", events$chr),
     ranges = IRanges(start = events$upstreamES+1,
                      end = events$upstreamEE),
     strand = events$strand,
@@ -95,7 +95,7 @@ create_GRanges_IR <- function(events){
   )
   
   exon_downstream <- GRanges(
-    seqnames = events$chr,
+    seqnames = sub("chr", "", events$chr),
     ranges = IRanges(start = events$downstreamES+1,
                      end = events$downstreamEE),
     strand = events$strand,
@@ -113,7 +113,7 @@ create_GRanges_IR <- function(events){
 create_GRanges_MXE <- function(events){
   
   exon1 <- GRanges(
-    seqnames = events$chr,
+    seqnames = sub("chr", "", events$chr),
     ranges = IRanges(start = events$X1stExonStart_0base+1,
                      end = events$X1stExonEnd),
     strand = events$strand,
@@ -123,7 +123,7 @@ create_GRanges_MXE <- function(events){
   )
   
   exon2 <- GRanges(
-    seqnames = events$chr,
+    seqnames = sub("chr", "", events$chr),
     ranges = IRanges(start = events$X2ndExonStart_0base+1,
                      end = events$X2ndExonEnd),
     strand = events$strand,
@@ -133,7 +133,7 @@ create_GRanges_MXE <- function(events){
   )
   
   exon_upstream <- GRanges(
-    seqnames = events$chr,
+    seqnames = sub("chr", "", events$chr),
     ranges = IRanges(start = events$upstreamES+1,
                      end = events$upstreamEE),
     strand = events$strand,
@@ -143,7 +143,7 @@ create_GRanges_MXE <- function(events){
   )
   
   exon_downstream <- GRanges(
-    seqnames = events$chr,
+    seqnames = sub("chr", "", events$chr),
     ranges = IRanges(start = events$downstreamES+1,
                      end = events$downstreamEE),
     strand = events$strand,

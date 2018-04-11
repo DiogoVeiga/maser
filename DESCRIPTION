@@ -17,7 +17,9 @@ Imports:
     rtracklayer,
     reshape2,
     Gviz,
-    DT
+    DT,
+    AnnotationHub,
+    GenomeInfoDb
 Suggests:
     testthat,
     knitr,
@@ -27,3 +29,4 @@ VignetteBuilder: knitr
 URL: https://github.com/DiogoVeiga/maser
 BugReports: https://github.com/DiogoVeiga/maser/issues
 RoxygenNote: 6.0.1
+biocViews: AlternativeSplicing, Transcriptomics, Visualization

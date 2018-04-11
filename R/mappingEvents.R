@@ -40,12 +40,10 @@
 #' srsf6_annot <- mapProteinFeaturesToEvents(srsf6_mapped, categories, by="category")
 #' head(annot(srsf6_annot, "SE"))
 #' 
-#' ## Plot splice event, transcripts and protein features
-#' plotUniprotKBFeatures(srsf6_annot, "SE", event_id = 33209, gtf = ens_gtf, 
-#'   features = c("domain", "chain", "mod-res"), show_transcripts = T)
-#' 
 #' @seealso \code{\link{plotUniprotKBFeatures}}
 #' @export
+#' @import GenomicRanges
+
 
 mapProteinFeaturesToEvents <- function(events, tracks, by = "feature"){
   
@@ -133,7 +131,7 @@ mapProteinFeaturesToEvents <- function(events, tracks, by = "feature"){
   return(events_with_features)
 }
 
-#internal function
+
 mapENSTtoUniprotKB <- function(enst_ids){
   
   if (enst_ids == ""){
@@ -267,6 +265,8 @@ mapProteinsToEvents <- function(events){
 #' 
 #' @seealso \code{\link{plotTranscripts}}
 #' @export
+#' @import GenomicRanges
+#' 
 mapTranscriptsToEvents <- function(events, gtf){
   
   is_strict = TRUE

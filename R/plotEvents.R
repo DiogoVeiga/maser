@@ -10,6 +10,8 @@
 #' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 #' boxplot_PSI_levels(hypoxia_filt, type = "RI")
 #' @export
+#' @import ggplot2
+
 boxplot_PSI_levels <- function(events, type){
 
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
@@ -24,9 +26,9 @@ boxplot_PSI_levels <- function(events, type){
 
     Condition <- rep("NA",nrow(PSI_long))
     idx.cond1 <- grep(paste0("^", events$conditions[1]), x = PSI_long$Sample,
-                      perl = T )
+                      perl = TRUE)
     idx.cond2 <- grep(paste0("^", events$conditions[2]), x = PSI_long$Sample,
-                      perl = T )
+                      perl = TRUE)
     Condition[idx.cond1] <- events$conditions[1]
     Condition[idx.cond2] <- events$conditions[2]
 
@@ -64,6 +66,8 @@ boxplot_PSI_levels <- function(events, type){
 #' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 #' splicingDistribution(hypoxia_filt)
 #' @export
+#' @import ggplot2
+#' 
 splicingDistribution <- function(events, fdr = 0.05, deltaPSI = 0.1){
 
     # Plot distribution of splicing events per condition
@@ -127,6 +131,8 @@ splicingDistribution <- function(events, fdr = 0.05, deltaPSI = 0.1){
 #' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 #' volcano(hypoxia_filt, type = "SE")
 #' @export
+#' @import ggplot2
+#' 
 volcano <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
 
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
@@ -189,6 +195,8 @@ volcano <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
 #' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 #' dotplot(hypoxia_filt, type = "SE")
 #' @export
+#' @import ggplot2
+
 dotplot <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
 
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
@@ -249,6 +257,9 @@ dotplot <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
 #' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 #' pca(hypoxia_filt, type = "RI")
 #' @export
+#' @import ggplot2
+#' @importFrom stats prcomp
+#' 
 pca <- function(events, type){
 
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")

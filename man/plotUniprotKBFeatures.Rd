@@ -65,7 +65,7 @@ head(annot(srsf6_annot, "SE"))
 
 ## Plot splice event, transcripts and protein features
 plotUniprotKBFeatures(srsf6_annot, "SE", event_id = 33209, gtf = ens_gtf, 
-  features = c("domain", "chain", "mod-res"), show_transcripts = T)
+  features = c("domain", "chain", "mod-res"), show_transcripts = TRUE)
 
 }
 \seealso{

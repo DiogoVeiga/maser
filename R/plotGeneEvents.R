@@ -10,8 +10,9 @@
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 #' hypoxia_mib2 <- geneEvents(hypoxia_filt, geneS = "MIB2")
-#' plotGenePSI(hypoxia_mib2, type = "SE", show_replicates = T)
+#' plotGenePSI(hypoxia_mib2, type = "SE", show_replicates = TRUE)
 #' @export
+#' @importFrom ggplot2 ggplot
 
 plotGenePSI <- function(events, type, show_replicates = TRUE){
   
@@ -35,9 +36,9 @@ plotGenePSI <- function(events, type, show_replicates = TRUE){
   
   Condition <- rep("NA",nrow(PSI_long))
   idx.cond1 <- grep(paste0("^", events$conditions[1]), x = PSI_long$Sample,
-                    perl = T )
+                    perl = TRUE)
   idx.cond2 <- grep(paste0("^", events$conditions[2]), x = PSI_long$Sample,
-                    perl = T )
+                    perl = TRUE)
   Condition[idx.cond1] <- events$conditions[1]
   Condition[idx.cond2] <- events$conditions[2]
   
@@ -84,90 +85,6 @@ plotGenePSI <- function(events, type, show_replicates = TRUE){
     facet_grid(. ~ ID)
     
   }
-  
-}
-
-
-plotTranscripts_old_txdb <- function(events, type, event_id, gtf_txdb, 
-                            is_strict = FALSE){
-  
-  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  if (!type %in% as_types){
-    stop(cat("\"type\" should be one of the following: ", as_types))
-  }
-  
-  annot <- events[[paste0(type,"_","events")]]
-  if (length(unique(annot$geneSymbol)) > 1){
-    stop(cat("Multiple genes found. Use geneEvents() to select gene-specific AS events."))
-  }
-  
-  # Genomic ranges of alternative splicing events
-  grl <- events[[paste0(type,"_","gr")]]
-  idx.event <- grep(as.numeric(event_id), grl[[1]]$ID)
-  
-  eventGr <- GRangesList()
-  for (feature in names(grl)){
-    eventGr[[paste0(feature)]] <- grl[[paste0(feature)]][idx.event]
-  }
-  
-  eventTrack <- createAnnotationTrack(eventGr, type)
-  
-  # Transcripts overlapping with splicing event 
-  ovl.e1 <- GenomicFeatures::transcriptsByOverlaps(gtf_txdb,eventGr[1])
-  ovl.e2 <- GenomicFeatures::transcriptsByOverlaps(gtf_txdb,eventGr[2])
-  ovl.e3 <- GenomicFeatures::transcriptsByOverlaps(gtf_txdb,eventGr[3])
-  
-  mytx.ids.e1 <- ovl.e1$tx_name
-  mytx.ids.e2 <- ovl.e2$tx_name
-  mytx.ids.e3 <- ovl.e3$tx_name
-  
-  if (is_strict){
-    mytx.ids.3exons <- intersect(mytx.ids.e1, mytx.ids.e3) #has both flaking exons
-    mytx.ids.3exons <- intersect(mytx.ids.3exons, mytx.ids.e2) #and the target exon
-    mytx.ids.2exons <- intersect(mytx.ids.e1, mytx.ids.e3)
-    
-  }else {
-    mytx.ids.3exons <- union(mytx.ids.e1, mytx.ids.e3) #has either flaking exons
-    mytx.ids.3exons <- intersect(mytx.ids.3exons, mytx.ids.e2) #and the target exon  
-    mytx.ids.2exons <- union(mytx.ids.e1, mytx.ids.e3)
-  }
-  
-  mytx.ids.2exons <- setdiff(mytx.ids.2exons, mytx.ids.3exons)
-  
-  if(length(mytx.ids.3exons)==0){
-    stop(cat("No transcripts matching the splicing event were found."))
-  }
-  
-  # Inclusion track
-  # Recover exons of transcripts for the inclusion track using transcript IDs
-  # AnnotationDbi::keytypes(gtf_txdb)
-  res <- AnnotationDbi::select(gtf_txdb, mytx.ids.3exons, 
-                               columns = AnnotationDbi::columns(gtf_txdb),
-                               keytype ="TXNAME")
-  
-  # Create data frame for inclusion track - follow the model from data(geneModels)
-  res.df <- res[, c("EXONCHROM", "EXONSTART", "EXONEND", "EXONSTRAND", "EXONNAME", "TXNAME")]
-  colnames(res.df) <- c("chromosome","start","end","strand","exon","transcript")
-  inclusionTrack <- GeneRegionTrack(range = res.df, name = "Inclusion", 
-                            transcriptAnnotation = "transcript")
-  
-  # Skipping track
-  # Recover exons of transcripts for the skipping track using transcript IDs
-  res <- AnnotationDbi::select(gtf_txdb, mytx.ids.2exons, 
-                               columns = AnnotationDbi::columns(gtf_txdb),
-                               keytype ="TXNAME")
-  
-  # Create data frame for inclusion track - follow the model from data(geneModels)
-  res.df <- res[, c("EXONCHROM", "EXONSTART", "EXONEND", "EXONSTRAND", "EXONNAME", "TXNAME")]
-  colnames(res.df) <- c("chromosome","start","end","strand","exon","transcript")
-  skippingTrack <- GeneRegionTrack(range = res.df, name = "Skipping", 
-                                    transcriptAnnotation = "transcript")
-  
-  
-  plotTracks(list(eventTrack, inclusionTrack, skippingTrack), 
-             col.line = NULL, col = NULL,
-             Inclusion = "darkred", Skipping = "darkblue")
-  
   
 }
 
@@ -242,6 +159,8 @@ plotTranscripts_old_txdb <- function(events, type, event_id, gtf_txdb,
 #' 
 #' @seealso \code{\link{mapTranscriptsToEvents}}
 #' @export
+#' @import GenomicRanges
+#' @importFrom ggplot2 ggplot
 
 plotTranscripts <- function(events, type, event_id, gtf, 
                             zoom = FALSE, show_PSI = TRUE){
@@ -368,11 +287,12 @@ plotTranscripts <- function(events, type, event_id, gtf,
 #' 
 #' ## Plot splice event, transcripts and protein features
 #' plotUniprotKBFeatures(srsf6_annot, "SE", event_id = 33209, gtf = ens_gtf, 
-#'   features = c("domain", "chain", "mod-res"), show_transcripts = T)
+#'   features = c("domain", "chain", "mod-res"), show_transcripts = TRUE)
 #' 
 #' @seealso \code{\link{mapProteinFeaturesToEvents}}
 #' @export
-
+#' @import GenomicRanges
+#' @importFrom ggplot2 ggplot
 
 plotUniprotKBFeatures <- function(events, type, event_id, gtf,
                                   features, zoom = FALSE,
@@ -451,70 +371,3 @@ plotUniprotKBFeatures <- function(events, type, event_id, gtf,
   
   
 }
-
-# deprecated - uses UCSC rtracklayer but too slow
-plotUniprotUCSCFeatures <- function(events, type, event_id, gtf, 
-                            is_strict = FALSE, zoom = FALSE, 
-                            show_transcripts = FALSE){
-  
-  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  if (!type %in% as_types){
-    stop(cat("\"type\" should be one of the following: ", as_types))
-  }
-  
-  annot <- events[[paste0(type,"_","events")]]
-  if (length(unique(annot$geneSymbol)) > 1){
-    stop(cat("Multiple genes found. Use geneEvents() to select gene-specific AS events."))
-  }
-  
-  # Genomic ranges of alternative splicing events
-  grl <- events[[paste0(type,"_","gr")]]
-  idx.event <- grep(as.numeric(event_id), grl[[1]]$ID)
-  
-  eventGr <- GRangesList()
-  for (feature in names(grl)){
-    eventGr[[paste0(feature)]] <- grl[[paste0(feature)]][idx.event]
-  }
-  
-  eventTrack <- createAnnotationTrack_event(eventGr, type)
-  
-  gtf_exons <- gtf[gtf$type=="exon",]
-  uniprotTracks <- createUniprotUCSCtrack_localization(eventGr, "hg38")
-  
-  if (show_transcripts){
-    txnTracks <- createAnnotationTrack_transcripts(eventGr, gtf_exons,
-                                                   type, is_strict)
-    trackList <- list(eventTrack, txnTracks$inclusionTrack, 
-                      txnTracks$skippingTrack,
-                      uniprotTracks$unipLocExtra, 
-                      uniprotTracks$unipLocTransMemb,
-                      uniprotTracks$unipLocCytopl)
-  }else {
-    trackList <- list(eventTrack, uniprotTracks$unipLocExtra, 
-                      uniprotTracks$unipLocTransMemb,
-                      uniprotTracks$unipLocCytopl)
-  }
-  
-  if (zoom){
-    Gviz::plotTracks(trackList, 
-                     col.line = NULL, col = NULL,
-                     Inclusion = "orange", Skipping = "purple",
-                     Retention = "orange", Non_Retention = "purple",
-                     MXE_Exon1 = "orange", MXE_Exon2 = "purple",
-                     A5SS_Short = "orange", A5SS_Long = "purple",
-                     A3SS_Short = "orange", A3SS_Long = "purple",
-                     from = start(range(unlist(eventGr))) - 500,
-                     to = end(range(unlist(eventGr))) + 500)  
-  }else {
-    Gviz::plotTracks(trackList, 
-                     col.line = NULL, col = NULL,
-                     Inclusion = "orange", Skipping = "purple",
-                     Retention = "orange", Non_Retention = "purple",
-                     MXE_Exon1 = "orange", MXE_Exon2 = "purple",
-                     A5SS_Short = "orange", A5SS_Long = "purple",
-                     A3SS_Short = "orange", A3SS_Long = "purple")  
-  }
-  
-}
-
-

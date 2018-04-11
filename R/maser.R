@@ -284,12 +284,13 @@ maser <- function(path, cond_labels,
 #' Print a maser object.
 #' 
 #' @param x a maser object.
+#' @param ... further arguments.
 #' @examples
 #' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' print(hypoxia)
 #' @export
-print.maser <- function(x){
+print.maser <- function(x, ...){
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
   counts <- rep(0, length(as_types))

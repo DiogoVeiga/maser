@@ -25,5 +25,5 @@ path <- system.file("extdata", file.path("MATS_output"), package = "maser")
 hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 hypoxia_mib2 <- geneEvents(hypoxia_filt, geneS = "MIB2")
-plotGenePSI(hypoxia_mib2, type = "SE", show_replicates = T)
+plotGenePSI(hypoxia_mib2, type = "SE", show_replicates = TRUE)
 }

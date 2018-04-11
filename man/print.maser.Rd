@@ -4,10 +4,12 @@
 \alias{print.maser}
 \title{Print a maser object.}
 \usage{
-\method{print}{maser}(x)
+\method{print}{maser}(x, ...)
 }
 \arguments{
 \item{x}{a maser object.}
+
+\item{...}{further arguments.}
 }
 \description{
 Print a maser object.

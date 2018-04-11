@@ -58,14 +58,9 @@ srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6")
 ## Map splicing events to transcripts
 srsf6_mapped <- mapTranscriptsToEvents(srsf6_events, ens_gtf)
 
-## Annotate splice events with protein features
-categories <- c("Domain_and_Sites", "Topology")
-srsf6_annot <- mapProteinFeaturesToEvents(srsf6_mapped, categories, by="category")
-head(annot(srsf6_annot, "SE"))
-
 ## Plot splice event, transcripts and protein features
 plotUniprotKBFeatures(srsf6_annot, "SE", event_id = 33209, gtf = ens_gtf, 
-  features = c("domain", "chain", "mod-res"), show_transcripts = TRUE)
+  features = c("domain"), show_transcripts = TRUE)
 
 }
 \seealso{

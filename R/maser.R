@@ -9,7 +9,7 @@ create_GRanges_ASS <- function(events){
   
   exon_long <- GRanges(
     seqnames = echr,
-    ranges = IRanges(start = events$longExonStart_0base+1,
+    ranges = IRanges::IRanges(start = events$longExonStart_0base+1,
                      end = events$longExonEnd),
     strand = events$strand,
     ID = events$ID,
@@ -18,7 +18,7 @@ create_GRanges_ASS <- function(events){
   )
   exon_short <- GRanges(
     seqnames = echr,
-    ranges = IRanges(start = events$shortES+1,
+    ranges = IRanges::IRanges(start = events$shortES+1,
                      end = events$shortEE),
     strand = events$strand,
     ID = as.vector(events$ID),
@@ -28,7 +28,7 @@ create_GRanges_ASS <- function(events){
   )
   exon_flanking <- GRanges(
     seqnames = echr,
-    ranges = IRanges(start = events$flankingES+1,
+    ranges = IRanges::IRanges(start = events$flankingES+1,
                      end = events$flankingEE),
     strand = events$strand,
     ID = events$ID,
@@ -50,7 +50,7 @@ create_GRanges_ES <- function(events){
   
   exon_target <- GRanges(
     seqnames = echr,
-    ranges = IRanges(start = events$exonStart_0base+1,
+    ranges = IRanges::IRanges(start = events$exonStart_0base+1,
                      end = events$exonEnd),
     strand = events$strand,
     ID = events$ID,
@@ -60,7 +60,7 @@ create_GRanges_ES <- function(events){
   
   exon_upstream <- GRanges(
     seqnames = echr,
-    ranges = IRanges(start = events$upstreamES+1,
+    ranges = IRanges::IRanges(start = events$upstreamES+1,
                      end = events$upstreamEE),
     strand = events$strand,
     ID = events$ID,
@@ -70,7 +70,7 @@ create_GRanges_ES <- function(events){
   
   exon_downstream <- GRanges(
     seqnames = echr,
-    ranges = IRanges(start = events$downstreamES+1,
+    ranges = IRanges::IRanges(start = events$downstreamES+1,
                      end = events$downstreamEE),
     strand = events$strand,
     ID = events$ID,
@@ -94,7 +94,7 @@ create_GRanges_IR <- function(events){
   
   exon_ir <- GRanges(
     seqnames = echr,
-    ranges = IRanges(start = events$riExonStart_0base+1,
+    ranges = IRanges::IRanges(start = events$riExonStart_0base+1,
                      end = events$riExonEnd),
     strand = events$strand,
     ID = events$ID,
@@ -104,7 +104,7 @@ create_GRanges_IR <- function(events){
   
   exon_upstream <- GRanges(
     seqnames = echr,
-    ranges = IRanges(start = events$upstreamES+1,
+    ranges = IRanges::IRanges(start = events$upstreamES+1,
                      end = events$upstreamEE),
     strand = events$strand,
     ID = events$ID,
@@ -114,7 +114,7 @@ create_GRanges_IR <- function(events){
   
   exon_downstream <- GRanges(
     seqnames = echr,
-    ranges = IRanges(start = events$downstreamES+1,
+    ranges = IRanges::IRanges(start = events$downstreamES+1,
                      end = events$downstreamEE),
     strand = events$strand,
     ID = events$ID,
@@ -138,7 +138,7 @@ create_GRanges_MXE <- function(events){
   
   exon1 <- GRanges(
     seqnames = echr,
-    ranges = IRanges(start = events$X1stExonStart_0base+1,
+    ranges = IRanges::IRanges(start = events$X1stExonStart_0base+1,
                      end = events$X1stExonEnd),
     strand = events$strand,
     ID = events$ID,
@@ -148,7 +148,7 @@ create_GRanges_MXE <- function(events){
   
   exon2 <- GRanges(
     seqnames = echr,
-    ranges = IRanges(start = events$X2ndExonStart_0base+1,
+    ranges = IRanges::IRanges(start = events$X2ndExonStart_0base+1,
                      end = events$X2ndExonEnd),
     strand = events$strand,
     ID = events$ID,
@@ -158,7 +158,7 @@ create_GRanges_MXE <- function(events){
   
   exon_upstream <- GRanges(
     seqnames = echr,
-    ranges = IRanges(start = events$upstreamES+1,
+    ranges = IRanges::IRanges(start = events$upstreamES+1,
                      end = events$upstreamEE),
     strand = events$strand,
     ID = events$ID,
@@ -309,6 +309,7 @@ maser <- function(path, cond_labels,
 #' 
 #' @param x a maser object.
 #' @param ... further arguments.
+#' @return a character.
 #' @examples
 #' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
@@ -511,8 +512,4 @@ stats <- function(events, type){
 
 .onAttach <- function(libname, pkgname) {
   packageStartupMessage("Welcome to maser")
-}
-
-.onLoad <- function(libname, pkgname) {
-  options(ucscChromosomeNames=FALSE)
 }

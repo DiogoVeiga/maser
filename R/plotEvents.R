@@ -14,7 +14,8 @@
 #' @importFrom stats median
 
 boxplot_PSI_levels <- function(events, type){
-
+    
+    Sample <- NULL
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
     if (!type %in% as_types){
         stop(cat("\"type\" should be one of the following: ", as_types))
@@ -75,6 +76,12 @@ splicingDistribution <- function(events, fdr = 0.05, deltaPSI = 0.1){
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
     nevents_cond1 <- rep(0, length(as_types))
     nevents_cond2 <- rep(0, length(as_types))
+    
+    FDR <- NULL
+    IncLevelDifference <- NULL
+    Condition <- NULL
+    Proportion <- NULL
+    Type <- NULL
 
     for (i in 1:length(as_types)) {
 
@@ -140,6 +147,9 @@ volcano <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
     if (!type %in% as_types){
         stop(cat("\"type\" should be one of the following: ", as_types))
     }
+    
+    IncLevelDifference <- NULL
+    Status <- NULL
 
     stats <- events[[paste0(type,"_","stats")]]
     cond1 <- dplyr::filter(stats, FDR < fdr, IncLevelDifference > deltaPSI)
@@ -205,6 +215,10 @@ dotplot <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
        stop(cat("\"type\" should be one of the following: ", as_types))
     }
 
+    FDR <- NULL
+    IncLevelDifference <- NULL
+    Status <- NULL
+    
     stats <- events[[paste0(type,"_","stats")]]
     cond1 <- dplyr::filter(stats, FDR < fdr, IncLevelDifference > deltaPSI)
     cond2 <- dplyr::filter(stats, FDR < fdr, IncLevelDifference < (-1*deltaPSI))
@@ -268,6 +282,11 @@ pca <- function(events, type){
         stop(cat("\"type\" should be one of the following: ", as_types))
     }
 
+    PC1 <- NULL
+    PC2 <- NULL
+    Condition <- NULL
+    Samples <- NULL
+    
     idx.cond1 <- seq(1, events$n_cond1, 1)
     idx.cond2 <- seq(events$n_cond1+1, events$n_cond1+events$n_cond2, 1)
 
@@ -287,7 +306,7 @@ pca <- function(events, type){
     }
 
     # PCA analysis
-    my.pc <- prcomp(PSI_notna, center=F,scale=F)
+    my.pc <- prcomp(PSI_notna, center = FALSE, scale = FALSE)
     my.rot <- my.pc$r
     my.sum <- summary(my.pc)
     my.imp <- my.sum$importance
@@ -325,6 +344,11 @@ viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI", "M
   if (any(!types %in% as_types)){
     stop(cat("\"type\" should be one or a combination of the following: ", as_types))
   }
+  
+  type <- NULL
+  count <- NULL
+  desc <- NULL
+  total <- NULL
   
   geneList <- c()
   for (atype in types){

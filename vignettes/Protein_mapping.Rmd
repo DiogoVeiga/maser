@@ -121,7 +121,7 @@ knitr::kable(
 
 ```
 
-By inspecting the results, we see that the SRSF6 exon skipping event is annotated with the Uniprot features **domain, chain and mod-res (modidifed residue)**. Visualization of the splice event, transcripts and protein features is performed with `plotUniprotKBFeatures()`. In this example, exons in the splice event overlap the	Serine/arginine-rich splicing factor 6 region of the protein, while the upstream exon and downstream exons are overlapping the RRM1 and RRM2 domains of SRSF6, respectively. 
+By inspecting the results, we see that the SRSF6 exon skipping event is annotated with the Uniprot features **domain, chain and mod-res (modidifed residue)**. Visualization of the splice event, transcripts and protein features is performed with `plotUniprotKBFeatures()`. In this example, exons in the splice event overlap the	Serine/arginine-rich splicing factor 6 region of the protein, while the upstream exon and downstream exons are overlapping the RRM1 and RRM2 domains of SRSF6, respectively.  
 
 ```{r, warning = FALSE, message = FALSE}
 # Plot splice event, transcripts and protein features

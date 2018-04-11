@@ -1,5 +1,7 @@
 filterByEventId <- function(events, event_id, type){
   
+  ID <- NULL
+  
   if(!is.maser(events)){
     stop("Parameter events has to be a maser object.")
   }
@@ -72,6 +74,8 @@ filterByEventId <- function(events, event_id, type){
 
 filterByCoverage <- function(events, avg_reads = 5){
     
+    ID <- NULL
+    
     if(!is.maser(events)){
       stop("Parameter events has to be a maser object.")
     }
@@ -143,6 +147,10 @@ topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
       stop("Parameter events has to be a maser object.")
     }
     
+    FDR <- NULL
+    IncLevelDifference <- NULL
+    ID <- NULL  
+  
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
     events_top <- events
 
@@ -212,6 +220,11 @@ geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
     stop("Parameter events has to be a maser object.")
   }
   
+  FDR <- NULL
+  IncLevelDifference <- NULL
+  geneSymbol <- NULL
+  ID <- NULL
+  
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
   events_top <- events
   
@@ -263,6 +276,8 @@ geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
 }
 
 countGeneEvents <- function(events, geneS){
+  
+  geneSymbol <- NULL
   
   if(!is.maser(events)){
     stop("Parameter events has to be a maser object.")

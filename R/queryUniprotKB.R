@@ -1,7 +1,9 @@
 
 #' @importFrom utils read.table
+#' @importFrom methods as
 createGRangesUniprotKBtrack <- function(track_name){
   
+  Name <- NULL
   track_df <- urlTracksUniprotKB()
   
   if(!track_name %in% track_df$Name){
@@ -24,9 +26,9 @@ createGRangesUniprotKBtrack <- function(track_name){
     }
   }
   bed <- cbind(bed, Name = name)
-  bed.gr <- as(bed, "GRanges")
+  bed.gr <- methods::as(bed, "GRanges")
   
-  genome(bed.gr) <- "hg38"
+  GenomeInfoDb::genome(bed.gr) <- "hg38"
 
   
   return(bed.gr)
@@ -41,6 +43,7 @@ createGRangesUniprotKBtrack <- function(track_name){
 #' @export
 availableFeaturesUniprotKB <- function(){
   
+  Name <- NULL
   trackMetadata <- "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/genome_annotation_tracks/UP000005640_9606_tracks.txt"
   data <- readLines(trackMetadata)
   
@@ -130,7 +133,7 @@ overlappingFeatures <- function(feature_gr, eventGr){
   region <- range(unlist(eventGr))
   start(region) <- start(region) - 10
   end(region) <- end(region) + 10
-  genome(region) <- "hg38"
+  GenomeInfoDb::genome(region) <- "hg38"
   
   ov <- findOverlaps(eventGr, feature_gr)
   ov_features <- feature_gr[subjectHits(ov)]

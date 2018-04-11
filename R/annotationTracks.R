@@ -57,7 +57,7 @@ createAnnotationTrack_transcripts <- function(eventGr, gtf_exons,
 
 createAnnotationTrackSE_transcripts <- function(eventGr, gtf_exons,
                                                 is_strict){
-  
+  transcript_id <- NULL
   tx_ids <- mapTranscriptsSEevent(eventGr, gtf_exons, is_strict)
   
   # Inclusion track
@@ -105,6 +105,7 @@ createAnnotationTrackSE_transcripts <- function(eventGr, gtf_exons,
 createAnnotationTrackRI_transcripts <- function(eventGr, gtf_exons,
                                                 is_strict){
   
+  transcript_id <- NULL
   tx_ids <- mapTranscriptsRIevent(eventGr, gtf_exons, is_strict)
   
   # Retention track
@@ -154,6 +155,7 @@ createAnnotationTrackRI_transcripts <- function(eventGr, gtf_exons,
 createAnnotationTrackMXE_transcripts <- function(eventGr, gtf_exons,
                                                 is_strict){
   
+  transcript_id <- NULL
   tx_ids <- mapTranscriptsMXEevent(eventGr, gtf_exons, is_strict)
 
   # MXE Exon 1 track
@@ -201,6 +203,7 @@ createAnnotationTrackMXE_transcripts <- function(eventGr, gtf_exons,
 
 createAnnotationTrackA5SS_transcripts <- function(eventGr, gtf_exons){
   
+  transcript_id <- NULL
   #reverse strand becomes A3SS
   if (as.character(strand(eventGr[1])) == "+"){
     tx_ids <- mapTranscriptsA5SSevent(eventGr, gtf_exons)  
@@ -253,6 +256,7 @@ createAnnotationTrackA5SS_transcripts <- function(eventGr, gtf_exons){
 
 createAnnotationTrackA3SS_transcripts <- function(eventGr, gtf_exons){
   
+  transcript_id <- NULL
   #reverse strand becomes A5SS
   if (as.character(strand(eventGr[1])) == "+"){
     tx_ids <- mapTranscriptsA3SSevent(eventGr, gtf_exons)  
@@ -305,6 +309,7 @@ createAnnotationTrackA3SS_transcripts <- function(eventGr, gtf_exons){
 
 createAnnotationTrackSE_event <- function(eventGr){
   
+  transcript_id <- NULL
   trackGr <- c(unlist(eventGr), unlist(eventGr[2:3]))
   trackGr$group <- rep(c("Inclusion", "Skipping"), c(3, 2))
   trackGr$type <- rep("Exon skipping", 5)
@@ -322,6 +327,7 @@ createAnnotationTrackSE_event <- function(eventGr){
 
 createAnnotationTrackRI_event <- function(eventGr){
   
+  transcript_id <- NULL
   trackGr <- c(eventGr$exon_ir, eventGr$exon_upstream, eventGr$exon_downstream)
   trackGr$group <- rep(c("Retention", "Non-retention"), c(1, 2))
   trackGr$type <- rep("Intron retention", 3)
@@ -407,11 +413,12 @@ createUniprotUCSCtrack_localization <- function(eventGr, genome){
   region <- range(unlist(eventGr))
   start(region) <- start(region) - 10
   end(region) <- end(region) + 10
-  genome(region) <- "hg38"
+  GenomeInfoDb::genome(region) <- "hg38"
   
   for(i in 1:length(tables_uniprot)){
     
-    query <- ucscTableQuery(session, track = "uniprot", table = tables_uniprot[i],
+    query <- rtracklayer::ucscTableQuery(session, track = "uniprot", 
+                            table = tables_uniprot[i],
                             range = region)
     query_gr <- rtracklayer::track(query)
     query_table <- rtracklayer::getTable(query)

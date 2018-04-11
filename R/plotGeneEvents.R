@@ -176,8 +176,8 @@ plotTranscripts <- function(events, type, event_id, gtf,
   }
   
   #Add chr to seqnames - necessary for Gviz plots
-  if(any(!grepl("chr", seqlevels(gtf)))){
-    GenomeInfoDb::seqlevels(gtf) <- paste0("chr", seqlevels(gtf)) 
+  if(any(!grepl("chr", GenomeInfoDb::seqlevels(gtf)))){
+    GenomeInfoDb::seqlevels(gtf) <- paste0("chr", GenomeInfoDb::seqlevels(gtf)) 
   }
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
@@ -306,8 +306,8 @@ plotUniprotKBFeatures <- function(events, type, event_id, gtf,
   }
   
   #Check chr to seqnames - necessary for Gviz plots
-  if(any(!grepl("chr", seqlevels(gtf)))){
-    GenomeInfoDb::seqlevels(gtf) <- paste0("chr", seqlevels(gtf)) 
+  if(any(!grepl("chr", GenomeInfoDb::seqlevels(gtf)))){
+    GenomeInfoDb::seqlevels(gtf) <- paste0("chr", GenomeInfoDb::seqlevels(gtf)) 
   }
   
   #Check and remove non-standard chr

@@ -2,7 +2,7 @@ Package: maser
 Type: Package
 Title: Map Alternative Splicing Events to pRoteins
 Version: 0.99.0
-Authors@R: person("Diogo", "Veiga", email = "Diogo.Veiga@jax.org",
+Authors@R: person("Diogo", "Veiga", email = "diogof.veiga@gmail.com",
                   role = c("aut", "cre"))
 Description: This package provides functionalities for annotation and 
     visualizaton of alternative splice events.
@@ -18,13 +18,17 @@ Imports:
     reshape2,
     Gviz,
     DT,
-    AnnotationHub,
-    GenomeInfoDb
+    GenomeInfoDb,
+    stats,
+    utils,
+    IRanges,
+    methods
 Suggests:
     testthat,
     knitr,
     rmarkdown,
-    BiocStyle
+    BiocStyle,
+    AnnotationHub
 VignetteBuilder: knitr
 URL: https://github.com/DiogoVeiga/maser
 BugReports: https://github.com/DiogoVeiga/maser/issues

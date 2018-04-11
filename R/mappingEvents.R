@@ -60,6 +60,8 @@ mapProteinFeaturesToEvents <- function(events, tracks, by = "feature"){
     features <- tracks
   }
   
+  Category <- NULL
+  
   if(by == "category"){
     
     if (!any(tracks %in% as.vector(df$Category))){
@@ -278,9 +280,11 @@ mapTranscriptsToEvents <- function(events, gtf){
     stop(cat("\"gtf\" should be a GRanges object."))
   }
   
+
   #Add chr to seqnames - necessary for Gviz plots and compatible with maser()
-  if(any(!grepl("chr", seqlevels(gtf)))){
-    GenomeInfoDb::seqlevels(gtf) <- paste0("chr", seqlevels(gtf)) 
+  if(any(!grepl("chr", GenomeInfoDb::seqlevels(gtf)))){
+    GenomeInfoDb::seqlevels(gtf) <- paste0("chr", 
+                                           GenomeInfoDb::seqlevels(gtf)) 
   }
   
   gtf_exons <- gtf[gtf$type=="exon",]
@@ -390,14 +394,14 @@ mapTranscriptsSEevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   
   #obtain intron range for inclusion event and skipping event
   intron.skipping <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_target),
-                                            ranges = IRanges(
+                                            ranges = IRanges::IRanges(
                                               start = end(eventGr$exon_upstream) + 1,  
                                               end = start(eventGr$exon_downstream) - 1),
                                             strand = strand(eventGr$exon_target)
   )
   
   intron.inclusion <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_target),
-                                             ranges = IRanges(
+                                             ranges = IRanges::IRanges(
                                                start = c(end(eventGr$exon_upstream) + 1,
                                                          end(eventGr$exon_target) + 1),  
                                                end = c(start(eventGr$exon_target) - 1,
@@ -456,7 +460,7 @@ mapTranscriptsRIevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   
   #obtain intron range from the retention event
   intron <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_ir),
-                                   ranges = IRanges(
+                                   ranges = IRanges::IRanges(
                                      start = end(eventGr$exon_upstream) + 1,  
                                      end = start(eventGr$exon_downstream) - 1),
                                    strand = strand(eventGr$exon_ir)
@@ -505,7 +509,7 @@ mapTranscriptsMXEevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   
   #obtain intron range for inclusion event and skipping event
   intron.mxe.exon1 <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_1),
-                                             ranges = IRanges(
+                                             ranges = IRanges::IRanges(
                                                start = c(end(eventGr$exon_upstream) + 1,
                                                          end(eventGr$exon_1) + 1),  
                                                end = c(start(eventGr$exon_1) - 1,
@@ -515,7 +519,7 @@ mapTranscriptsMXEevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   )
   
   intron.mxe.exon2 <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_2),
-                                             ranges = IRanges(
+                                             ranges = IRanges::IRanges(
                                                start = c(end(eventGr$exon_upstream) + 1,
                                                          end(eventGr$exon_2) + 1),  
                                                end = c(start(eventGr$exon_2) - 1,
@@ -578,14 +582,14 @@ mapTranscriptsA5SSevent <- function(eventGr, gtf_exons){
   
   #obtain intron range for short event and long event
   intron.short <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_short),
-                                         ranges = IRanges(
+                                         ranges = IRanges::IRanges(
                                            start = end(eventGr$exon_short) + 1,  
                                            end = start(eventGr$exon_flanking) - 1),
                                          strand = strand(eventGr$exon_short)
   )
   
   intron.long <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_long),
-                                        ranges = IRanges(
+                                        ranges = IRanges::IRanges(
                                           start = end(eventGr$exon_long) + 1,  
                                           end = start(eventGr$exon_flanking) - 1),
                                         strand = strand(eventGr$exon_long)
@@ -632,14 +636,14 @@ mapTranscriptsA3SSevent <- function(eventGr, gtf_exons){
   
   #obtain intron range for short event and long event
   intron.short <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_short),
-                                         ranges = IRanges(
+                                         ranges = IRanges::IRanges(
                                            start = end(eventGr$exon_flanking) + 1,  
                                            end = start(eventGr$exon_short) - 1),
                                          strand = strand(eventGr$exon_short)
   )
   
   intron.long <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_long),
-                                        ranges = IRanges(
+                                        ranges = IRanges::IRanges(
                                           start = end(eventGr$exon_flanking) + 1,  
                                           end = start(eventGr$exon_long) - 1),
                                         strand = strand(eventGr$exon_long)

@@ -11,6 +11,9 @@
 
 \item{...}{further arguments.}
 }
+\value{
+a character.
+}
 \description{
 Print a maser object.
 }

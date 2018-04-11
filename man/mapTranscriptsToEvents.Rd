@@ -66,11 +66,11 @@ path <- system.file("extdata", file.path("MATS_output"), package = "maser")
 hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 
-## Retrieve Ensembl GTF annotation
-ah <- AnnotationHub::AnnotationHub()
-qhs <- AnnotationHub::query(ah, c("Ensembl", "gene", "annotation", "grch38")) 
-ens_gtf <- qhs[["AH51014"]] #Homo_sapiens.GRCh38.85.gtf 
-
+## Ensembl GTF annotation for SRSF6
+gtf_path <- system.file("extdata", file.path("GTF", "SRSF6_Ensembl85.gtf"),
+ package = "maser")
+ens_gtf <- rtracklayer::import.gff(gtf_path)
+ 
 ## Retrieve gene specific splice events
 srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6")
 

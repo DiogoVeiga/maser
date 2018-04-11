@@ -74,7 +74,10 @@ path <- system.file("extdata", file.path("MATS_output"), package = "maser")
 hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 
-## Retrieve Ensembl GTF annotation
+## Ensembl GTF annotation for SRSF6
+ gtf_path <- system.file("extdata", file.path("GTF", 
+   "SRSF6_Ensembl85.gtf"), package = "maser")
+ ens_gtf <- rtracklayer::import.gff(gtf_path)
 
 ## Retrieve gene specific splice events
 srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6")

@@ -9,10 +9,11 @@ plotGenePSI(events, type, show_replicates = TRUE)
 \arguments{
 \item{events}{a maser object.}
 
-\item{type}{character indicating splice type. Possible values are
-\code{c("A3SS", "A5SS", "SE", "RI", "MXE")}}
+\item{type}{character indicating splice type. Possible values 
+are \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}}
 
-\item{show_replicates}{logical, add data points for individual replicates}
+\item{show_replicates}{logical, add data points for individual
+replicates}
 }
 \value{
 a ggplot object.

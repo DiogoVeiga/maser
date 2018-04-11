@@ -9,9 +9,11 @@ mapProteinFeaturesToEvents(events, tracks, by = "feature")
 \arguments{
 \item{events}{a maser object with transcript and protein identifiers.}
 
-\item{tracks}{a character vector indicating valid UniprotKB features or categories.}
+\item{tracks}{a character vector indicating valid UniprotKB features or 
+categories.}
 
-\item{by}{a character vector, possible values are \code{c("feature", "category")}.}
+\item{by}{a character vector, possible values 
+are \code{c("feature", "category")}.}
 }
 \value{
 a maser object with protein feature annotation.
@@ -20,19 +22,21 @@ a maser object with protein feature annotation.
 Mapping of splice events to UniprotKB protein features.
 }
 \details{
-This function performs mapping of splicing events to protein features
-available in the UniprotKB database. Annotation tracks of protein features
-mapped to the hg38 build of the human genome are retrieved from the public 
-UniprotKB FTP. The function will overlap exons involved in the splice event 
-with the feature genomic coordinates retrieved from UniprotKB.
+This function performs mapping of splicing events to protein
+ features available in the UniprotKB database. Annotation tracks of protein
+ features mapped to the hg38 build of the human genome are retrieved from the
+ public UniprotKB FTP. The function will overlap exons involved in the splice
+ event with the feature genomic coordinates retrieved from UniprotKB.
 
 Annotation can be executed either by feature or category. If categories are 
-provided, all features within the category group will be included for annotation.
+provided, all features within the category group will be included for 
+annotation.
 
 Thus, batch annotation is enabled either by using \code{by = category} or 
 by providing mutilple features in the \code{tracks} argument.
 
-Visualization of protein features can be done using \code{\link{plotUniprotKBFeatures}}.
+Visualization of protein features can be done 
+using \code{\link{plotUniprotKBFeatures}}.
 }
 \examples{
 ## Create the maser object

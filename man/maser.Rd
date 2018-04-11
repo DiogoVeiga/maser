@@ -9,9 +9,11 @@ maser(path, cond_labels, rtype = "ReadsOnTargetAndJunction")
 \arguments{
 \item{path}{a character specifiying the folder containing rMATS output files.}
 
-\item{cond_labels}{a character vector of length 2 describing labels for experimental conditions.}
+\item{cond_labels}{a character vector of length 2 describing labels for 
+experimental conditions.}
 
-\item{rtype}{a character indicating the read type. Possible values are \code{c("ReadsOnTargetAndJunction", "JunctionCountOnly")}.}
+\item{rtype}{a character indicating the read type. Possible values 
+are \code{c("ReadsOnTargetAndJunction", "JunctionCountOnly")}.}
 }
 \value{
 A maser object.

@@ -14,7 +14,8 @@ plotTranscripts(events, type, event_id, gtf, zoom = FALSE, show_PSI = TRUE)
 
 \item{event_id}{numeric, event identifier.}
 
-\item{gtf}{a \code{GRanges}, Ensembl or Gencode GTF using the hg38 build of the human genome.}
+\item{gtf}{a \code{GRanges}, Ensembl or Gencode GTF using the hg38 build
+of the human genome.}
 
 \item{zoom}{logical, zoom to the genomic coordinates of the splice event.}
 
@@ -27,29 +28,32 @@ a Gviz object.
 Mapping and visualization of Ensembl transcripts affected by splicing.
 }
 \details{
-This is a wrapper function for performing both mapping and visualization
- of Ensembl transcripts that are compatible with the splice event. This function
- calls \code{\link{mapTranscriptsToEvents}} for transcript mapping, which in 
- turn uses \code{\link[GenomicRanges:findOverlaps]{GenomicRanges}} for transcript
- overlapping. The \code{\link[Gviz:plotTracks]{GViz}} package is used for creating
- annotation tracks for genomic visualization of splice events. 
+This is a wrapper function for performing both mapping and 
+visualization of Ensembl transcripts that are compatible with the splice 
+event. This function calls \code{\link{mapTranscriptsToEvents}} for 
+transcript mapping, which in turn 
+uses \code{\link[GenomicRanges:findOverlaps]{GenomicRanges}} for transcript
+ overlapping. The \code{\link[Gviz:plotTracks]{GViz}} package is used for 
+ creating annotation tracks for genomic visualization of splice events. 
  
- Each type of splice event requires a specific overlapping rule (described below),
- and a customized \code{Gviz} plot is created for each splicing type.
+ Each type of splice event requires a specific overlapping rule 
+ (described below), #'  and a customized \code{Gviz} plot is created for 
+ each splicing type.
   
   \describe{
     \item{\strong{Exon skipping}}{}
-    \item{Inclusion track}{Transcript(s) overlapping the cassette exon, as well 
-                           both flanking exons (i.e upstream and downstream exons).}
-    \item{Skipping track}{Transcript(s) overlapping both flanking exons but not the
-                           cassettte exon.}
+    \item{Inclusion track}{Transcript(s) overlapping the cassette exon,
+     as well both flanking exons (i.e upstream and downstream exons).}
+    \item{Skipping track}{Transcript(s) overlapping both flanking exons but
+     not the cassettte exon.}
   }
   
   \describe{
     \item{\strong{Intron retention}}{}
-    \item{Retention track}{Transcript(s) overlapping exactly the retained intron.}
-    \item{Skipping track}{Transcript(s) where intron is spliced out and overlapping
-                             both flanking exons.}
+    \item{Retention track}{Transcript(s) overlapping exactly the retained
+     intron.}
+    \item{Skipping track}{Transcript(s) where intron is spliced out and 
+    overlapping both flanking exons.}
   }
   
   \describe{
@@ -64,8 +68,8 @@ This is a wrapper function for performing both mapping and visualization
     \item{\strong{Alternative 3' and 5' splice sites}}{}
     \item{Short exon track}{Transcript(s) overlapping both short and 
                        downstream exons.}
-    \item{Long exon track}{Transcript(s) overlapping both long and downstream 
-                          exons.}
+    \item{Long exon track}{Transcript(s) overlapping both long and 
+    downstream exons.}
   }
 }
 \examples{

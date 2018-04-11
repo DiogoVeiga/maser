@@ -43,10 +43,13 @@ boxplot_PSI_levels <- function(events, type){
         theme_bw() +
         theme(axis.text.x = element_text(size=12, angle = 45, hjust = 1),
               axis.text.y = element_text(size=12),
-              axis.title.x = element_text(face="plain", colour="black", size=12),
-              axis.title.y = element_text(face="plain", colour="black", size=12),
+              axis.title.x = element_text(face="plain", colour="black", 
+                                          size=12),
+              axis.title.y = element_text(face="plain", colour="black", 
+                                          size=12),
               legend.title=element_blank(),
-              legend.text = element_text(face="plain", colour="black", size=12)) +
+              legend.text = element_text(face="plain", colour="black", 
+                                         size=12)) +
         ylab(paste(type, "PSI")) +
         xlab("Sample") +
         scale_y_continuous(limits=c(-0.1, 1.05)) +
@@ -87,7 +90,8 @@ splicingDistribution <- function(events, fdr = 0.05, deltaPSI = 0.1){
 
         stats <- events[[paste0(as_types[i],"_","stats")]]
         cond1 <- dplyr::filter(stats, FDR < fdr, IncLevelDifference > deltaPSI)
-        cond2 <- dplyr::filter(stats, FDR < fdr, IncLevelDifference < (-1*deltaPSI))
+        cond2 <- dplyr::filter(stats, FDR < fdr, IncLevelDifference < 
+                                 (-1*deltaPSI))
 
         nevents_cond1[i] <- length(cond1$ID)
         nevents_cond2[i] <- length(cond2$ID)
@@ -108,12 +112,17 @@ splicingDistribution <- function(events, fdr = 0.05, deltaPSI = 0.1){
                         colour = Type, fill = Type)) +
         geom_bar(stat = "identity") +
         theme_bw() +
-        theme(axis.text.y = element_text(size=12, angle = 0, hjust = 0.5, face = "plain"),
-              axis.text.x = element_text(size=12, angle = 0, hjust = 0.5, face = "plain"),
-              axis.title.x = element_text(face="plain", colour="black", size=12),
-              axis.title.y = element_text(face="plain", colour="black", size=12),
+        theme(axis.text.y = element_text(size=12, angle = 0, hjust = 0.5,
+                                         face = "plain"),
+              axis.text.x = element_text(size=12, angle = 0, hjust = 0.5,
+                                         face = "plain"),
+              axis.title.x = element_text(face="plain", colour="black",
+                                          size=12),
+              axis.title.y = element_text(face="plain", colour="black",
+                                          size=12),
               legend.title=element_blank(),
-              legend.text = element_text(face="plain", colour="black", size=12),
+              legend.text = element_text(face="plain", colour="black",
+                                         size=12),
               panel.grid=element_blank()
         ) +
         ylab("Proportion of splicing events") +
@@ -153,7 +162,8 @@ volcano <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
 
     stats <- events[[paste0(type,"_","stats")]]
     cond1 <- dplyr::filter(stats, FDR < fdr, IncLevelDifference > deltaPSI)
-    cond2 <- dplyr::filter(stats, FDR < fdr, IncLevelDifference < (-1*deltaPSI))
+    cond2 <- dplyr::filter(stats, FDR < fdr, IncLevelDifference < 
+                             (-1*deltaPSI))
 
     status <- rep("Not significant", times = nrow(stats))
     status[stats$ID %in% cond1$ID] <- events$conditions[1]
@@ -182,9 +192,12 @@ volcano <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
         geom_point(aes(colour = Status)) +
         scale_colour_manual(values = colors) +
         theme_bw() +
-        theme(axis.text.x = element_text(size=12), axis.text.y = element_text(size=12),
-              axis.title.x = element_text(face="plain", colour="black", size=12),
-              axis.title.y = element_text(face="plain", colour="black", size=12),
+        theme(axis.text.x = element_text(size=12), axis.text.y = 
+                element_text(size=12),
+              axis.title.x = element_text(face="plain", colour="black", 
+                                          size=12),
+              axis.title.y = element_text(face="plain", colour="black", 
+                                          size=12),
               panel.grid.minor = element_blank(),
               plot.background = element_blank()
         ) +
@@ -221,7 +234,8 @@ dotplot <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
     
     stats <- events[[paste0(type,"_","stats")]]
     cond1 <- dplyr::filter(stats, FDR < fdr, IncLevelDifference > deltaPSI)
-    cond2 <- dplyr::filter(stats, FDR < fdr, IncLevelDifference < (-1*deltaPSI))
+    cond2 <- dplyr::filter(stats, FDR < fdr, IncLevelDifference < 
+                             (-1*deltaPSI))
 
     idx.cond1 <- seq(1, events$n_cond1, 1)
     idx.cond2 <- seq(events$n_cond1+1, events$n_cond1+events$n_cond2, 1)
@@ -250,9 +264,12 @@ dotplot <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
         geom_point(aes(colour = Status)) +
         scale_colour_manual(values = colors) +
         theme_bw() +
-        theme(axis.text.x = element_text(size=12), axis.text.y = element_text(size=12),
-              axis.title.x = element_text(face="plain", colour="black", size=12),
-              axis.title.y = element_text(face="plain", colour="black", size=12),
+        theme(axis.text.x = element_text(size=12), axis.text.y = 
+                element_text(size=12),
+              axis.title.x = element_text(face="plain", colour="black",
+                                          size=12),
+              axis.title.y = element_text(face="plain", colour="black",
+                                          size=12),
               panel.grid.minor = element_blank(),
               plot.background = element_blank()
               ) +
@@ -323,9 +340,12 @@ pca <- function(events, type){
         #geom_text(vjust = 1, hjust = 0) +
         scale_colour_manual(values = c("blue", "red")) +
         theme_bw() +
-        theme(axis.text.x = element_text(size=12), axis.text.y = element_text(size=12),
-              axis.title.x = element_text(face="plain", colour="black", size=12),
-              axis.title.y = element_text(face="plain", colour="black", size=12),
+        theme(axis.text.x = element_text(size=12), axis.text.y = 
+                element_text(size=12),
+              axis.title.x = element_text(face="plain", colour="black", 
+                                          size=12),
+              axis.title.y = element_text(face="plain", colour="black", 
+                                          size=12),
               panel.grid.minor = element_blank(),
               panel.grid.major = element_blank(),
               plot.background = element_blank(),
@@ -337,12 +357,13 @@ pca <- function(events, type){
 
 }
 
-viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI", "MXE"), 
-                                n = 20){
+viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI",
+                                                  "MXE"), n = 20){
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
   if (any(!types %in% as_types)){
-    stop(cat("\"type\" should be one or a combination of the following: ", as_types))
+    stop(cat("\"type\" should be one or a combination of the following: ",
+             as_types))
   }
   
   type <- NULL

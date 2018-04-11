@@ -11,7 +11,8 @@ createGRangesUniprotKBtrack <- function(track_name){
   }
   
   track <- dplyr::filter(track_df, Name %in% track_name)
-  bed <- read.table(as.character(track$URL), header = FALSE, sep = "\t", quote = NULL,
+  bed <- read.table(as.character(track$URL), header = FALSE, sep = "\t", 
+                    quote = NULL,
                     stringsAsFactors = FALSE)
   
   colnames(bed)[1:6] <- c("chr", "start", "end", "Uniprot_ID", "V5", "strand") 
@@ -44,7 +45,10 @@ createGRangesUniprotKBtrack <- function(track_name){
 availableFeaturesUniprotKB <- function(){
   
   Name <- NULL
-  trackMetadata <- "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/genome_annotation_tracks/UP000005640_9606_tracks.txt"
+  trackMetadata <- paste0("ftp://ftp.uniprot.org/pub/databases/uniprot/",
+                    "current_release/knowledgebase/genome_annotation_tracks/",
+                    "UP000005640_9606_tracks.txt")
+  
   data <- readLines(trackMetadata)
   
   track_df <- data.frame()
@@ -96,7 +100,10 @@ availableFeaturesUniprotKB <- function(){
 
 urlTracksUniprotKB <- function(){
   
-  trackMetadata <- "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/genome_annotation_tracks/UP000005640_9606_tracks.txt"
+  trackMetadata <- paste0("ftp://ftp.uniprot.org/pub/databases/uniprot/",
+    "current_release/knowledgebase/genome_annotation_tracks/",
+    "UP000005640_9606_tracks.txt")
+  
   data <- readLines(trackMetadata)
   
   track_df <- data.frame()

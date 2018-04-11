@@ -23,6 +23,6 @@ Filter splice events based on false discovery rate and PSI change.
 path <- system.file("extdata", file.path("MATS_output"), package = "maser")
 hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 
-## To select all events with minimum 10\% change in PSI, and FDR lower than 0.01 
+## To select all events with minimum 10\% change in PSI, and FDR < 0.01 
 hypoxia_top <- topEvents(hypoxia, fdr = 0.01, deltaPSI = 0.1)
 }

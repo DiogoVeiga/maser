@@ -15,7 +15,8 @@ plotUniprotKBFeatures(events, type, event_id, gtf, features, zoom = FALSE,
 
 \item{event_id}{numeric, event identifier.}
 
-\item{gtf}{a \code{GRanges}, Ensembl or Gencode GTF using the hg38 build of the human genome.}
+\item{gtf}{a \code{GRanges}, Ensembl or Gencode GTF using the hg38 build of
+the human genome.}
 
 \item{features}{a character vector indicating valid UniprotKB features.}
 
@@ -30,10 +31,10 @@ a Gviz object.
 Mapping and visualization of UniprotKB protein features affected by splicing.
 }
 \details{
-This is a wrapper function for performing both mapping and visualization
- of protein features affected by the splice event. This function
- calls \code{\link{mapProteinFeaturesToEvents}} for mapping of protein features to 
- splice events. 
+This is a wrapper function for performing both mapping and 
+visualization of protein features affected by the splice event. This function
+ calls \code{\link{mapProteinFeaturesToEvents}} for mapping of protein
+ features to splice events. 
  
 The \code{\link[Gviz:plotTracks]{GViz}} package is used for creating
  annotation tracks for genomic visualization. 

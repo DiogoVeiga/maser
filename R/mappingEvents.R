@@ -1,22 +1,26 @@
 #' Mapping of splice events to UniprotKB protein features.
 #' 
 #' @param events a maser object with transcript and protein identifiers.
-#' @param tracks a character vector indicating valid UniprotKB features or categories.
-#' @param by a character vector, possible values are \code{c("feature", "category")}.
+#' @param tracks a character vector indicating valid UniprotKB features or 
+#' categories.
+#' @param by a character vector, possible values 
+#' are \code{c("feature", "category")}.
 #' @return a maser object with protein feature annotation.
-#' @details This function performs mapping of splicing events to protein features
-#' available in the UniprotKB database. Annotation tracks of protein features
-#' mapped to the hg38 build of the human genome are retrieved from the public 
-#' UniprotKB FTP. The function will overlap exons involved in the splice event 
-#' with the feature genomic coordinates retrieved from UniprotKB.
+#' @details This function performs mapping of splicing events to protein
+#'  features available in the UniprotKB database. Annotation tracks of protein
+#'  features mapped to the hg38 build of the human genome are retrieved from the
+#'  public UniprotKB FTP. The function will overlap exons involved in the splice
+#'  event with the feature genomic coordinates retrieved from UniprotKB.
 #' 
 #' Annotation can be executed either by feature or category. If categories are 
-#' provided, all features within the category group will be included for annotation.
+#' provided, all features within the category group will be included for 
+#' annotation.
 #' 
 #' Thus, batch annotation is enabled either by using \code{by = category} or 
 #' by providing mutilple features in the \code{tracks} argument.
 #' 
-#' Visualization of protein features can be done using \code{\link{plotUniprotKBFeatures}}.
+#' Visualization of protein features can be done 
+#' using \code{\link{plotUniprotKBFeatures}}.
 #'  
 #' @examples
 #' ## Create the maser object
@@ -125,7 +129,8 @@ mapProteinFeaturesToEvents <- function(events, tracks, by = "feature"){
     }#all events
     
     #write annotation to maser object
-    events_with_features[[paste0(type,"_","events")]] <- cbind(annot, annot_uniprotkb)
+    events_with_features[[paste0(type,"_","events")]] <- 
+      cbind(annot, annot_uniprotkb)
 
   }#all types
   
@@ -179,9 +184,11 @@ mapProteinsToEvents <- function(events){
     for (i in 1:nrow(annot)) {
       
       
-      list_ptn_a <- c(list_ptn_a, paste(mapENSTtoUniprotKB(annot[i,idx.cols[1]]), 
+      list_ptn_a <- c(list_ptn_a, paste(mapENSTtoUniprotKB(
+                                        annot[i,idx.cols[1]]), 
                                         collapse = ","))
-      list_ptn_b <- c(list_ptn_b, paste(mapENSTtoUniprotKB(annot[i,idx.cols[2]]), 
+      list_ptn_b <- c(list_ptn_b, paste(mapENSTtoUniprotKB(
+                                        annot[i,idx.cols[2]]), 
                                         collapse = ","))
       
     } #for all events in annot
@@ -202,48 +209,52 @@ mapProteinsToEvents <- function(events){
 #' Mapping of splice events to Ensembl transcripts.
 #' 
 #' @param events a maser object.
-#' @param gtf a \code{GRanges} object obtained from an Ensembl or Gencode GTF file using the hg38 build of the human genome.
+#' @param gtf a \code{GRanges} object obtained from an Ensembl or Gencode GTF
+#'  file using the hg38 build of the human genome.
 #' @return a maser object with transcript and protein identifiers.
 #' @details This function performs mapping of splice events in the maser object
 #'  to Ensembl transcripts by overlapping exons involved in the splice event to
 #'  the transcript models provided in the GTF. 
 #'  
-#'  Each type of splice event requires a specific mapping procedure (described below).
+#'  Each type of splice event requires a specific mapping procedure
+#'   (described below).
 #'  
 #'  The mapping will also add Uniprot identifiers when the ENST transcript 
 #'  encodes for a protein. 
 #'    
-#'  Visualization of affected transcripts can be done using \code{\link{plotTranscripts}}.
+#'  Visualization of affected transcripts can be done 
+#'  using \code{\link{plotTranscripts}}.
 #'  
 #'   \describe{
 #'     \item{\strong{Exon skipping}}{}
-#'     \item{Inclusion transcript(s)}{Transcript(s) overlapping the cassette exon, as well 
-#'                            both flanking exons (i.e upstream and downstream exons).}
-#'     \item{Skipping transcript(s)}{Transcript(s) overlapping both flanking exons but not the
-#'                            cassettte exon.}
+#'     \item{Inclusion transcript(s)}{Transcript(s) overlapping the cassette
+#'      exon, as well both flanking exons (i.e upstream and downstream exons).}
+#'     \item{Skipping transcript(s)}{Transcript(s) overlapping both flanking 
+#'     exons but not the cassettte exon.}
 #'   }
 #'   
 #'   \describe{
 #'     \item{\strong{Intron retention}}{}
-#'     \item{Retention transcript(s)}{Transcript(s) overlapping exactly the retained intron.}
-#'     \item{Skipping transcript(s)}{Transcript(s) where intron is spliced out and overlapping
-#'                              both flanking exons.}
+#'     \item{Retention transcript(s)}{Transcript(s) overlapping exactly the
+#'      retained intron.}
+#'     \item{Skipping transcript(s)}{Transcript(s) where intron is spliced out
+#'      and overlapping both flanking exons.}
 #'   }
 #'   
 #'   \describe{
 #'   \item{\strong{Mutually exclusive exons}}{}
-#'     \item{Exon1 transcript(s)}{Transcript(s) overlapping the first exon and both 
-#'                       flanking exons.}
-#'     \item{Exon2 transcript(s)}{Transcript(s) overlapping the second exon and both
-#'                        flanking exons.}
+#'     \item{Exon1 transcript(s)}{Transcript(s) overlapping the first exon 
+#'     and both flanking exons.}
+#'     \item{Exon2 transcript(s)}{Transcript(s) overlapping the second exon and
+#'      both flanking exons.}
 #'   }
 #'   
 #'   \describe{
 #'     \item{\strong{Alternative 3' and 5' splice sites}}{}
 #'     \item{Short exon transcript(s)}{Transcript(s) overlapping both short and 
 #'                        downstream exons.}
-#'     \item{Long exon transcript(s)}{Transcript(s) overlapping both long and downstream 
-#'                           exons.}
+#'     \item{Long exon transcript(s)}{Transcript(s) overlapping both long and
+#'      downstream exons.}
 #'   }
 #'   
 #' @examples
@@ -325,14 +336,18 @@ mapTranscriptsToEvents <- function(events, gtf){
       
       if(type == "MXE") {
         tx_ids <- mapTranscriptsMXEevent(eventGr, gtf_exons, is_strict)
-        list_txn_a <- c(list_txn_a, paste(tx_ids$txn_mxe_exon1, collapse = ",") )
-        list_txn_b <- c(list_txn_b, paste(tx_ids$txn_mxe_exon2, collapse = ",") )
+        list_txn_a <- c(list_txn_a, paste(tx_ids$txn_mxe_exon1, 
+                                          collapse = ",") )
+        list_txn_b <- c(list_txn_b, paste(tx_ids$txn_mxe_exon2, 
+                                          collapse = ",") )
       }
       
       if(type == "RI") {
         tx_ids <- mapTranscriptsRIevent(eventGr, gtf_exons, is_strict)
-        list_txn_a <- c(list_txn_a, paste(tx_ids$txn_nonRetention, collapse = ",") )
-        list_txn_b <- c(list_txn_b, paste(tx_ids$txn_retention, collapse = ",") )
+        list_txn_a <- c(list_txn_a, paste(tx_ids$txn_nonRetention, 
+                                          collapse = ",") )
+        list_txn_b <- c(list_txn_b, paste(tx_ids$txn_retention, 
+                                          collapse = ",") )
       }
       
       if(type == "A5SS") {
@@ -393,41 +408,45 @@ mapTranscriptsSEevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   mytx.ids.e3 <- gtf_exons$transcript_id[subjectHits(ovl.e3)]
   
   #obtain intron range for inclusion event and skipping event
-  intron.skipping <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_target),
-                                            ranges = IRanges::IRanges(
-                                              start = end(eventGr$exon_upstream) + 1,  
-                                              end = start(eventGr$exon_downstream) - 1),
-                                            strand = strand(eventGr$exon_target)
+  intron.skipping <- GenomicRanges::GRanges(
+                                     seqnames = seqnames(eventGr$exon_target),
+                                     ranges = IRanges::IRanges(
+                                     start = end(eventGr$exon_upstream) + 1,  
+                                     end = start(eventGr$exon_downstream) - 1),
+                                     strand = strand(eventGr$exon_target)
   )
   
-  intron.inclusion <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_target),
-                                             ranges = IRanges::IRanges(
-                                               start = c(end(eventGr$exon_upstream) + 1,
-                                                         end(eventGr$exon_target) + 1),  
-                                               end = c(start(eventGr$exon_target) - 1,
-                                                       start(eventGr$exon_downstream) -1)
+  intron.inclusion <- GenomicRanges::GRanges(
+                                     seqnames = seqnames(eventGr$exon_target),
+                                     ranges = IRanges::IRanges(
+                                     start = c(end(eventGr$exon_upstream) + 1,
+                                                end(eventGr$exon_target) + 1),  
+                                     end = c(start(eventGr$exon_target) - 1,
+                                             start(eventGr$exon_downstream) -1)
                                              ),
-                                             strand = strand(eventGr$exon_target)
+                                     strand = strand(eventGr$exon_target)
   )
   
   #find transcripts with exons overlapping intronic regions
   ovl.intron.inclusion <- GenomicRanges::findOverlaps(intron.inclusion, 
                                                       gtf_exons, type = "any")
-  mytx.ids.intron.inclusion <- gtf_exons$transcript_id[subjectHits(ovl.intron.inclusion)]
+  mytx.ids.intron.inclusion <- 
+    gtf_exons$transcript_id[subjectHits(ovl.intron.inclusion)]
   
   ovl.intron.skipping <- GenomicRanges::findOverlaps(intron.skipping, 
                                                      gtf_exons, type = "any")
-  mytx.ids.intron.skipping <- gtf_exons$transcript_id[subjectHits(ovl.intron.skipping)]
+  mytx.ids.intron.skipping <- 
+    gtf_exons$transcript_id[subjectHits(ovl.intron.skipping)]
   
   #decide wich transcripts to plot in inclusion and skipping tracks
   if (is_strict){
-    mytx.ids.3exons <- intersect(mytx.ids.e1, mytx.ids.e3) #has both flaking exons
-    mytx.ids.3exons <- intersect(mytx.ids.3exons, mytx.ids.e2) #and the target exon
+    mytx.ids.3exons <- intersect(mytx.ids.e1, mytx.ids.e3)#has both flank exons
+    mytx.ids.3exons <- intersect(mytx.ids.3exons, mytx.ids.e2) #and target exon
     mytx.ids.2exons <- intersect(mytx.ids.e1, mytx.ids.e3)
     
   }else {
-    mytx.ids.3exons <- union(mytx.ids.e1, mytx.ids.e3) #has either flaking exons
-    mytx.ids.3exons <- intersect(mytx.ids.3exons, mytx.ids.e2) #and the target exon  
+    mytx.ids.3exons <- union(mytx.ids.e1, mytx.ids.e3)#has either flaking exons
+    mytx.ids.3exons <- intersect(mytx.ids.3exons, mytx.ids.e2) #and target exon  
     mytx.ids.2exons <- union(mytx.ids.e1, mytx.ids.e3)
   }
   
@@ -472,10 +491,12 @@ mapTranscriptsRIevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   
   #decide wich transcripts to plot in retention and non-retention tracks
   if (is_strict){
-    tx.ids.nonRetention <- intersect(mytx.ids.e1, mytx.ids.e3) #has both upstream and downstream exons
+    #has both upstream and downstream exons
+    tx.ids.nonRetention <- intersect(mytx.ids.e1, mytx.ids.e3) 
     
   }else {
-    tx.ids.nonRetention <- union(mytx.ids.e1, mytx.ids.e3) #has either upstream and downstream exons
+    #has either upstream and downstream exons
+    tx.ids.nonRetention <- union(mytx.ids.e1, mytx.ids.e3) 
   }
   
   tx.ids.nonRetention <- setdiff(tx.ids.nonRetention, mytx.ids.intron)
@@ -508,47 +529,55 @@ mapTranscriptsMXEevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   mytx.ids.e4 <- gtf_exons$transcript_id[subjectHits(ovl.e4)]
   
   #obtain intron range for inclusion event and skipping event
-  intron.mxe.exon1 <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_1),
-                                             ranges = IRanges::IRanges(
-                                               start = c(end(eventGr$exon_upstream) + 1,
-                                                         end(eventGr$exon_1) + 1),  
-                                               end = c(start(eventGr$exon_1) - 1,
-                                                       start(eventGr$exon_downstream) -1)
-                                             ),
-                                             strand = strand(eventGr$exon_1)
+  intron.mxe.exon1 <- GenomicRanges::GRanges(
+                                    seqnames = seqnames(eventGr$exon_1),
+                                    ranges = IRanges::IRanges(
+                                    start = c(end(eventGr$exon_upstream) + 1,
+                                              end(eventGr$exon_1) + 1),  
+                                    end = c(start(eventGr$exon_1) - 1,
+                                            start(eventGr$exon_downstream) -1)
+                                     ),
+                                    strand = strand(eventGr$exon_1)
   )
   
-  intron.mxe.exon2 <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_2),
-                                             ranges = IRanges::IRanges(
-                                               start = c(end(eventGr$exon_upstream) + 1,
-                                                         end(eventGr$exon_2) + 1),  
-                                               end = c(start(eventGr$exon_2) - 1,
-                                                       start(eventGr$exon_downstream) -1)
+  intron.mxe.exon2 <- GenomicRanges::GRanges(
+                                      seqnames = seqnames(eventGr$exon_2),
+                                      ranges = IRanges::IRanges(
+                                      start = c(end(eventGr$exon_upstream) + 1,
+                                                 end(eventGr$exon_2) + 1),  
+                                      end = c(start(eventGr$exon_2) - 1,
+                                             start(eventGr$exon_downstream) -1)
                                              ),
-                                             strand = strand(eventGr$exon_2)
-  )
+                                      strand = strand(eventGr$exon_2)
+                                      )
   
   #find transcripts with exons overlapping intronic regions
-  ovl.mxe.exon1 <- GenomicRanges::findOverlaps(intron.mxe.exon1, gtf_exons, type = "any")
+  ovl.mxe.exon1 <- GenomicRanges::findOverlaps(intron.mxe.exon1, 
+                                               gtf_exons, type = "any")
   mytx.ids.intron1 <- gtf_exons$transcript_id[subjectHits(ovl.mxe.exon1)]
   
-  ovl.mxe.exon2 <- GenomicRanges::findOverlaps(intron.mxe.exon2, gtf_exons, type = "any")
+  ovl.mxe.exon2 <- GenomicRanges::findOverlaps(intron.mxe.exon2, 
+                                               gtf_exons, type = "any")
   mytx.ids.intron2 <- gtf_exons$transcript_id[subjectHits(ovl.mxe.exon2)]
   
   
   #decide wich transcripts to plot in inclusion and skipping tracks
   if (is_strict){
-    mytx.ids.mxe.exon1 <- intersect(mytx.ids.e3, mytx.ids.e4) #has both flanking exons
+    #has both flanking exons
+    mytx.ids.mxe.exon1 <- intersect(mytx.ids.e3, mytx.ids.e4) 
     mytx.ids.mxe.exon1 <- intersect(mytx.ids.mxe.exon1, mytx.ids.e1) #and exon1
     
-    mytx.ids.mxe.exon2 <- intersect(mytx.ids.e3, mytx.ids.e4) #has both flanking exons
+    #has both flanking exons
+    mytx.ids.mxe.exon2 <- intersect(mytx.ids.e3, mytx.ids.e4) 
     mytx.ids.mxe.exon2 <- intersect(mytx.ids.mxe.exon2, mytx.ids.e2) #and exon2
     
   }else {
-    mytx.ids.mxe.exon1 <- union(mytx.ids.e3, mytx.ids.e4) #has either flanking exons
+    #has either flanking exons
+    mytx.ids.mxe.exon1 <- union(mytx.ids.e3, mytx.ids.e4) 
     mytx.ids.mxe.exon1 <- intersect(mytx.ids.mxe.exon1, mytx.ids.e1) #and exon 1
     
-    mytx.ids.mxe.exon2 <- union(mytx.ids.e3, mytx.ids.e4) #has both flanking exons
+    #has both flanking exons
+    mytx.ids.mxe.exon2 <- union(mytx.ids.e3, mytx.ids.e4) 
     mytx.ids.mxe.exon2 <- intersect(mytx.ids.mxe.exon2, mytx.ids.e2) #and exon2
   }
   
@@ -581,26 +610,30 @@ mapTranscriptsA5SSevent <- function(eventGr, gtf_exons){
   mytx.ids.e3 <- gtf_exons$transcript_id[subjectHits(ovl.e3)]
   
   #obtain intron range for short event and long event
-  intron.short <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_short),
-                                         ranges = IRanges::IRanges(
-                                           start = end(eventGr$exon_short) + 1,  
-                                           end = start(eventGr$exon_flanking) - 1),
-                                         strand = strand(eventGr$exon_short)
+  intron.short <- GenomicRanges::GRanges(
+                                      seqnames = seqnames(eventGr$exon_short),
+                                      ranges = IRanges::IRanges(
+                                      start = end(eventGr$exon_short) + 1,  
+                                      end = start(eventGr$exon_flanking) - 1),
+                                      strand = strand(eventGr$exon_short)
   )
   
   intron.long <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_long),
                                         ranges = IRanges::IRanges(
-                                          start = end(eventGr$exon_long) + 1,  
-                                          end = start(eventGr$exon_flanking) - 1),
+                                        start = end(eventGr$exon_long) + 1,  
+                                        end = start(eventGr$exon_flanking) - 1),
                                         strand = strand(eventGr$exon_long)
   )
   
   
   #find transcripts with exons overlapping intronic regions
-  ovl.intron.short <- GenomicRanges::findOverlaps(intron.short, gtf_exons, type = "any")
-  mytx.ids.intron.short <- gtf_exons$transcript_id[subjectHits(ovl.intron.short)]
+  ovl.intron.short <- GenomicRanges::findOverlaps(intron.short, 
+                                                  gtf_exons, type = "any")
+  mytx.ids.intron.short <- 
+    gtf_exons$transcript_id[subjectHits(ovl.intron.short)]
   
-  ovl.intron.long <- GenomicRanges::findOverlaps(intron.long, gtf_exons, type = "any")
+  ovl.intron.long <- GenomicRanges::findOverlaps(intron.long, 
+                                                 gtf_exons, type = "any")
   mytx.ids.intron.long <- gtf_exons$transcript_id[subjectHits(ovl.intron.long)]
   
   #decide wich transcripts to plot in short and long tracks
@@ -635,25 +668,29 @@ mapTranscriptsA3SSevent <- function(eventGr, gtf_exons){
   mytx.ids.e3 <- gtf_exons$transcript_id[subjectHits(ovl.e3)]
   
   #obtain intron range for short event and long event
-  intron.short <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_short),
-                                         ranges = IRanges::IRanges(
-                                           start = end(eventGr$exon_flanking) + 1,  
-                                           end = start(eventGr$exon_short) - 1),
-                                         strand = strand(eventGr$exon_short)
+  intron.short <- GenomicRanges::GRanges(
+                                      seqnames = seqnames(eventGr$exon_short),
+                                      ranges = IRanges::IRanges(
+                                      start = end(eventGr$exon_flanking) + 1,  
+                                      end = start(eventGr$exon_short) - 1),
+                                      strand = strand(eventGr$exon_short)
   )
   
   intron.long <- GenomicRanges::GRanges(seqnames = seqnames(eventGr$exon_long),
-                                        ranges = IRanges::IRanges(
-                                          start = end(eventGr$exon_flanking) + 1,  
-                                          end = start(eventGr$exon_long) - 1),
-                                        strand = strand(eventGr$exon_long)
+                                      ranges = IRanges::IRanges(
+                                      start = end(eventGr$exon_flanking) + 1,  
+                                      end = start(eventGr$exon_long) - 1),
+                                      strand = strand(eventGr$exon_long)
   )  
   
   #find transcripts with exons overlapping intronic regions
-  ovl.intron.short <- GenomicRanges::findOverlaps(intron.short, gtf_exons, type = "any")
-  mytx.ids.intron.short <- gtf_exons$transcript_id[subjectHits(ovl.intron.short)]
+  ovl.intron.short <- GenomicRanges::findOverlaps(intron.short, 
+                                                  gtf_exons, type = "any")
+  mytx.ids.intron.short <- 
+    gtf_exons$transcript_id[subjectHits(ovl.intron.short)]
   
-  ovl.intron.long <- GenomicRanges::findOverlaps(intron.long, gtf_exons, type = "any")
+  ovl.intron.long <- GenomicRanges::findOverlaps(intron.long, 
+                                                 gtf_exons, type = "any")
   mytx.ids.intron.long <- gtf_exons$transcript_id[subjectHits(ovl.intron.long)]
   
   #decide wich transcripts to plot in short and long tracks

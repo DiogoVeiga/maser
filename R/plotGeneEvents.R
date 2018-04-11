@@ -1,9 +1,10 @@
 #' Boxplots of Percent spliced-in levels for gene events.
 #' 
 #' @param events a maser object.
-#' @param type character indicating splice type. Possible values are
-#'    \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}
-#' @param show_replicates logical, add data points for individual replicates     
+#' @param type character indicating splice type. Possible values 
+#' are \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}
+#' @param show_replicates logical, add data points for individual
+#'  replicates     
 #' @return a ggplot object.
 #' @examples
 #' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
@@ -46,17 +47,18 @@ plotGenePSI <- function(events, type, show_replicates = TRUE){
   
   if (show_replicates){
     
-    ggplot(PSI_long, aes(x = Condition, y = PSI, fill = Condition, color = Condition)) +
+    ggplot(PSI_long, aes(x = Condition, y = PSI, fill = Condition, color = 
+                           Condition)) +
       #geom_boxplot() +
       geom_violin(trim = FALSE, alpha = 0.6) +
       geom_jitter(position=position_jitter(0.05), size = 2) +
       theme_bw() +
       theme(axis.text.x = element_text(size=12, angle = 45, hjust = 1),
-            axis.text.y = element_text(size=12),
-            axis.title.x = element_text(face="plain", colour="black", size=12),
-            axis.title.y = element_text(face="plain", colour="black", size=12),
-            legend.title=element_blank(),
-            legend.text = element_text(face="plain", colour="black", size=12)) +
+          axis.text.y = element_text(size=12),
+          axis.title.x = element_text(face="plain", colour="black", size=12),
+          axis.title.y = element_text(face="plain", colour="black", size=12),
+          legend.title=element_blank(),
+          legend.text = element_text(face="plain", colour="black", size=12)) + 
       ylab(paste(type, "PSI")) +
       #xlab("Sample") +
       scale_y_continuous(limits=c(-0.1, 1.05)) +
@@ -66,7 +68,8 @@ plotGenePSI <- function(events, type, show_replicates = TRUE){
 
   } else{  
   
-  ggplot(PSI_long, aes(x = Condition, y = PSI, fill = Condition, color = Condition)) +
+  ggplot(PSI_long, aes(x = Condition, y = PSI, fill = Condition, color = 
+                         Condition)) +
     #geom_boxplot() +
     geom_violin(trim = FALSE) +
     stat_summary(fun.y=mean, geom="point", size=2, color="black") +
@@ -95,33 +98,37 @@ plotGenePSI <- function(events, type, show_replicates = TRUE){
 #' @param type character indicating splice type. Possible values are
 #'    \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}.
 #' @param event_id numeric, event identifier.
-#' @param gtf a \code{GRanges}, Ensembl or Gencode GTF using the hg38 build of the human genome.
+#' @param gtf a \code{GRanges}, Ensembl or Gencode GTF using the hg38 build
+#'  of the human genome.
 #' @param zoom logical, zoom to the genomic coordinates of the splice event.
 #' @param show_PSI logical, display the PSI track.     
 #' @return a Gviz object.
-#' @details This is a wrapper function for performing both mapping and visualization
-#'  of Ensembl transcripts that are compatible with the splice event. This function
-#'  calls \code{\link{mapTranscriptsToEvents}} for transcript mapping, which in 
-#'  turn uses \code{\link[GenomicRanges:findOverlaps]{GenomicRanges}} for transcript
-#'  overlapping. The \code{\link[Gviz:plotTracks]{GViz}} package is used for creating
-#'  annotation tracks for genomic visualization of splice events. 
+#' @details This is a wrapper function for performing both mapping and 
+#' visualization of Ensembl transcripts that are compatible with the splice 
+#' event. This function calls \code{\link{mapTranscriptsToEvents}} for 
+#' transcript mapping, which in turn 
+#' uses \code{\link[GenomicRanges:findOverlaps]{GenomicRanges}} for transcript
+#'  overlapping. The \code{\link[Gviz:plotTracks]{GViz}} package is used for 
+#'  creating annotation tracks for genomic visualization of splice events. 
 #'  
-#'  Each type of splice event requires a specific overlapping rule (described below),
-#'  and a customized \code{Gviz} plot is created for each splicing type.
+#'  Each type of splice event requires a specific overlapping rule 
+#'  (described below), #'  and a customized \code{Gviz} plot is created for 
+#'  each splicing type.
 #'   
 #'   \describe{
 #'     \item{\strong{Exon skipping}}{}
-#'     \item{Inclusion track}{Transcript(s) overlapping the cassette exon, as well 
-#'                            both flanking exons (i.e upstream and downstream exons).}
-#'     \item{Skipping track}{Transcript(s) overlapping both flanking exons but not the
-#'                            cassettte exon.}
+#'     \item{Inclusion track}{Transcript(s) overlapping the cassette exon,
+#'      as well both flanking exons (i.e upstream and downstream exons).}
+#'     \item{Skipping track}{Transcript(s) overlapping both flanking exons but
+#'      not the cassettte exon.}
 #'   }
 #'   
 #'   \describe{
 #'     \item{\strong{Intron retention}}{}
-#'     \item{Retention track}{Transcript(s) overlapping exactly the retained intron.}
-#'     \item{Skipping track}{Transcript(s) where intron is spliced out and overlapping
-#'                              both flanking exons.}
+#'     \item{Retention track}{Transcript(s) overlapping exactly the retained
+#'      intron.}
+#'     \item{Skipping track}{Transcript(s) where intron is spliced out and 
+#'     overlapping both flanking exons.}
 #'   }
 #'   
 #'   \describe{
@@ -136,8 +143,8 @@ plotGenePSI <- function(events, type, show_replicates = TRUE){
 #'     \item{\strong{Alternative 3' and 5' splice sites}}{}
 #'     \item{Short exon track}{Transcript(s) overlapping both short and 
 #'                        downstream exons.}
-#'     \item{Long exon track}{Transcript(s) overlapping both long and downstream 
-#'                           exons.}
+#'     \item{Long exon track}{Transcript(s) overlapping both long and 
+#'     downstream exons.}
 #'   }
 #'   
 #' @examples
@@ -187,7 +194,8 @@ plotTranscripts <- function(events, type, event_id, gtf,
   
   annot <- events[[paste0(type,"_","events")]]
   if (length(unique(annot$geneSymbol)) > 1){
-    stop(cat("Multiple genes found. Use geneEvents() to select gene-specific AS events."))
+    stop(cat("Multiple genes found. Use geneEvents() to select 
+             gene-specific AS events."))
   }
   
   # Genomic ranges of alternative splicing events
@@ -248,15 +256,16 @@ plotTranscripts <- function(events, type, event_id, gtf,
 #' @param type character indicating splice type. Possible values are
 #'    \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}.
 #' @param event_id numeric, event identifier.
-#' @param gtf a \code{GRanges}, Ensembl or Gencode GTF using the hg38 build of the human genome.
+#' @param gtf a \code{GRanges}, Ensembl or Gencode GTF using the hg38 build of
+#'  the human genome.
 #' @param features a character vector indicating valid UniprotKB features.
 #' @param zoom logical, zoom to the genomic coordinates of the splice event.
 #' @param show_transcripts logical, display transcripts track.
 #' @return a Gviz object.
-#' @details This is a wrapper function for performing both mapping and visualization
-#'  of protein features affected by the splice event. This function
-#'  calls \code{\link{mapProteinFeaturesToEvents}} for mapping of protein features to 
-#'  splice events. 
+#' @details This is a wrapper function for performing both mapping and 
+#' visualization of protein features affected by the splice event. This function
+#'  calls \code{\link{mapProteinFeaturesToEvents}} for mapping of protein
+#'  features to splice events. 
 #'  
 #' The \code{\link[Gviz:plotTracks]{GViz}} package is used for creating
 #'  annotation tracks for genomic visualization. 
@@ -324,7 +333,8 @@ plotUniprotKBFeatures <- function(events, type, event_id, gtf,
   
   annot <- events[[paste0(type,"_","events")]]
   if (length(unique(annot$geneSymbol)) > 1){
-    stop(cat("Multiple genes found. Use geneEvents() to select gene-specific AS events."))
+    stop(cat("Multiple genes found. Use geneEvents() to select gene-specific
+             AS events."))
   }
   
 
@@ -341,7 +351,8 @@ plotUniprotKBFeatures <- function(events, type, event_id, gtf,
   
   gtf_exons <- gtf[gtf$type=="exon",]
   idx.cols <- grep("^list_ptn_", colnames(annot))
-  protein_ids <- unique(c(annot[idx.event, idx.cols[1]], annot[idx.event, idx.cols[2]]))
+  protein_ids <- unique(c(annot[idx.event, idx.cols[1]], 
+                          annot[idx.event, idx.cols[2]]))
   uniprotTracks <- createUniprotKBtracks(eventGr, features, protein_ids)
   
   if (show_transcripts){

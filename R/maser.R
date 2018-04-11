@@ -168,7 +168,7 @@ create_GRanges_MXE <- function(events){
   
   exon_downstream <- GRanges(
     seqnames = echr,
-    ranges = IRanges(start = events$downstreamES+1,
+    ranges = IRanges::IRanges(start = events$downstreamES+1,
                      end = events$downstreamEE),
     strand = events$strand,
     ID = events$ID,
@@ -208,8 +208,10 @@ create_GRanges <- function(events, type){
 #' Create a maser object by importing rMATS splice events.
 #' 
 #' @param path a character specifiying the folder containing rMATS output files.
-#' @param cond_labels a character vector of length 2 describing labels for experimental conditions.
-#' @param rtype a character indicating the read type. Possible values are \code{c("ReadsOnTargetAndJunction", "JunctionCountOnly")}. 
+#' @param cond_labels a character vector of length 2 describing labels for 
+#' experimental conditions.
+#' @param rtype a character indicating the read type. Possible values 
+#' are \code{c("ReadsOnTargetAndJunction", "JunctionCountOnly")}. 
 #' @return A maser object.
 #' @examples
 #' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
@@ -331,7 +333,8 @@ print.maser <- function(x, ...){
   }
   
   line1 <- paste0("A maser object with ", total, " splicing events.\n\n")
-  line2 <- paste0("Samples description: \n", "Label=", x$conditions[1], "     n=", x$n_cond1, 
+  line2 <- paste0("Samples description: \n", "Label=", x$conditions[1],
+                  "     n=", x$n_cond1, 
                   " replicates\n")
   line3 <- paste0( "Label=", x$conditions[2], "     n=", x$n_cond1, 
                    " replicates\n\n")
@@ -355,8 +358,8 @@ is.maser <- function(x){
                   "RI_counts", "RI_PSI", "RI_stats", "RI_gr", "RI_events",
                   "SE_counts", "SE_PSI", "SE_stats", "SE_gr", "SE_events")
   
-  #check if all elements are allowed attributes, and that all attributes are present
-  # and has been created using the constructor maser()
+  #check if all elements are allowed attributes, and that all attributes are
+  # present and has been created using the constructor maser()
   if (any(!names(x) %in% attributes)  || any(!attributes %in% names(x)) || 
       !class(x) == "maser"){
     return(FALSE)

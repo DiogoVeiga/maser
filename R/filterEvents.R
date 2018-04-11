@@ -138,7 +138,7 @@ filterByCoverage <- function(events, avg_reads = 5){
 #' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' 
-#' ## To select all events with minimum 10% change in PSI, and FDR lower than 0.01 
+#' ## To select all events with minimum 10% change in PSI, and FDR < 0.01 
 #' hypoxia_top <- topEvents(hypoxia, fdr = 0.01, deltaPSI = 0.1)
 #' @export
 topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
@@ -172,7 +172,7 @@ topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
 
         # filter rMATS stats
         events_top[[paste0(type,"_","stats")]] <- dplyr::filter(stats,
-                                                                ID %in% res$ID)
+                                                            ID %in% res$ID)
 
         # Filter Genomic ranges of alternative splicing events
         grl <- events[[paste0(type,"_","gr")]]
@@ -188,7 +188,7 @@ topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
         # Filter Event annotation
         annot <- events[[paste0(type,"_","events")]]
         events_top[[paste0(type,"_","events")]] <- dplyr::filter(annot,
-                                                                 ID %in% res$ID)
+                                                              ID %in% res$ID)
 
         #cat("Selecting  ", type, length(res$ID), " events\n")
 

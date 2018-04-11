@@ -9,7 +9,8 @@ mapTranscriptsToEvents(events, gtf)
 \arguments{
 \item{events}{a maser object.}
 
-\item{gtf}{a \code{GRanges} object obtained from an Ensembl or Gencode GTF file using the hg38 build of the human genome.}
+\item{gtf}{a \code{GRanges} object obtained from an Ensembl or Gencode GTF
+file using the hg38 build of the human genome.}
 }
 \value{
 a maser object with transcript and protein identifiers.
@@ -22,42 +23,45 @@ This function performs mapping of splice events in the maser object
  to Ensembl transcripts by overlapping exons involved in the splice event to
  the transcript models provided in the GTF. 
  
- Each type of splice event requires a specific mapping procedure (described below).
+ Each type of splice event requires a specific mapping procedure
+  (described below).
  
  The mapping will also add Uniprot identifiers when the ENST transcript 
  encodes for a protein. 
    
- Visualization of affected transcripts can be done using \code{\link{plotTranscripts}}.
+ Visualization of affected transcripts can be done 
+ using \code{\link{plotTranscripts}}.
  
   \describe{
     \item{\strong{Exon skipping}}{}
-    \item{Inclusion transcript(s)}{Transcript(s) overlapping the cassette exon, as well 
-                           both flanking exons (i.e upstream and downstream exons).}
-    \item{Skipping transcript(s)}{Transcript(s) overlapping both flanking exons but not the
-                           cassettte exon.}
+    \item{Inclusion transcript(s)}{Transcript(s) overlapping the cassette
+     exon, as well both flanking exons (i.e upstream and downstream exons).}
+    \item{Skipping transcript(s)}{Transcript(s) overlapping both flanking 
+    exons but not the cassettte exon.}
   }
   
   \describe{
     \item{\strong{Intron retention}}{}
-    \item{Retention transcript(s)}{Transcript(s) overlapping exactly the retained intron.}
-    \item{Skipping transcript(s)}{Transcript(s) where intron is spliced out and overlapping
-                             both flanking exons.}
+    \item{Retention transcript(s)}{Transcript(s) overlapping exactly the
+     retained intron.}
+    \item{Skipping transcript(s)}{Transcript(s) where intron is spliced out
+     and overlapping both flanking exons.}
   }
   
   \describe{
   \item{\strong{Mutually exclusive exons}}{}
-    \item{Exon1 transcript(s)}{Transcript(s) overlapping the first exon and both 
-                      flanking exons.}
-    \item{Exon2 transcript(s)}{Transcript(s) overlapping the second exon and both
-                       flanking exons.}
+    \item{Exon1 transcript(s)}{Transcript(s) overlapping the first exon 
+    and both flanking exons.}
+    \item{Exon2 transcript(s)}{Transcript(s) overlapping the second exon and
+     both flanking exons.}
   }
   
   \describe{
     \item{\strong{Alternative 3' and 5' splice sites}}{}
     \item{Short exon transcript(s)}{Transcript(s) overlapping both short and 
                        downstream exons.}
-    \item{Long exon transcript(s)}{Transcript(s) overlapping both long and downstream 
-                          exons.}
+    \item{Long exon transcript(s)}{Transcript(s) overlapping both long and
+     downstream exons.}
   }
 }
 \examples{

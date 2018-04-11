@@ -168,7 +168,7 @@ srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6", fdr = 0.05, deltaPSI =
 
 ## Dislay affected transcripts and PSI levels
 plotTranscripts(srsf6_events, type = "SE", event_id = 33209,
-                gtf = ens_gtf, zoom = F, show_PSI = T)
+                gtf = ens_gtf, zoom = FALSE, show_PSI = TRUE)
 
 ```
 
@@ -183,7 +183,7 @@ Splicing might impact multiple transcripts, as denoted by the exon skipping even
 ```{r, warning = FALSE, message = FALSE}
 mcm3_events <- geneEvents(hypoxia_filt, geneS = "MCM3", fdr = 0.05, deltaPSI = 0.1 )
 plotTranscripts(mcm3_events, type = "SE", event_id = 11867, 
-                gtf = ens_gtf, zoom = F)
+                gtf = ens_gtf, zoom = FALSE)
 
 ```
 
@@ -194,7 +194,7 @@ Intron retention is a type of splice event that are usually associated to decrea
 ```{r, warning = FALSE, message = FALSE}
 stat2_events <- geneEvents(hypoxia_filt, geneS = "STAT2", fdr = 0.05, deltaPSI = 0.1 )
 plotTranscripts(stat2_events, type = "RI", event_id = 3785, 
-                gtf = ens_gtf, zoom = F)
+                gtf = ens_gtf, zoom = FALSE)
 
 ```
 
@@ -207,7 +207,7 @@ The *PSI* track in the mutually exclusive exons event wil show two sets of boxpl
 ```{r, warning = FALSE, message = FALSE}
 il32_events <- geneEvents(hypoxia_filt, geneS = "IL32", fdr = 0.05, deltaPSI = 0.1 )
 plotTranscripts(il32_events, type = "MXE", event_id = 1136, 
-                gtf = ens_gtf, zoom = F)
+                gtf = ens_gtf, zoom = FALSE)
 ```
 
 ## Alternative 5' and 3' exons
@@ -224,7 +224,7 @@ In the example below, BCS1L contains an exon with alternative 5' splice site, be
 #A5SS event
 bcs1l_gene <- geneEvents(hypoxia_filt, geneS = "BCS1L", fdr = 0.05, deltaPSI = 0.1 )
 plotTranscripts(bcs1l_gene, type = "A5SS", event_id = 3988, 
-                gtf = ens_gtf, zoom = T)
+                gtf = ens_gtf, zoom = TRUE)
 
 ```
 
@@ -234,5 +234,5 @@ In this other example, ELOVL1 contains an exon with alternative 3' splice site, 
 #A3SS event
 elovl1_gene <- geneEvents(hypoxia_filt, geneS = "ELOVL1")
 plotTranscripts(elovl1_gene, type = "A3SS", event_id = 3030, 
-                gtf = ens_gtf, zoom = F)
+                gtf = ens_gtf, zoom = FALSE)
 ```

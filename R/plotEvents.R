@@ -11,6 +11,7 @@
 #' boxplot_PSI_levels(hypoxia_filt, type = "RI")
 #' @export
 #' @import ggplot2
+#' @importFrom stats median
 
 boxplot_PSI_levels <- function(events, type){
 
@@ -35,8 +36,8 @@ boxplot_PSI_levels <- function(events, type){
     PSI_long <- cbind(PSI_long, Condition)
 
     ggplot(PSI_long, aes(x = Sample, y = PSI, fill = Condition)) +
-        #geom_boxplot() +
-        geom_violin(trim = F) +
+        geom_boxplot() +
+        #geom_violin(trim = FALSE) +
         stat_summary(fun.y=median, geom="point", size=2, color="black") +
         theme_bw() +
         theme(axis.text.x = element_text(size=12, angle = 45, hjust = 1),

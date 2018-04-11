@@ -9,7 +9,7 @@ Description: This package provides functionalities for annotation and
 Depends: R (>= 3.4.0),
     ggplot2,
     GenomicRanges
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:

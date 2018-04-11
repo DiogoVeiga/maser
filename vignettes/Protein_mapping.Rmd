@@ -125,7 +125,7 @@ By inspecting the results, we see that the SRSF6 exon skipping event is annotate
 
 ```{r, warning = FALSE, message = FALSE}
 # Plot splice event, transcripts and protein features
-plotUniprotKBFeatures(srsf6_annot, "SE", event_id = 33209, gtf = ens_gtf, 
+plotUniprotKBFeatures(srsf6_mapped, "SE", event_id = 33209, gtf = ens_gtf, 
    features = c("domain", "chain", "mod-res"), show_transcripts = TRUE)
 
 ```
@@ -148,7 +148,7 @@ ripk2_annot <- mapProteinFeaturesToEvents(ripk2_mapped,
 ```{r, warning = FALSE, message = FALSE}
 plotUniprotKBFeatures(ripk2_annot, type = "SE", event_id = 14319, 
                       features = c("domain", "binding", "act-site"), gtf = ens_gtf, 
-                      zoom = F, show_transcripts = TRUE)
+                      zoom = FALSE, show_transcripts = TRUE)
 
 ```
 
@@ -171,7 +171,7 @@ bmrp2_annot <- mapProteinFeaturesToEvents(bmpr2_mapped,
 plotUniprotKBFeatures(bmpr2_mapped, type = "SE", event_id = 25501, 
                       features = c("domain", "topo-dom", "mod-res"), 
                       gtf = ens_gtf, 
-                      zoom = F,
+                      zoom = FALSE,
                       show_transcripts = TRUE)
 
 ```

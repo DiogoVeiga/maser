@@ -48,7 +48,7 @@ plotGenePSI <- function(events, type, show_replicates = TRUE){
     
     ggplot(PSI_long, aes(x = Condition, y = PSI, fill = Condition, color = Condition)) +
       #geom_boxplot() +
-      geom_violin(trim = F, alpha = 0.6) +
+      geom_violin(trim = FALSE, alpha = 0.6) +
       geom_jitter(position=position_jitter(0.05), size = 2) +
       theme_bw() +
       theme(axis.text.x = element_text(size=12, angle = 45, hjust = 1),
@@ -68,7 +68,7 @@ plotGenePSI <- function(events, type, show_replicates = TRUE){
   
   ggplot(PSI_long, aes(x = Condition, y = PSI, fill = Condition, color = Condition)) +
     #geom_boxplot() +
-    geom_violin(trim = F) +
+    geom_violin(trim = FALSE) +
     stat_summary(fun.y=mean, geom="point", size=2, color="black") +
     theme_bw() +
     theme(axis.text.x = element_text(size=12, angle = 45, hjust = 1),
@@ -166,7 +166,6 @@ plotTranscripts <- function(events, type, event_id, gtf,
                             zoom = FALSE, show_PSI = TRUE){
   
   is_strict = TRUE #affects exon skipping, MXE, RI
-  options(ucscChromosomeNames=FALSE)
   
   if(!is.maser(events)){
     stop("Parameter events has to be a maser object.")
@@ -176,7 +175,10 @@ plotTranscripts <- function(events, type, event_id, gtf,
     stop(cat("\"gtf\" should be a GRanges class."))
   }
   
-  #GenomeInfoDb::seqlevels(gtf) <- paste0("chr", seqlevels(gtf))
+  #Add chr to seqnames - necessary for Gviz plots
+  if(any(!grepl("chr", seqlevels(gtf)))){
+    GenomeInfoDb::seqlevels(gtf) <- paste0("chr", seqlevels(gtf)) 
+  }
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
   if (!type %in% as_types){
@@ -294,7 +296,7 @@ plotUniprotKBFeatures <- function(events, type, event_id, gtf,
   
   is_strict = FALSE
   options(ucscChromosomeNames=FALSE)
-  
+
   if(!is.maser(events)){
     stop("Parameter events has to be a maser object.")
   }
@@ -303,7 +305,17 @@ plotUniprotKBFeatures <- function(events, type, event_id, gtf,
     stop(cat("\"gtf\" should be a GRanges class."))
   }
   
-  #GenomeInfoDb::seqlevels(gtf) <- paste0("chr", seqlevels(gtf))
+  #Check chr to seqnames - necessary for Gviz plots
+  if(any(!grepl("chr", seqlevels(gtf)))){
+    GenomeInfoDb::seqlevels(gtf) <- paste0("chr", seqlevels(gtf)) 
+  }
+  
+  #Check and remove non-standard chr
+  # std_chr <- c(paste0("chr", seq(1:22)), "chrX", "chrY")
+  # if (any(!seqlevels(gtf) %in% std_chr)){
+  #   seqlevels(gtf, pruning.mode = "coarse" ) <- std_chr  
+  # }
+  
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
   if (!type %in% as_types){

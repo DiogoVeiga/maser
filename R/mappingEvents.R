@@ -278,7 +278,11 @@ mapTranscriptsToEvents <- function(events, gtf){
     stop(cat("\"gtf\" should be a GRanges object."))
   }
   
-  #GenomeInfoDb::seqlevels(gtf) <- paste0("chr", seqlevels(gtf))
+  #Add chr to seqnames - necessary for Gviz plots and compatible with maser()
+  if(any(!grepl("chr", seqlevels(gtf)))){
+    GenomeInfoDb::seqlevels(gtf) <- paste0("chr", seqlevels(gtf)) 
+  }
+  
   gtf_exons <- gtf[gtf$type=="exon",]
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")

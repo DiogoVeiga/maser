@@ -1,4 +1,5 @@
 
+#' @importFrom utils read.table
 createGRangesUniprotKBtrack <- function(track_name){
   
   track_df <- urlTracksUniprotKB()
@@ -8,7 +9,7 @@ createGRangesUniprotKBtrack <- function(track_name){
   }
   
   track <- dplyr::filter(track_df, Name %in% track_name)
-  bed <- read.table(as.character(track$URL), header = F, sep = "\t", quote = NULL,
+  bed <- read.table(as.character(track$URL), header = FALSE, sep = "\t", quote = NULL,
                     stringsAsFactors = FALSE)
   
   colnames(bed)[1:6] <- c("chr", "start", "end", "Uniprot_ID", "V5", "strand") 
@@ -26,48 +27,10 @@ createGRangesUniprotKBtrack <- function(track_name){
   bed.gr <- as(bed, "GRanges")
   
   genome(bed.gr) <- "hg38"
-  GenomeInfoDb::seqlevels(bed.gr) <- gsub("chr", "", seqlevels(bed.gr))
-  
+
   
   return(bed.gr)
   
-}
-
-# possibly remove - use createGRangesUniprotKBrack instead
-downloadUniprotKBtrack <- function(track_name, destfolder = getwd()){
-  
-  
-  track_df <- urlTracksUniprotKB()
-  
-  if(!track_name %in% track_df$Name){
-    stop(cat("Unknown track name."))
-  }
-  
-  track <- dplyr::filter(track_df, Name %in% track_name)
-  
-  dir_path <- file.path(destfolder, "UP000005640_9606_beds")
-  
-  if (!dir.exists(dir_path)){
-    dir.create(dir_path)  
-  }
-  
-  bedFile <- basename(as.character(track$URL))
-  bedPath <- file.path(dir_path, bedFile)
-  download.file(as.character(track$URL), destfile = bedPath) #will trigger error if URL does not work
-  
-  bed <- read.table(as.character(track$URL), header = F, sep = "\t", quote = NULL,
-                    stringsAsFactors = FALSE)
-  
-  colnames(bed)[1:4] <- c("chr", "start", "end", "Uniprot_ID") 
-  res <- strsplit(bed$V14, ";")
-  
-  name <- rep("NA", length(res))
-  for (i in 1:length(res)) {
-    #name <- c(name, res[[1]][[2]])
-    name[i] <- res[[i]][[2]]
-  }
-  bed <- cbind(bed, Name = name)
-  bed.gr <- as(bed, "GRanges")
 }
 
 #' Query available human protein features in UniprotKB.
@@ -86,7 +49,7 @@ availableFeaturesUniprotKB <- function(){
   for (i in 1:length(data)){
     
     aux <- gsub("\"", "", data[i])
-    tokens <- strsplit(aux, split = "=", fixed = F)
+    tokens <- strsplit(aux, split = "=", fixed = FALSE)
     
     values <- tokens[[1]]
     
@@ -138,7 +101,7 @@ urlTracksUniprotKB <- function(){
   for (i in 1:length(data)){
     
     aux <- gsub("\"", "", data[i])
-    tokens <- strsplit(aux, split = "=", fixed = F)
+    tokens <- strsplit(aux, split = "=", fixed = FALSE)
     
     values <- tokens[[1]]
     

@@ -1,0 +1,10 @@
+LAUNCH VERSION 0.99.0
+-------------------------
+
+FEATURES
+
+    o Filtering of rMATS splice events based on RNA-seq coverage, p-values and differential percent spliced-in (PSI).
+    o Analysis of global splicing effects using boxplots, principal component analysis and volcano plots.
+    o Mapping of splice events to Ensembl transcripts and UniprotKB proteins
+    o Integration with Uniprot for batch annotation of protein features overlapping splice events
+    o Visualization of transcripts and protein affected by splicing using custom Gviz plots. 

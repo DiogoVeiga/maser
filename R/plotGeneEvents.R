@@ -187,6 +187,12 @@ plotTranscripts <- function(events, type, event_id, gtf,
     GenomeInfoDb::seqlevels(gtf) <- paste0("chr", GenomeInfoDb::seqlevels(gtf)) 
   }
   
+  #Check and remove non-standard chr
+  std_chr <- c(paste0("chr", seq(1:22)), "chrX", "chrY")
+  if (any(!seqlevels(gtf) %in% std_chr)){
+    GenomeInfoDb::seqlevels(gtf, pruning.mode = "coarse" ) <- std_chr
+  }
+  
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
   if (!type %in% as_types){
     stop(cat("\"type\" should be one of the following: ", as_types))
@@ -320,10 +326,10 @@ plotUniprotKBFeatures <- function(events, type, event_id, gtf,
   }
   
   #Check and remove non-standard chr
-  # std_chr <- c(paste0("chr", seq(1:22)), "chrX", "chrY")
-  # if (any(!seqlevels(gtf) %in% std_chr)){
-  #   seqlevels(gtf, pruning.mode = "coarse" ) <- std_chr  
-  # }
+  std_chr <- c(paste0("chr", seq(1:22)), "chrX", "chrY")
+  if (any(!seqlevels(gtf) %in% std_chr)){
+    GenomeInfoDb::seqlevels(gtf, pruning.mode = "coarse" ) <- std_chr
+  }
   
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")

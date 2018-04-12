@@ -167,7 +167,9 @@ plotGenePSI <- function(events, type, show_replicates = TRUE){
 #' @seealso \code{\link{mapTranscriptsToEvents}}
 #' @export
 #' @import GenomicRanges
+#' @import GenomeInfoDb
 #' @importFrom ggplot2 ggplot
+
 
 plotTranscripts <- function(events, type, event_id, gtf, 
                             zoom = FALSE, show_PSI = TRUE){
@@ -303,6 +305,7 @@ plotTranscripts <- function(events, type, event_id, gtf,
 #' @seealso \code{\link{mapProteinFeaturesToEvents}}
 #' @export
 #' @import GenomicRanges
+#' @import GenomeInfoDb
 #' @importFrom ggplot2 ggplot
 
 plotUniprotKBFeatures <- function(events, type, event_id, gtf,

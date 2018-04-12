@@ -2,6 +2,8 @@
 title: "Introduction"
 shorttitle: "Introduction"
 author: "Diogo Veiga"
+affiliation: The Jackson Laboratory for Genomic Medicine, Farmington, CT, USA"
+email: Diogo.Veiga@jax.org
 package: maser
 date: "`r Sys.Date()`"
 output:
@@ -235,4 +237,11 @@ In this other example, ELOVL1 contains an exon with alternative 3' splice site, 
 elovl1_gene <- geneEvents(hypoxia_filt, geneS = "ELOVL1")
 plotTranscripts(elovl1_gene, type = "A3SS", event_id = 3030, 
                 gtf = ens_gtf, zoom = FALSE)
+```
+
+# Session info
+Here is the output of `sessionInfo()` on the system on which this document was
+compiled:
+```{r, echo=FALSE}
+sessionInfo()
 ```

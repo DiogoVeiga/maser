@@ -176,7 +176,12 @@ plotUniprotKBFeatures(bmpr2_mapped, type = "SE", event_id = 25501,
 
 ```
 
-
+# Session info
+Here is the output of `sessionInfo()` on the system on which this document was
+compiled:
+```{r, echo=FALSE}
+sessionInfo()
+```
 
 
 

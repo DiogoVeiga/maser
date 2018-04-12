@@ -25,23 +25,23 @@ knitr::opts_chunk$set(
 # Overview of maser
 Alternative splicing occurs in most human genes and novel splice isoforms may be associated to disease or tissue specific functions. However, functional interpretation of splicing requires the integration of heterogeneous data sources such as transcriptomic and proteomic information. 
 
-We developed **maser** (**M**apping **A**lternative **S**plicing **E**vents to p**R**oteins) package to enable functional characterization of splicing in both transcriptomic and proteomic contexts. Overall, `r Rpackage("maser")` allows a detailed analysis of splice events identified by [rMATS](http://rnaseq-mats.sourceforge.net/) by implementing the following functionalities:
+We developed **maser** (**M**apping **A**lternative **S**plicing **E**vents to p**R**oteins) package to enable functional characterization of splicing in both transcriptomic and proteomic contexts. Overall, `r Rpackage("maser")` allows a detailed analysis of splicing events identified by [rMATS](http://rnaseq-mats.sourceforge.net/) by implementing the following functionalities:
 
-* Filtering of [rMATS](http://rnaseq-mats.sourceforge.net/) splice events based on RNA-seq coverage, p-values and differential percent spliced-in (PSI)
+* Filtering of [rMATS](http://rnaseq-mats.sourceforge.net/) splicing events based on RNA-seq coverage, p-values and differential percent spliced-in (PSI)
 * Analysis of global splicing effects using boxplots, principal component analysis and volcano plots.
-* Mapping of splice events to [Ensembl](http://www.ensembl.org/) transcripts and [UniprotKB](http://www.uniprot.org/) proteins
-* Integration with [UniprotKB](http://www.uniprot.org/) for batch annotation of protein features overlapping splice events
+* Mapping of splicing events to [Ensembl](http://www.ensembl.org/) transcripts and [UniprotKB](http://www.uniprot.org/) proteins
+* Integration with [UniprotKB](http://www.uniprot.org/) for batch annotation of protein features overlapping splicing events
 * Visualization of transcripts and protein affected by splicing using custom `r Rpackage("Gviz")`   plots. 
 
 A key feature of the package is mapping of splicing events to protein features such as topological domains, motifs and mutation sites provided by the [UniprotKB](http://www.uniprot.org/) database and visualized along side the genomic location of splicing.  
 
 In this manner, `r Rpackage("maser")` can quickly identify splicing affecting known protein domains, extracellular and transmembrane regions, as well as mutation sites in the protein.  
 
-In this vignette, we describe a basic `r Rpackage("maser")` workflow for analyzing alternative splicing, starting with importing splice events, filtering events based on their coverage and differential expression, and analyzing global or specific spling events with several types of graphics.
+In this vignette, we describe a basic `r Rpackage("maser")` workflow for analyzing alternative splicing, starting with importing splicing events, filtering events based on their coverage and differential expression, and analyzing global or specific spling events with several types of graphics.
 
 The second vignette describes how to use `r Rpackage("maser")` for annotation and visualization of protein features affected by splicing.
 
-Throughout the text we use the following abbreviations to describe different types of splice events:
+Throughout the text we use the following abbreviations to describe different types of splicing events:
 
 * SE, refers to exon skipping
 * RI, intron retention
@@ -53,7 +53,7 @@ Throughout the text we use the following abbreviations to describe different typ
 We demonstrate the package with data generated to investigate the effects of hypoxia in alternative splicing in colorectal cancer <link>
 [publication](https://doi.org/10.1038/npjgenmed.2016.20). RNA-seq was collected at 0h and 24h after inducing hypoxia in the HCT116 colorectal cancer cell line, and splicing events were detected using [rMATS](http://rnaseq-mats.sourceforge.net/).
 
-To import splice events we use the constructor function `maser()` indicating the path containing rMATS files, and labels for conditions. The `maser()` constructor returns an object containing all events quantified by rMATS. 
+To import splicing events we use the constructor function `maser()` indicating the path containing rMATS files, and labels for conditions. The `maser()` constructor returns an object containing all events quantified by rMATS. 
 
 
 ```{r, warning = FALSE, message = FALSE}
@@ -143,7 +143,7 @@ splicingDistribution(hypoxia_filt, fdr = 0.05, deltaPSI = 0.1)
 
 # Genomic visualization of splicing events
 
-Users can use `r Rpackage("maser")` to visualize Ensembl transcripts affected by splicing. The core function for transcripts visualization is `plotTranscripts()`. This is a wrapper function for performing both mapping of splice events to the transcriptome, as well as visualization of transcripts that are compatible with the splice event. The function uses `r Biocpkg("Gviz")` for visualization of the genomic locus of splicing event along with involved transcripts. 
+Users can use `r Rpackage("maser")` to visualize Ensembl transcripts affected by splicing. The core function for transcripts visualization is `plotTranscripts()`. This is a wrapper function for performing both mapping of splicing events to the transcriptome, as well as visualization of transcripts that are compatible with the splice event. The function uses `r Biocpkg("Gviz")` for visualization of the genomic locus of splicing event along with involved transcripts. 
 
 Internally, `plotTranscripts()` uses `mapTranscriptsToEvents()` to identify compatible transcripts by overlapping exons involved in splicing to the gene models provided in the Ensembl GTF. Each type of splice event requires a specific overlapping rule (described below) and a customized `r Biocpkg("Gviz")` plot is created for each splicing type. 
 
@@ -165,7 +165,7 @@ The most common type of splicing event involves a cassette exon that is either e
 
 
 ```{r, warning = FALSE, message = FALSE}
-## Retrieve SRSF6 splice events
+## Retrieve SRSF6 splicing events
 srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6", fdr = 0.05, deltaPSI = 0.1 )
 
 ## Dislay affected transcripts and PSI levels
@@ -214,7 +214,7 @@ plotTranscripts(il32_events, type = "MXE", event_id = 1136,
 
 ## Alternative 5' and 3' exons
 
-Alternative 5' splicing occur due to alternative **donor** sites, while altenative 3' is caused by change in the **acceptor** sites. Practically, these splice events will lead to expression of longer or shorter exons. 
+Alternative 5' splicing occur due to alternative **donor** sites, while altenative 3' is caused by change in the **acceptor** sites. Practically, these splicing events will lead to expression of longer or shorter exons. 
 
 The *short exon* track shows transcripts overlapping both short and flanking exons, while the *long exon* track shows transcripts overlapping both long and flanking exons.  
 

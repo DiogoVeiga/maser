@@ -1,6 +1,6 @@
 ---
-title: "Mapping protein features to splice events"
-shorttitle: "Mapping protein features to splice events"
+title: "Mapping protein features to splicing events"
+shorttitle: "Mapping protein features to splicing events"
 author: "Diogo Veiga"
 package: maser
 date: "`r Sys.Date()`"
@@ -8,7 +8,7 @@ output:
   BiocStyle::html_document:
     toc_float: true  
 vignette: >
-  %\VignetteIndexEntry{Mapping protein features to splice events}
+  %\VignetteIndexEntry{Mapping protein features to splicing events}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,7 +16,7 @@ vignette: >
 # Overview of protein annotation
 In this vignette, we describe a `r Rpackage("maser")` workflow for annotation and visualization of protein features affected by splicing. 
 
-Integration of protein features to splicing events may reveal the impact of alternative splicing on protein function. We developed `r Rpackage("maser")` to enable systematic mapping of protein annotation from [UniprotKB](http://www.uniprot.org/) to splice events.  
+Integration of protein features to splicing events may reveal the impact of alternative splicing on protein function. We developed `r Rpackage("maser")` to enable systematic mapping of protein annotation from [UniprotKB](http://www.uniprot.org/) to splicing events.  
 
 Protein features can be annotated and visualized along with transcripts affected by the splice event. In this manner, `r Rpackage("maser")` can identify whether the splicing is affecting regions of interest containing known domains or motifs, mutations, post-translational modification and other described protein structural features.
 
@@ -52,7 +52,7 @@ knitr::kable(
 ```
 
 ## Steps for annotation
-Protein feature annotation of splice events is performed in two steps.
+Protein feature annotation of splicing events is performed in two steps.
 
 1. Use `mapTranscriptsToEvents()` to add both transcript and protein IDs to all events in the maser object.
 2. Use `mapProteinFeaturesToEvents()` for annotation specifying UniprotKB features or categories.
@@ -68,27 +68,27 @@ qhs <- AnnotationHub::query(ah, c("Ensembl", "gene", "annotation", "grch38"))
 ens_gtf <- qhs[["AH51014"]] #Homo_sapiens.GRCh38.85.gtf
 ```
 
-In the second step, `mapProteinFeaturesToEvents()` retrieves data from UniprotKB and overlaps splice events to genomic coordinates of protein features. 
+In the second step, `mapProteinFeaturesToEvents()` retrieves data from UniprotKB and overlaps splicing events to genomic coordinates of protein features. 
 
 
 ## SRSF6 example
 
-The splicing factor SRSF6 undergoes splicing during hypoxia by expressing an alternative exon. We will annotate the exon skipping event with domain, sites and topology information. The first step is to obtain a maser object containing SRSF6 splicing information, and then map transcripts to splice events.
+The splicing factor SRSF6 undergoes splicing during hypoxia by expressing an alternative exon. We will annotate the exon skipping event with domain, sites and topology information. The first step is to obtain a maser object containing SRSF6 splicing information, and then map transcripts to splicing events.
 
 ```{r, warning = FALSE, message = FALSE}
-# Retrieve gene specific splice events
+# Retrieve gene specific splicing events
 srsf6_events <- geneEvents(hypoxia_filt, "SRSF6")
 srsf6_events
 
 ```
 
 ```{r, warning = FALSE, message = FALSE}
-# Map transcripts to splice events
+# Map transcripts to splicing events
 srsf6_mapped <- mapTranscriptsToEvents(srsf6_events, ens_gtf)
 
 ```
 
-If transcript mapping worked correctly, Ensembl and Uniprot identifiers will be added to splice events. Possible `NA` values indicates non-protein coding transcripts. In this case, the splicing involves two Ensembl transcripts coding for the Q13247 isoform of SRSF6. 
+If transcript mapping worked correctly, Ensembl and Uniprot identifiers will be added to splicing events. Possible `NA` values indicates non-protein coding transcripts. In this case, the splicing involves two Ensembl transcripts coding for the Q13247 isoform of SRSF6. 
 
 ```{r, warning = FALSE, message = FALSE, eval=FALSE}
 head(annot(srsf6_mapped, "SE"))
@@ -105,7 +105,7 @@ Now we are ready to call `mapProteinFeaturesToEvents()` for annotation. Feature 
 `mapProteinFeaturesToEvents()` will add extra columns describing the feature name, feature description and protein identifiers for which the annotation has been assigned. Possible `NA` values indicate the particular feature is not annotated for the splice event.
 
 ```{r, warning = FALSE, message = FALSE}
-# Annotate splice events with protein features
+# Annotate splicing events with protein features
 srsf6_annot <- mapProteinFeaturesToEvents(srsf6_mapped, c("Domain_and_Sites", "Topology"), by="category")
 
 ```
@@ -132,7 +132,7 @@ plotUniprotKBFeatures(srsf6_mapped, "SE", event_id = 33209, gtf = ens_gtf,
 
 ## RIPK2 example
 
-RIPK2 has an exon skipping event in the hypoxia dataset. Following the example above, we map transcripts to splice events and annotate protein features overlapping the splice event. We find out that the alternative exon overlaps the kinase domain of the protein, thus possibly changing the configuration of this domain during hypoxia. The ATP and proton acceptor binding sites are overlapping exons flanking the alternative exon.  
+RIPK2 has an exon skipping event in the hypoxia dataset. Following the example above, we map transcripts to splicing events and annotate protein features overlapping the splice event. We find out that the alternative exon overlaps the kinase domain of the protein, thus possibly changing the configuration of this domain during hypoxia. The ATP and proton acceptor binding sites are overlapping exons flanking the alternative exon.  
 
 
 ```{r, warning = FALSE, message = FALSE}

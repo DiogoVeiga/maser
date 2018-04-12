@@ -99,7 +99,7 @@ hypoxia_top
 Events in a `maser` object can be queried using an interactive data table provided by `display()`. The table allows to look up event information such as gene names, identifiers and PSI differences.
 
 ```{r, warning = FALSE, message = FALSE}
-display(hypoxia_top, "SE")
+maser::display(hypoxia_top, "SE")
 
 ```
 
@@ -150,7 +150,21 @@ Internally, `plotTranscripts()` uses `mapTranscriptsToEvents()` to identify comp
 `plotTranscripts()` requires an Ensembl or Gencode GTF using the hg38 build of the human genome. Ensembl GTFs can be retrieved using `r Biocpkg("AnnotationHub")` as below. Several releases are available, and `r Rpackage("maser")` is compatible with any version using the hg38 build.  
 
 Below is the code snippet for retrieving the Ensembl GTF release 85 using `r Biocpkg("AnnotationHub")`. 
+
+```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+if(!require(AnnotationHub)){
+  source("https://bioconductor.org/biocLite.R")
+  biocLite("AnnotationHub")
+}
+```
+
 ```{r, warning = FALSE, message = FALSE}
+if(!require(AnnotationHub)){
+  source("https://bioconductor.org/biocLite.R")
+  biocLite("AnnotationHub")
+}
+
+library(AnnotationHub)
 ah <- AnnotationHub::AnnotationHub()
 ah <- AnnotationHub::subset(ah, species == "Homo sapiens")
 qhs <- AnnotationHub::query(ah, c("Ensembl", "gene", "annotation", "grch38"))
@@ -208,7 +222,7 @@ The *PSI* track in the mutually exclusive exons event wil show two sets of boxpl
 
 ```{r, warning = FALSE, message = FALSE}
 il32_events <- geneEvents(hypoxia_filt, geneS = "IL32", fdr = 0.05, deltaPSI = 0.1 )
-plotTranscripts(il32_events, type = "MXE", event_id = 1136, 
+plotTranscripts(il32_events, type = "MXE", event_id = 1136,
                 gtf = ens_gtf, zoom = FALSE)
 ```
 

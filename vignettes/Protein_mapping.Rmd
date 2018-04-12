@@ -61,7 +61,20 @@ Protein feature annotation of splicing events is performed in two steps.
 
 `mapTranscriptsToEvents()` requires an Ensembl or Gencode GTF using the hg38 build of the human genome. Ensembl GTFs can be retrieved using `r Biocpkg("AnnotationHub")` as below. Several releases are available, and `r Rpackage("maser")` is compatible with any version using the hg38 build.
 
+```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+if(!require(AnnotationHub)){
+  source("https://bioconductor.org/biocLite.R")
+  biocLite("AnnotationHub")
+}
+```
+
 ```{r, warning = FALSE, message = FALSE}
+if(!require(AnnotationHub)){
+  source("https://bioconductor.org/biocLite.R")
+  biocLite("AnnotationHub")
+}
+
+library(AnnotationHub)
 ah <- AnnotationHub::AnnotationHub()
 ah <- AnnotationHub::subset(ah, species == "Homo sapiens")
 qhs <- AnnotationHub::query(ah, c("Ensembl", "gene", "annotation", "grch38"))
@@ -124,6 +137,7 @@ knitr::kable(
 By inspecting the results, we see that the SRSF6 exon skipping event is annotated with the Uniprot features **domain, chain and mod-res (modidifed residue)**. Visualization of the splice event, transcripts and protein features is performed with `plotUniprotKBFeatures()`. In this example, exons in the splice event overlap the	Serine/arginine-rich splicing factor 6 region of the protein, while the upstream exon and downstream exons are overlapping the RRM1 and RRM2 domains of SRSF6, respectively.  
 
 ```{r, warning = FALSE, message = FALSE}
+
 # Plot splice event, transcripts and protein features
 plotUniprotKBFeatures(srsf6_mapped, "SE", event_id = 33209, gtf = ens_gtf, 
    features = c("domain", "chain", "mod-res"), show_transcripts = TRUE)

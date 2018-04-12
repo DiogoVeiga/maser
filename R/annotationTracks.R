@@ -626,8 +626,11 @@ createPSITrackMXE_event <- function(eventGr, PSI_event, groups, zoom){
     end(trackGr) <- end(trackGr) + 50
   }else{
     #create space for boxplot plotting
-    trackGr <- c( range(unlist(eventGr$exon_upstream,eventGr$exon_1)),
-                  range(unlist(eventGr$exon_2,eventGr$exon_downstream))
+    trackGr <- c( range(c(range(eventGr$exon_upstream), 
+                          range(eventGr$exon_1))),
+                  
+                  range(c(range(eventGr$exon_2), 
+                          range(eventGr$exon_downstream)))
     )
     start(trackGr) <- start(trackGr) - 200
     end(trackGr) <- end(trackGr) + 200

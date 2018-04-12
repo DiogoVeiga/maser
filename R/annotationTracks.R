@@ -510,6 +510,7 @@ createUniprotUCSCtrack_localization <- function(eventGr, genome){
 createUniprotKBtracks <- function(eventGr, features, protein_ids){
   
   uniprotTracks <- list()
+  options(ucscChromosomeNames=FALSE)
   
   for(i in 1:length(features)){
     

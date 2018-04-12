@@ -6,7 +6,7 @@ Authors@R: person("Diogo", "Veiga", email = "diogof.veiga@gmail.com",
                   role = c("aut", "cre"))
 Description: This package provides functionalities for analysis, annotation and 
     visualizaton of alternative splicing events.
-Depends: R (>= 3.4.0),
+Depends: R (>= 3.5.0),
     ggplot2,
     GenomicRanges
 License: MIT + file LICENSE

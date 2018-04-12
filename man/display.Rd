@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotEvents.R
 \name{display}
 \alias{display}
-\title{Visualization of splice events annotation using an interactive data table.}
+\title{Visualization of splicing events annotation using an interactive data table.}
 \usage{
 display(events, type)
 }
@@ -16,7 +16,7 @@ display(events, type)
 a datatables object.
 }
 \description{
-Visualization of splice events annotation using an interactive data table.
+Visualization of splicing events annotation using an interactive data table.
 }
 \examples{
 path <- system.file("extdata", file.path("MATS_output"), package = "maser")

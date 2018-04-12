@@ -412,7 +412,7 @@ viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI",
   
 }
 
-#' Visualization of splice events annotation using an interactive data table.
+#' Visualization of splicing events annotation using an interactive data table.
 #' 
 #' @param events a maser object.
 #' @param type character indicating splice type. Possible values are

@@ -61,7 +61,7 @@ filterByEventId <- function(events, event_id, type){
   
 }
 
-#' Filter splice events based on coverage.
+#' Filter splicing events based on coverage.
 #' 
 #' @param events a maser object.
 #' @param avg_reads numeric, average number of reads covering the splice event.
@@ -128,7 +128,7 @@ filterByCoverage <- function(events, avg_reads = 5){
 
 }
 
-#' Filter splice events based on false discovery rate and PSI change.
+#' Filter splicing events based on false discovery rate and PSI change.
 #' 
 #' @param events a maser object.
 #' @param fdr numeric, FDR (False Discovery Rate) cutoff.
@@ -202,7 +202,7 @@ topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
 
 }
 
-#' Retrieve splice events for a given gene.
+#' Retrieve splicing events for a given gene.
 #' 
 #' @param events a maser object.
 #' @param geneS a character indicating the gene symbol.

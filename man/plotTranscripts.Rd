@@ -34,7 +34,7 @@ event. This function calls \code{\link{mapTranscriptsToEvents}} for
 transcript mapping, which in turn 
 uses \code{\link[GenomicRanges:findOverlaps]{GenomicRanges}} for transcript
  overlapping. The \code{\link[Gviz:plotTracks]{GViz}} package is used for 
- creating annotation tracks for genomic visualization of splice events. 
+ creating annotation tracks for genomic visualization of splicing events. 
  
  Each type of splice event requires a specific overlapping rule 
  (described below), #'  and a customized \code{Gviz} plot is created for 
@@ -83,7 +83,7 @@ hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
    "SRSF6_Ensembl85.gtf"), package = "maser")
  ens_gtf <- rtracklayer::import.gff(gtf_path)
 
-## Retrieve gene specific splice events
+## Retrieve gene specific splicing events
 srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6")
 
 ## Plot exon skipping event

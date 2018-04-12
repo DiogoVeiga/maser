@@ -109,7 +109,7 @@ plotGenePSI <- function(events, type, show_replicates = TRUE){
 #' transcript mapping, which in turn 
 #' uses \code{\link[GenomicRanges:findOverlaps]{GenomicRanges}} for transcript
 #'  overlapping. The \code{\link[Gviz:plotTracks]{GViz}} package is used for 
-#'  creating annotation tracks for genomic visualization of splice events. 
+#'  creating annotation tracks for genomic visualization of splicing events. 
 #'  
 #'  Each type of splice event requires a specific overlapping rule 
 #'  (described below), #'  and a customized \code{Gviz} plot is created for 
@@ -158,7 +158,7 @@ plotGenePSI <- function(events, type, show_replicates = TRUE){
 #'    "SRSF6_Ensembl85.gtf"), package = "maser")
 #'  ens_gtf <- rtracklayer::import.gff(gtf_path)
 #' 
-#' ## Retrieve gene specific splice events
+#' ## Retrieve gene specific splicing events
 #' srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6")
 #' 
 #' ## Plot exon skipping event
@@ -265,7 +265,7 @@ plotTranscripts <- function(events, type, event_id, gtf,
 #' @details This is a wrapper function for performing both mapping and 
 #' visualization of protein features affected by the splice event. This function
 #'  calls \code{\link{mapProteinFeaturesToEvents}} for mapping of protein
-#'  features to splice events. 
+#'  features to splicing events. 
 #'  
 #' The \code{\link[Gviz:plotTracks]{GViz}} package is used for creating
 #'  annotation tracks for genomic visualization. 
@@ -284,7 +284,7 @@ plotTranscripts <- function(events, type, event_id, gtf,
 #'    "SRSF6_Ensembl85.gtf"), package = "maser")
 #' ens_gtf <- rtracklayer::import.gff(gtf_path)
 #' 
-#' ## Retrieve gene specific splice events
+#' ## Retrieve gene specific splicing events
 #' srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6")
 #' 
 #' ## Map splicing events to transcripts

@@ -2,7 +2,7 @@
 % Please edit documentation in R/filterEvents.R
 \name{geneEvents}
 \alias{geneEvents}
-\title{Retrieve splice events for a given gene.}
+\title{Retrieve splicing events for a given gene.}
 \usage{
 geneEvents(events, geneS, fdr = 0.05, deltaPSI = 0.1)
 }
@@ -19,7 +19,7 @@ geneEvents(events, geneS, fdr = 0.05, deltaPSI = 0.1)
 a maser object.
 }
 \description{
-Retrieve splice events for a given gene.
+Retrieve splicing events for a given gene.
 }
 \examples{
 path <- system.file("extdata", file.path("MATS_output"), package = "maser")

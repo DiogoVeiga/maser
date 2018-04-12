@@ -2,7 +2,7 @@
 % Please edit documentation in R/maser.R
 \name{annot}
 \alias{annot}
-\title{Retrieve annotation of splice events from a maser object.}
+\title{Retrieve annotation of splicing events from a maser object.}
 \usage{
 annot(events, type)
 }
@@ -16,7 +16,7 @@ are  \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}.}
 a data.frame.
 }
 \description{
-Retrieve annotation of splice events from a maser object.
+Retrieve annotation of splicing events from a maser object.
 }
 \examples{
 path <- system.file("extdata", file.path("MATS_output"), package = "maser")

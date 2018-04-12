@@ -2,7 +2,7 @@
 % Please edit documentation in R/maser.R
 \name{maser}
 \alias{maser}
-\title{Create a maser object by importing rMATS splice events.}
+\title{Create a maser object by importing rMATS splicing events.}
 \usage{
 maser(path, cond_labels, rtype = "ReadsOnTargetAndJunction")
 }
@@ -19,7 +19,7 @@ are \code{c("ReadsOnTargetAndJunction", "JunctionCountOnly")}.}
 A maser object.
 }
 \description{
-Create a maser object by importing rMATS splice events.
+Create a maser object by importing rMATS splicing events.
 }
 \examples{
 path <- system.file("extdata", file.path("MATS_output"), package = "maser")

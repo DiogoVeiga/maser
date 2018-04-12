@@ -34,7 +34,7 @@ Mapping and visualization of UniprotKB protein features affected by splicing.
 This is a wrapper function for performing both mapping and 
 visualization of protein features affected by the splice event. This function
  calls \code{\link{mapProteinFeaturesToEvents}} for mapping of protein
- features to splice events. 
+ features to splicing events. 
  
 The \code{\link[Gviz:plotTracks]{GViz}} package is used for creating
  annotation tracks for genomic visualization. 
@@ -53,7 +53,7 @@ gtf_path <- system.file("extdata", file.path("GTF",
    "SRSF6_Ensembl85.gtf"), package = "maser")
 ens_gtf <- rtracklayer::import.gff(gtf_path)
 
-## Retrieve gene specific splice events
+## Retrieve gene specific splicing events
 srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6")
 
 ## Map splicing events to transcripts

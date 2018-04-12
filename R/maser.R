@@ -205,7 +205,7 @@ create_GRanges <- function(events, type){
   
 }
 
-#' Create a maser object by importing rMATS splice events.
+#' Create a maser object by importing rMATS splicing events.
 #' 
 #' @param path a character specifiying the folder containing rMATS output files.
 #' @param cond_labels a character vector of length 2 describing labels for 
@@ -461,7 +461,7 @@ counts <- function(events, type){
   
 }
 
-#' Retrieve annotation of splice events from a maser object.
+#' Retrieve annotation of splicing events from a maser object.
 #' 
 #' @param events a maser object.
 #' @param type a character indicating the splice type. Possible values 

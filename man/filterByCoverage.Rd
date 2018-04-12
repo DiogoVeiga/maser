@@ -2,7 +2,7 @@
 % Please edit documentation in R/filterEvents.R
 \name{filterByCoverage}
 \alias{filterByCoverage}
-\title{Filter splice events based on coverage.}
+\title{Filter splicing events based on coverage.}
 \usage{
 filterByCoverage(events, avg_reads = 5)
 }
@@ -15,7 +15,7 @@ filterByCoverage(events, avg_reads = 5)
 a maser object.
 }
 \description{
-Filter splice events based on coverage.
+Filter splicing events based on coverage.
 }
 \examples{
 path <- system.file("extdata", file.path("MATS_output"), package = "maser")

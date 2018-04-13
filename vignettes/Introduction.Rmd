@@ -8,7 +8,7 @@ package: maser
 date: "`r Sys.Date()`"
 output:
   BiocStyle::html_document:
-    toc_float: true  
+      toc_float: true
 vignette: >
   %\VignetteIndexEntry{Introduction}
   %\VignetteEngine{knitr::rmarkdown}
@@ -18,7 +18,8 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  dpi = 100
 )
 ```
 
@@ -50,10 +51,10 @@ Throughout the text we use the following abbreviations to describe different typ
 * A5SS, alternative 5' splice site
 
 # Importing rMATS events
-We demonstrate the package with data generated to investigate the effects of hypoxia in alternative splicing in colorectal cancer <link>
-[publication](https://doi.org/10.1038/npjgenmed.2016.20). RNA-seq was collected at 0h and 24h after inducing hypoxia in the HCT116 colorectal cancer cell line, and splicing events were detected using [rMATS](http://rnaseq-mats.sourceforge.net/).
+We demonstrate the package with data generated to investigate alternative splicing in colorectal cancer cells undergoing hypoxia <link>
+[publication](https://doi.org/10.1038/npjgenmed.2016.20). RNA-seq was collected at 0h and 24h after hypoxia in the HCT116 cell line. We applied [rMATS](http://rnaseq-mats.sourceforge.net/) to detect splicing events using the release 25 GTF (GRCh38 build) from the Gencode [website](ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_25/gencode.v25.annotation.gtf.gz). The example dataset was reduced because of size constraints.  
 
-To import splicing events we use the constructor function `maser()` indicating the path containing rMATS files, and labels for conditions. The `maser()` constructor returns an object containing all events quantified by rMATS. 
+To import splicing events, we use the constructor function `maser()` indicating the path containing rMATS files, and labels for conditions. The `maser()` constructor returns an object containing all events quantified by rMATS. 
 
 
 ```{r, warning = FALSE, message = FALSE}
@@ -96,20 +97,24 @@ hypoxia_top
 
 ```
 
-Events in a `maser` object can be queried using an interactive data table provided by `display()`. The table allows to look up event information such as gene names, identifiers and PSI differences.
-
-```{r, warning = FALSE, message = FALSE}
-maser::display(hypoxia_top, "SE")
-
-```
-
-Also, gene specific events can be selected using `geneEvents()`. For instance, there are 8 splicing changes affecting MIB2 as seen below.
+Gene specific events can be selected using `geneEvents()`. For instance, there are 8 splicing changes affecting MIB2 as seen below.
 ```{r, warning = FALSE, message = FALSE}
 hypoxia_mib2 <- geneEvents(hypoxia_filt, geneS = "MIB2", fdr = 0.05, deltaPSI = 0.1)
 print(hypoxia_mib2)
 ```
 
-PSI levels for gene events can be plotted using `plotGenePSI()`, indicating a valid splicing type.
+Events in a `maser` object can be queried using an interactive data table provided by `display()`. The table allows to look up event information such as gene names, identifiers and PSI levels.  
+
+
+```{r, warning = FALSE, message = FALSE}
+
+maser::display(hypoxia_mib2, "SE")
+
+```
+
+PSI levels for gene events can be plotted using `plotGenePSI()`, indicating a valid splicing type.  
+
+
 ```{r, warning = FALSE, message = FALSE}
 plotGenePSI(hypoxia_mib2, type = "SE", show_replicates = TRUE)
 ```
@@ -118,25 +123,25 @@ plotGenePSI(hypoxia_mib2, type = "SE", show_replicates = TRUE)
 An overview of significant events can be obtained using either `dotplot()` or `volcano()` functions, specifying FDR levels, minimum change in PSI between conditions and splicing type.
 Significant events in each condition will be highlighted.
 
-```{r, warning = FALSE, message = FALSE}
+```{r, warning = FALSE, message = FALSE, fig.small = TRUE}
 volcano(hypoxia_filt, fdr = 0.05, deltaPSI = 0.1, type = "SE")
 ```
 
 If only significant events should be plotted, then use `topEvents()` combined with `volcano()` or `dotplot()` for visualization.
-```{r, warning = FALSE, message = FALSE}
+```{r, warning = FALSE, message = FALSE, fig.small = TRUE}
 dotplot(hypoxia_top, type = "SE")
 ```
 
 Splicing patterns of individual replicates can also be inspected using principal component analysis (PCA) and plotted using `pca()`. Also, boxplots of PSI levels distributions for all events in the `maser` object can be visualized using `boxplot_PSI_levels()`. For instance, one can see the higher intron retention levels after 24h of hypoxia.
 
-```{r, warning = FALSE, message = FALSE, fig.small = TRUE}
+```{r, warning = FALSE, message = FALSE, fig.small = TRUE, eval=FALSE}
 pca(hypoxia_filt, type = "RI")
 boxplot_PSI_levels(hypoxia_filt, type = "RI")
 ```
 
-The breakdown of splicing types can be plotted using `splicingDistribution()` and desired significance thresholds. Again, one can see the increase in significant intron retention events after 24h of hypoxia.
+The breakdown of splicing types can be plotted using `splicingDistribution()` and desired significance thresholds. This plot also shows increase in significant intron retention events after 24h of hypoxia.
 
-```{r, warning = FALSE, message = FALSE}
+```{r, warning = FALSE, message = FALSE, fig.wide = TRUE, eval=FALSE}
 splicingDistribution(hypoxia_filt, fdr = 0.05, deltaPSI = 0.1)
 ```
 
@@ -196,7 +201,7 @@ In the example above, there is a significant increase of the cassette exon inclu
 
 Splicing might impact multiple transcripts, as denoted by the exon skipping event affecting MCM3. `plotTranscripts()` shows that multiple transcripts are involved, including four distinct **skipping** transcripts and one **inclusion** transcript, and the cassette exon has a higher PSI level at 24h. In this case, one can predict a switch from multiple transcripts to the *MCM3-004* isoform in hypoxi conditions.
 
-```{r, warning = FALSE, message = FALSE}
+```{r, warning = FALSE, message = FALSE, eval=FALSE}
 mcm3_events <- geneEvents(hypoxia_filt, geneS = "MCM3", fdr = 0.05, deltaPSI = 0.1 )
 plotTranscripts(mcm3_events, type = "SE", event_id = 11867, 
                 gtf = ens_gtf, zoom = FALSE)
@@ -246,7 +251,7 @@ plotTranscripts(bcs1l_gene, type = "A5SS", event_id = 3988,
 
 In this other example, ELOVL1 contains an exon with alternative 3' splice site, being that the longer exon has a signficantly higher PSI in hypoxia. 
 
-```{r, warning = FALSE, message = FALSE}
+```{r, warning = FALSE, message = FALSE, eval=FALSE}
 #A3SS event
 elovl1_gene <- geneEvents(hypoxia_filt, geneS = "ELOVL1")
 plotTranscripts(elovl1_gene, type = "A3SS", event_id = 3030, 

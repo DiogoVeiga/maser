@@ -2,6 +2,8 @@
 title: "Mapping protein features to splicing events"
 shorttitle: "Mapping protein features to splicing events"
 author: "Diogo Veiga"
+affiliation: The Jackson Laboratory for Genomic Medicine, Farmington, CT, USA"
+email: Diogo.Veiga@jax.org
 package: maser
 date: "`r Sys.Date()`"
 output:
@@ -12,6 +14,14 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  dpi = 100
+)
+```
 
 # Overview of protein annotation
 In this vignette, we describe a `r Rpackage("maser")` workflow for annotation and visualization of protein features affected by splicing. 
@@ -170,7 +180,7 @@ plotUniprotKBFeatures(ripk2_annot, type = "SE", event_id = 14319,
 
 BMPR2 is plasma membrane protein that also undergoes splicing in the hypoxia dataset. After transcript mapping and annotation, we find ou that alternative exon is located in the cytoplasmic portion of the protein, and next to kinase domain. Setting `zoom = TRUE` might be useful for a detailed analysis.
 
-```{r, warning = FALSE, message = FALSE}
+```{r, warning = FALSE, message = FALSE, eval=FALSE}
 
 bmpr2_events <- geneEvents(hypoxia_filt, "BMPR2")
 bmpr2_mapped <- mapTranscriptsToEvents(bmpr2_events, ens_gtf)
@@ -181,7 +191,7 @@ bmrp2_annot <- mapProteinFeaturesToEvents(bmpr2_mapped,
 
 ```
 
-```{r, warning = FALSE, message = FALSE}
+```{r, warning = FALSE, message = FALSE, eval=FALSE}
 plotUniprotKBFeatures(bmpr2_mapped, type = "SE", event_id = 25501, 
                       features = c("domain", "topo-dom", "mod-res"), 
                       gtf = ens_gtf, 

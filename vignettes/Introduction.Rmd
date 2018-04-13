@@ -59,6 +59,7 @@ To import splicing events, we use the constructor function `maser()` indicating 
 
 ```{r, warning = FALSE, message = FALSE}
 library(maser)
+library(rtracklayer)
 
 # path to Hypoxia data
 path <- system.file("extdata", file.path("MATS_output"),
@@ -156,14 +157,14 @@ Internally, `plotTranscripts()` uses `mapTranscriptsToEvents()` to identify comp
 
 Below is the code snippet for retrieving the Ensembl GTF release 85 using `r Biocpkg("AnnotationHub")`. 
 
-```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE, eval=FALSE}
 if(!require(AnnotationHub)){
   source("https://bioconductor.org/biocLite.R")
   biocLite("AnnotationHub")
 }
 ```
 
-```{r, warning = FALSE, message = FALSE}
+```{r, warning = FALSE, message = FALSE, eval=FALSE}
 if(!require(AnnotationHub)){
   source("https://bioconductor.org/biocLite.R")
   biocLite("AnnotationHub")
@@ -176,7 +177,17 @@ qhs <- AnnotationHub::query(ah, c("Ensembl", "gene", "annotation", "grch38"))
 ens_gtf <- qhs[["AH51014"]] #Homo_sapiens.GRCh38.85.gtf
 ```
 
-Alternatively, GTFs can be downloaded from the [Ensembl FTP site](ftp://ftp.ensembl.org/pub/release-91/gtf/homo_sapiens) and imported using `readGFF()` from the `r Biocpkg("rtracklayer")` package.
+Alternatively, GTFs can be downloaded from the [Ensembl FTP site](ftp://ftp.ensembl.org/pub/release-91/gtf/homo_sapiens) and imported using `import.gff()` from the `r Biocpkg("rtracklayer")` package.  
+
+We are going to use a reduced GTF extracted from Ensembl Release 85 for running examples.
+
+```{r, warning = FALSE, message = FALSE}
+## Ensembl GTF annotation
+gtf_path <- system.file("extdata", file.path("GTF","Ensembl85_examples.gtf.gz"),
+                        package = "maser")
+ens_gtf <- rtracklayer::import.gff(gtf_path)
+
+```
 
 ## Exon skipping
 
@@ -185,7 +196,8 @@ The most common type of splicing event involves a cassette exon that is either e
 
 ```{r, warning = FALSE, message = FALSE}
 ## Retrieve SRSF6 splicing events
-srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6", fdr = 0.05, deltaPSI = 0.1 )
+srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6", fdr = 0.05, 
+                           deltaPSI = 0.1 )
 
 ## Dislay affected transcripts and PSI levels
 plotTranscripts(srsf6_events, type = "SE", event_id = 33209,

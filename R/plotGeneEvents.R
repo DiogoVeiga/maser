@@ -107,7 +107,7 @@ plotGenePSI <- function(events, type, show_replicates = TRUE){
 #' visualization of Ensembl transcripts that are compatible with the splice 
 #' event. This function calls \code{\link{mapTranscriptsToEvents}} for 
 #' transcript mapping, which in turn 
-#' uses \code{\link[GenomicRanges:findOverlaps]{GenomicRanges}} for transcript
+#' uses \code{findOverlaps} for transcript
 #'  overlapping. The \code{\link[Gviz:plotTracks]{GViz}} package is used for 
 #'  creating annotation tracks for genomic visualization of splicing events. 
 #'  

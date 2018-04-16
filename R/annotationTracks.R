@@ -284,19 +284,20 @@ createAnnotationTrackA3SS_event <- function(eventGr){
   
 }
 
+
 createUniprotKBtracks <- function(eventGr, features, protein_ids){
   
   uniprotTracks <- list()
   options(ucscChromosomeNames=FALSE)
   
-  for(i in 1:length(features)){
+  uniprotTracks <- lapply(seq_along(features), function(i){
     
     feature_gr <- createGRangesUniprotKBtrack(features[i])
     ovl_gr <- overlappingFeatures(feature_gr, eventGr)
     ovl_gr_filt <- ovl_gr[ovl_gr$Uniprot_ID %in% protein_ids, ] 
     
     uniq_features <- match(unique(as.vector(ovl_gr_filt$Name)), 
-                        as.vector(ovl_gr_filt$Name))
+                           as.vector(ovl_gr_filt$Name))
     
     ovl_gr_filt_uniq <- ovl_gr_filt[uniq_features, ]
     
@@ -314,9 +315,10 @@ createUniprotKBtracks <- function(eventGr, features, protein_ids){
       track <- Gviz::AnnotationTrack(range = GRanges(), name = features[i])
     }
     
-    uniprotTracks[[features[i]]] <- track  
-  }
-  
+    return(track)
+    
+  })
+
   return(uniprotTracks)  
   
 }

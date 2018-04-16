@@ -53,61 +53,54 @@ createAnnotationTrack_transcripts <- function(eventGr, gtf_exons,
   return(txn_tracks)
   
 }
-
-
-createAnnotationTrackSE_transcripts <- function(eventGr, gtf_exons,
-                                                is_strict){
-  transcript_id <- NULL
-  tx_ids <- mapTranscriptsSEevent(eventGr, gtf_exons, is_strict)
+#' @importFrom dplyr filter
+createExonTable <- function(gtf_exons, ids){
   
-  # Inclusion track
+  transcript_id <- NULL
   # Recover exons of transcripts for the inclusion track using transcript
   #IDs
-  # AnnotationDbi::keytypes(gtf_txdb)
   res <- dplyr::filter(as.data.frame(gtf_exons), 
-                       transcript_id %in% tx_ids$txn_3exons)
+                       transcript_id %in% ids)
   
-  # Create data frame for inclusion track - follow the model 
+  # Create data frame for transcript track - follow the model 
   #from data(geneModels)
   res.df <- res[, c("seqnames", "start", "end", "strand", "exon_id",
                     "transcript_name")]
   colnames(res.df) <- c("chromosome","start","end","strand","exon", 
                         "transcript")
   
+  return(res.df)
+}
+
+createTxnTrack <- function(res.df, trackLabel, featureName){
+  
   if (nrow(res.df) > 0){ 
-    res.df$feature <- "Inclusion"
-    inclusionTrack <- Gviz::GeneRegionTrack(range = res.df, 
-                                    name = "Inclusion", 
-                                    transcriptAnnotation = "transcript")  
+    res.df$feature <- featureName
+    txnTrack <- Gviz::GeneRegionTrack(range = res.df, 
+                                            name = trackLabel, 
+                                            transcriptAnnotation = "transcript")  
   }else {
-    inclusionTrack <- Gviz::GeneRegionTrack(range = GRanges(),
-                                      name = "Inclusion", 
-                                      transcriptAnnotation = "transcript")  
+    txnTrack <- Gviz::GeneRegionTrack(range = GRanges(),
+                                            name = trackLabel, 
+                                            transcriptAnnotation = "transcript")  
   }
+  return(txnTrack)
+  
+}
+
+#' @importFrom Gviz GeneRegionTrack
+createAnnotationTrackSE_transcripts <- function(eventGr, gtf_exons,
+                                                is_strict){
+  
+  tx_ids <- mapTranscriptsSEevent(eventGr, gtf_exons, is_strict)
+  
+  # Inclusion track
+  res.df <- createExonTable(gtf_exons, tx_ids$txn_3exons)
+  inclusionTrack <- createTxnTrack(res.df, "Inclusion", "Inclusion")
   
   # Skipping track
-  # Recover exons of transcripts for the skipping track using 
-  # transcript IDs
-  res <- dplyr::filter(as.data.frame(gtf_exons), 
-                       transcript_id %in% tx_ids$txn_2exons)
-  
-  # Create data frame for inclusion track - follow the model 
-  # from data(geneModels)
-  res.df <- res[, c("seqnames", "start", "end", "strand", "exon_id",
-                    "transcript_name")]
-  colnames(res.df) <- c("chromosome","start","end","strand","exon", 
-                        "transcript")
-  
-  if (nrow(res.df) > 0){
-    res.df$feature <- "Skipping"
-    skippingTrack <- Gviz::GeneRegionTrack(range = res.df, 
-                                      name = "Skipping", 
-                                      transcriptAnnotation = "transcript")  
-  }else {
-    skippingTrack <- Gviz::GeneRegionTrack(range = GRanges(),
-                                      name = "Skipping", 
-                                      transcriptAnnotation = "transcript")  
-  }
+  res.df <- createExonTable(gtf_exons, tx_ids$txn_2exons)
+  skippingTrack <- createTxnTrack(res.df, "Skipping", "Skipping")
   
   txn_tracks <- list("inclusionTrack" = inclusionTrack,
                      "skippingTrack" = skippingTrack)
@@ -118,58 +111,15 @@ createAnnotationTrackSE_transcripts <- function(eventGr, gtf_exons,
 createAnnotationTrackRI_transcripts <- function(eventGr, gtf_exons,
                                                 is_strict){
   
-  transcript_id <- NULL
   tx_ids <- mapTranscriptsRIevent(eventGr, gtf_exons, is_strict)
   
   # Retention track
-  # Recover exons of transcripts for the retention track using 
-  # transcript IDs
-  res <- dplyr::filter(as.data.frame(gtf_exons), 
-                       transcript_id %in% tx_ids$txn_retention)
-  
-  # Create data frame for inclusion track - follow the model from 
-  # data(geneModels)
-  res.df <- res[, c("seqnames", "start", "end", "strand", "exon_id",
-                    "transcript_name")]
-  colnames(res.df) <- c("chromosome","start","end","strand","exon",
-                        "transcript")
-  
-  if (nrow(res.df) > 0){ 
-    res.df$feature <- "Retention"
-    retention_Track <- Gviz::GeneRegionTrack(range = res.df,
-                                      name = "Retention", 
-                                      transcriptAnnotation = "transcript")  
-  }else {
-    retention_Track <- Gviz::GeneRegionTrack(range = GRanges(),
-                                      name = "Retention", 
-                                      transcriptAnnotation = "transcript")  
-  }
+  res.df <- createExonTable(gtf_exons, tx_ids$txn_retention)
+  retention_Track <- createTxnTrack(res.df, "Retention", "Retention")
   
   # Non-retention track
-  # Recover exons of transcripts for the non-retention track using
-  # transcript IDs
-  res <- dplyr::filter(as.data.frame(gtf_exons), 
-                       transcript_id %in% tx_ids$txn_nonRetention)
-  
-  # Create data frame for inclusion track - follow the model
-  # from data(geneModels)
-  res.df <- res[, c("seqnames", "start", "end", "strand", "exon_id",
-                    "transcript_name")]
-  colnames(res.df) <- c("chromosome","start","end","strand","exon",
-                        "transcript")
-  
-  if (nrow(res.df) > 0){
-    res.df$feature <- "Non_retention"
-    nonRetention_Track <- Gviz::GeneRegionTrack(range = res.df, 
-                                      name = "Non-retention", 
-                                      transcriptAnnotation = "transcript",
-                                      feature = "Non_Retention")  
-  }else {
-    nonRetention_Track <- Gviz::GeneRegionTrack(range = GRanges(),
-                                      name = "Non-retention", 
-                                      transcriptAnnotation = "transcript",
-                                      feature = "Non_Retention")  
-  }
+  res.df <- createExonTable(gtf_exons, tx_ids$txn_nonRetention)
+  nonRetention_Track <- createTxnTrack(res.df, "Non-retention", "Non_Retention")
   
   txn_tracks <- list("inclusionTrack" = retention_Track,
                      "skippingTrack" = nonRetention_Track)
@@ -180,56 +130,15 @@ createAnnotationTrackRI_transcripts <- function(eventGr, gtf_exons,
 createAnnotationTrackMXE_transcripts <- function(eventGr, gtf_exons,
                                                 is_strict){
   
-  transcript_id <- NULL
   tx_ids <- mapTranscriptsMXEevent(eventGr, gtf_exons, is_strict)
 
   # MXE Exon 1 track
-  # Recover exons of transcripts for the MXE Exon 1 track using 
-  # transcript IDs
-  res <- dplyr::filter(as.data.frame(gtf_exons), 
-                       transcript_id %in% tx_ids$txn_mxe_exon1)
-  
-  # Create data frame for inclusion track - follow the model
-  # from data(geneModels)
-  res.df <- res[, c("seqnames", "start", "end", "strand", "exon_id",
-                    "transcript_name")]
-  colnames(res.df) <- c("chromosome","start","end","strand","exon", 
-                        "transcript")
-  
-  if (nrow(res.df) > 0){ 
-    res.df$feature <- "MXE_Exon1"
-    inclusionTrack <- Gviz::GeneRegionTrack(range = res.df,
-                                    name = "MXE Exon 1", 
-                                    transcriptAnnotation = "transcript")  
-  }else {
-    inclusionTrack <- Gviz::GeneRegionTrack(range = GRanges(),
-                                    name = "MXE Exon 1", 
-                                    transcriptAnnotation = "transcript")  
-  }
+  res.df <- createExonTable(gtf_exons, tx_ids$txn_mxe_exon1)
+  inclusionTrack <- createTxnTrack(res.df, "MXE Exon 1", "MXE_Exon1")
   
   # MXE Exon 2 track
-  # Recover exons of transcripts for the MXE Exon 2 track using
-  #transcript IDs
-  res <- dplyr::filter(as.data.frame(gtf_exons), 
-                       transcript_id %in% tx_ids$txn_mxe_exon2)
-  
-  # Create data frame for inclusion track - follow the model from
-  # data(geneModels)
-  res.df <- res[, c("seqnames", "start", "end", "strand", "exon_id",
-                    "transcript_name")]
-  colnames(res.df) <- c("chromosome","start","end","strand","exon", 
-                        "transcript")
-  
-  if (nrow(res.df) > 0){
-    res.df$feature <- "MXE_Exon2"
-    skippingTrack <- Gviz::GeneRegionTrack(range = res.df,
-                                    name = "MXE Exon 2", 
-                                    transcriptAnnotation = "transcript")  
-  }else {
-    skippingTrack <- Gviz::GeneRegionTrack(range = GRanges(),
-                                    name = "MXE Exon 2", 
-                                    transcriptAnnotation = "transcript")  
-  }
+  res.df <- createExonTable(gtf_exons, tx_ids$txn_mxe_exon2)
+  skippingTrack <- createTxnTrack(res.df, "MXE Exon 2", "MXE_Exon2")
   
   txn_tracks <- list("inclusionTrack" = inclusionTrack,
                      "skippingTrack" = skippingTrack)
@@ -239,7 +148,6 @@ createAnnotationTrackMXE_transcripts <- function(eventGr, gtf_exons,
 
 createAnnotationTrackA5SS_transcripts <- function(eventGr, gtf_exons){
   
-  transcript_id <- NULL
   #reverse strand becomes A3SS
   if (as.character(strand(eventGr[1])) == "+"){
     tx_ids <- mapTranscriptsA5SSevent(eventGr, gtf_exons)  
@@ -247,52 +155,13 @@ createAnnotationTrackA5SS_transcripts <- function(eventGr, gtf_exons){
     tx_ids <- mapTranscriptsA3SSevent(eventGr, gtf_exons)  
   }
   
-  # Short track
-  # Recover exons of transcripts for the short track using transcript IDs
-  # AnnotationDbi::keytypes(gtf_txdb)
-  res <- dplyr::filter(as.data.frame(gtf_exons), 
-                       transcript_id %in% tx_ids$txn_short)
-  
-  # Create data frame for inclusion track - follow the model from
-  # data(geneModels)
-  res.df <- res[, c("seqnames", "start", "end", "strand", "exon_id",
-                    "transcript_name")]
-  colnames(res.df) <- c("chromosome","start","end","strand","exon",
-                        "transcript")
-  
-  if (nrow(res.df) > 0){ 
-    res.df$feature <- "A5SS_Short"
-    inclusionTrack <- Gviz::GeneRegionTrack(range = res.df, 
-                                      name = "A5SS Short", 
-                                      transcriptAnnotation = "transcript")  
-  }else {
-    inclusionTrack <- Gviz::GeneRegionTrack(range = GRanges(),
-                                    name = "A5SS Short", 
-                                    transcriptAnnotation = "transcript")  
-  }
+  # Short exon track
+  res.df <- createExonTable(gtf_exons, tx_ids$txn_short)
+  inclusionTrack <- createTxnTrack(res.df, "A5SS Short", "A5SS_Short")
   
   # Long track
-  # Recover exons of transcripts for the long track using transcript IDs
-  res <- dplyr::filter(as.data.frame(gtf_exons), 
-                       transcript_id %in% tx_ids$txn_long)
-  
-  # Create data frame for inclusion track - follow the model
-  # from data(geneModels)
-  res.df <- res[, c("seqnames", "start", "end", "strand", "exon_id",
-                    "transcript_name")]
-  colnames(res.df) <- c("chromosome","start","end","strand","exon",
-                        "transcript")
-  
-  if (nrow(res.df) > 0){
-    res.df$feature <- "A5SS_Long"
-    skippingTrack <- Gviz::GeneRegionTrack(range = res.df,
-                                      name = "A5SS Long", 
-                                      transcriptAnnotation = "transcript")  
-  }else {
-    skippingTrack <- Gviz::GeneRegionTrack(range = GRanges(), 
-                                      name = "A5SS Long", 
-                                      transcriptAnnotation = "transcript")  
-  }
+  res.df <- createExonTable(gtf_exons, tx_ids$txn_long)
+  skippingTrack <- createTxnTrack(res.df, "A5SS Long", "A5SS_Long")
   
   txn_tracks <- list("inclusionTrack" = inclusionTrack,
                      "skippingTrack" = skippingTrack)
@@ -302,7 +171,6 @@ createAnnotationTrackA5SS_transcripts <- function(eventGr, gtf_exons){
 
 createAnnotationTrackA3SS_transcripts <- function(eventGr, gtf_exons){
   
-  transcript_id <- NULL
   #reverse strand becomes A5SS
   if (as.character(strand(eventGr[1])) == "+"){
     tx_ids <- mapTranscriptsA3SSevent(eventGr, gtf_exons)  
@@ -310,52 +178,13 @@ createAnnotationTrackA3SS_transcripts <- function(eventGr, gtf_exons){
     tx_ids <- mapTranscriptsA5SSevent(eventGr, gtf_exons)  
   }
   
-  # Short track
-  # Recover exons of transcripts for the short track using transcript IDs
-  # AnnotationDbi::keytypes(gtf_txdb)
-  res <- dplyr::filter(as.data.frame(gtf_exons), 
-                       transcript_id %in% tx_ids$txn_short)
+  # Short exon track
+  res.df <- createExonTable(gtf_exons, tx_ids$txn_short)
+  inclusionTrack <- createTxnTrack(res.df, "A3SS Short", "A3SS_Short")
   
-  # Create data frame for inclusion track - follow the model 
-  # from data(geneModels)
-  res.df <- res[, c("seqnames", "start", "end", "strand", "exon_id",
-                    "transcript_name")]
-  colnames(res.df) <- c("chromosome","start","end","strand","exon",
-                        "transcript")
-  
-  if (nrow(res.df) > 0){ 
-    res.df$feature <- "A3SS_Short"
-    inclusionTrack <- Gviz::GeneRegionTrack(range = res.df, 
-                                      name = "A3SS Short", 
-                                      transcriptAnnotation = "transcript")  
-  }else {
-    inclusionTrack <- Gviz::GeneRegionTrack(range = GRanges(), 
-                                      name = "A3SS Short", 
-                                      transcriptAnnotation = "transcript")  
-  }
-  
-  # Long track
-  # Recover exons of transcripts for the long track using transcript IDs
-  res <- dplyr::filter(as.data.frame(gtf_exons), 
-                       transcript_id %in% tx_ids$txn_long)
-  
-  # Create data frame for inclusion track - follow the model 
-  # from data(geneModels)
-  res.df <- res[, c("seqnames", "start", "end", "strand", 
-                    "exon_id", "transcript_name")]
-  colnames(res.df) <- c("chromosome","start","end","strand","exon",
-                        "transcript")
-  
-  if (nrow(res.df) > 0){
-    res.df$feature <- "A3SS_Long"
-    skippingTrack <- Gviz::GeneRegionTrack(range = res.df, 
-                                    name = "A3SS Long", 
-                                    transcriptAnnotation = "transcript")  
-  }else {
-    skippingTrack <- Gviz::GeneRegionTrack(range = GRanges(), 
-                                    name = "A3SS Long", 
-                                    transcriptAnnotation = "transcript")  
-  }
+  # Long exon track
+  res.df <- createExonTable(gtf_exons, tx_ids$txn_long)
+  skippingTrack <- createTxnTrack(res.df, "A3SS Long", "A3SS_Long")
   
   txn_tracks <- list("inclusionTrack" = inclusionTrack,
                      "skippingTrack" = skippingTrack)

@@ -377,20 +377,19 @@ createUniprotKBtracks <- function(eventGr, features, protein_ids){
 
 createPSITrack_event <- function(eventGr, PSI_event, groups, type, zoom){
   
-  if(type == "A3SS") {
-    psi_track <- createPSITrackA3SS_event(eventGr, PSI_event, groups, zoom)
-  }
-  
-  if(type == "A5SS") {
-    psi_track <- createPSITrackA5SS_event(eventGr, PSI_event, groups, zoom)
+  if(type == "A3SS" || type == "A5SS" ) {
+    psi_track <- createPSIDataTrack(eventGr, PSI_event, groups, zoom, 
+                                    eventGr$exon_long)
   }
   
   if (type == "SE"){
-    psi_track <- createPSITrackSE_event(eventGr, PSI_event, groups, zoom)
+    psi_track <- createPSIDataTrack(eventGr, PSI_event, groups, zoom, 
+                                    eventGr$exon_target)
   }
   
   if (type == "RI"){
-    psi_track <- createPSITrackRI_event(eventGr, PSI_event, groups, zoom)
+    psi_track <- createPSIDataTrack(eventGr, PSI_event, groups, zoom, 
+                                    eventGr$exon_ir)
   }
   
   if (type == "MXE"){
@@ -401,10 +400,10 @@ createPSITrack_event <- function(eventGr, PSI_event, groups, type, zoom){
   
 }
 
-createPSITrackSE_event <- function(eventGr, PSI_event, groups, zoom){
-  
+createPSIDataTrack <- function(eventGr, PSI_event, groups, zoom, exonGr){
+
   if(zoom){
-    trackGr <- eventGr$exon_target  
+    trackGr <- exonGr  
   }else{
     #create space for boxplot plotting
     trackGr <- range(unlist(eventGr))
@@ -424,29 +423,7 @@ createPSITrackSE_event <- function(eventGr, PSI_event, groups, zoom){
   
 }
 
-createPSITrackRI_event <- function(eventGr, PSI_event, groups, zoom){
-  
-  if(zoom){
-    trackGr <- eventGr$exon_ir  
-  }else{
-    #create space for boxplot plotting
-    trackGr <- range(unlist(eventGr))
-    start(trackGr) <- start(trackGr) - 200
-    end(trackGr) <- end(trackGr) + 200
-  }
-  
-  values(trackGr) <- PSI_event 
-  psi_track <- Gviz::DataTrack(trackGr, 
-                               name = "PSI", 
-                               groups = groups,
-                               legend = TRUE,
-                               type = c("boxplot"),
-                               fill = c("blue", "red"),
-                               col = c("blue", "red"))
-  return(psi_track)
-  
-  
-}
+
 
 createPSITrackMXE_event <- function(eventGr, PSI_event, groups, zoom){
   
@@ -477,51 +454,5 @@ createPSITrackMXE_event <- function(eventGr, PSI_event, groups, zoom){
                                col = c("blue", "red"))
   return(psi_track)
   
-  
-}
-
-createPSITrackA5SS_event <- function(eventGr, PSI_event, groups, zoom){
-  
-  if(zoom){
-    trackGr <- eventGr$exon_long  
-  }else{
-    #create space for boxplot plotting
-    trackGr <- range(unlist(eventGr))
-    start(trackGr) <- start(trackGr) - 200
-    end(trackGr) <- end(trackGr) + 200
-  }
-  
-  values(trackGr) <- PSI_event 
-  psi_track <- Gviz::DataTrack(trackGr, 
-                               name = "PSI", 
-                               groups = groups,
-                               legend = TRUE,
-                               type = c("boxplot"),
-                               fill = c("blue", "red"),
-                               col = c("blue", "red"))
-  return(psi_track)
-  
-}
-
-createPSITrackA3SS_event <- function(eventGr, PSI_event, groups, zoom){
-  
-  if(zoom){
-    trackGr <- eventGr$exon_long  
-  }else{
-    #create space for boxplot plotting
-    trackGr <- range(unlist(eventGr))
-    start(trackGr) <- start(trackGr) - 200
-    end(trackGr) <- end(trackGr) + 200
-  }
-  
-  values(trackGr) <- PSI_event 
-  psi_track <- Gviz::DataTrack(trackGr, 
-                               name = "PSI", 
-                               groups = groups,
-                               legend = TRUE,
-                               type = c("boxplot"),
-                               fill = c("blue", "red"),
-                               col = c("blue", "red"))
-  return(psi_track)
   
 }

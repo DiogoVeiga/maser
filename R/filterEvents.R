@@ -1,66 +1,3 @@
-filterByEventId <- function(events, event_id, type){
-  
-  ID <- NULL
-  
-  if(!is.maser(events)){
-    stop("Parameter events has to be a maser object.")
-  }
-  
-  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  if (!type %in% as_types){
-    stop(cat("\"type\" should be one of the following: ", as_types))
-  }
-  
-  event_filt <- list()
-  
-  annot <- events[[paste0(type,"_","events")]]
-  idx.event <- grep(as.numeric(event_id), annot$ID)
-  
-  if(length(idx.event)==0){
-    stop(cat("Event id not found."))
-  }
-  
-  # filter read counts matrix
-  counts <- events[[paste0(type,"_","counts")]]
-  events_filt[[paste0(type,"_","counts")]] <-
-    counts[ rownames(counts) %in% event_id, , drop = FALSE]
-  
-  # filter PSI matrix
-  PSI <- events[[paste0(type,"_","PSI")]]
-  events_filt[[paste0(type,"_","PSI")]] <-
-    PSI[ rownames(PSI) %in% event_id, , drop = FALSE]
-  
-  # filter rMATS stats
-  stats <- events[[paste0(type,"_","stats")]]
-  events_filt[[paste0(type,"_","stats")]] <- dplyr::filter(stats,
-                                                           ID %in% event_id)
-  
-  # Filter Genomic ranges of alternative splicing events
-  grl <- events[[paste0(type,"_","gr")]]
-  grl_new <- grl
-  for (exon in names(grl)) {
-    
-    exon.gr <- grl[[exon]]
-    grl_new[[exon]] <- exon.gr[exon.gr$ID %in% event_id, ]
-    
-  }
-  events_filt[[paste0(type,"_","gr")]] <- grl_new
-  
-  # Filter Event annotation
-  annot <- events[[paste0(type,"_","events")]]
-  events_filt[[paste0(type,"_","events")]] <-
-    dplyr::filter(annot, ID %in% event_id)
-  
-  
-  events_filt[["n_cond1"]] <- events$n_cond1
-  events_filt[["n_cond2"]] <- events$n_cond2
-  events_filt[["conditions"]] <- events$conditions
-  
-  class(events_filt) <- "maser"
-  return(events_filt)
-  
-}
-
 #' Filter splicing events based on coverage.
 #' 
 #' @param events a maser object.
@@ -82,50 +19,63 @@ filterByCoverage <- function(events, avg_reads = 5){
   
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
     # Re-create events list by coverage filtering
-    events_filt <- events
-
+    events_new <- list()
+    
     for (type in as_types){
 
         # Find event ids with avg_reads > threshold
         counts <- events[[paste0(type,"_","counts")]]
         res_id <- rownames(counts)[rowMeans(counts) > avg_reads]
-
-        # filter read counts matrix
-        events_filt[[paste0(type,"_","counts")]] <-
-                  counts[ rownames(counts) %in% res_id, , drop = FALSE]
-
-        # filter PSI matrix
-        PSI <- events[[paste0(type,"_","PSI")]]
-        events_filt[[paste0(type,"_","PSI")]] <-
-                    PSI[ rownames(PSI) %in% res_id, , drop = FALSE]
-
-        # filter rMATS stats
-        stats <- events[[paste0(type,"_","stats")]]
-        events_filt[[paste0(type,"_","stats")]] <- dplyr::filter(stats,
-                                                    ID %in% res_id)
-
-        # Filter Genomic ranges of alternative splicing events
-        grl <- events[[paste0(type,"_","gr")]]
-        grl_new <- grl
-        for (exon in names(grl)) {
-
-            exon.gr <- grl[[exon]]
-            grl_new[[exon]] <- exon.gr[exon.gr$ID %in% res_id, ]
-
-        }
-        events_filt[[paste0(type,"_","gr")]] <- grl_new
-
-        # Filter Event annotation
-        annot <- events[[paste0(type,"_","events")]]
-        events_filt[[paste0(type,"_","events")]] <-
-                    dplyr::filter(annot, ID %in% res_id)
-
-        #cat("Selecting  ", type, length(res_id), " events\n")
+        events_new <- c(events_new, filterByIds(type, events, res_id))
 
     } # for each event type
+    
+    events_new[["n_cond1"]] <- events$n_cond1
+    events_new[["n_cond2"]] <- events$n_cond2
+    events_new[["conditions"]] <- events$conditions
+    
+    class(events_new) <- "maser"
+    return(events_new)
 
-    return(events_filt)
+}
 
+filterByIds <- function(type, events, res_id){
+  
+  events_filt <- list()
+  
+  # filter read counts matrix
+  counts <- events[[paste0(type,"_","counts")]]
+  events_filt[[paste0(type,"_","counts")]] <-
+   counts[ rownames(counts) %in% res_id, , drop = FALSE]
+  
+  # filter PSI matrix
+  PSI <- events[[paste0(type,"_","PSI")]]
+  events_filt[[paste0(type,"_","PSI")]] <-
+      PSI[ rownames(PSI) %in% res_id, , drop = FALSE]
+  
+  # filter rMATS stats
+  stats <- events[[paste0(type,"_","stats")]]
+  events_filt[[paste0(type,"_","stats")]] <- dplyr::filter(stats,
+                                                         ID %in% res_id)
+  
+  # Filter Genomic ranges of alternative splicing events
+  grl <- events[[paste0(type,"_","gr")]]
+  grl_new <- grl
+  for (exon in names(grl)) {
+    
+    exon.gr <- grl[[exon]]
+    grl_new[[exon]] <- exon.gr[exon.gr$ID %in% res_id, ]
+    
+  }
+  events_filt[[paste0(type,"_","gr")]] <- grl_new
+  
+  # Filter Event annotation
+  annot <- events[[paste0(type,"_","events")]]
+  events_filt[[paste0(type,"_","events")]] <-
+    dplyr::filter(annot, ID %in% res_id)
+  
+  return(events_filt)
+  
 }
 
 #' Filter splicing events based on false discovery rate and PSI change.
@@ -152,51 +102,23 @@ topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
     ID <- NULL  
   
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-    events_top <- events
+    events_top <- list()
 
     for (type in as_types){
 
         stats <- events[[paste0(type,"_","stats")]]
         res <- dplyr::filter(stats, FDR < fdr,
                          abs(IncLevelDifference) > deltaPSI)
-
-        # filter read counts matrix
-        counts <- events[[paste0(type,"_","counts")]]
-        events_top[[paste0(type,"_","counts")]] <- 
-            counts[ rownames(counts) %in% res$ID, , drop = FALSE]
-
-        # filter PSI matrix
-        PSI <- events[[paste0(type,"_","PSI")]]
-        events_top[[paste0(type,"_","PSI")]] <- 
-                PSI[ rownames(PSI) %in% res$ID, , drop = FALSE]
-
-        # filter rMATS stats
-        events_top[[paste0(type,"_","stats")]] <- dplyr::filter(stats,
-                                                            ID %in% res$ID)
-
-        # Filter Genomic ranges of alternative splicing events
-        grl <- events[[paste0(type,"_","gr")]]
-        grl_new <- grl
-        for (exon in names(grl)) {
-
-            exon.gr <- grl[[exon]]
-            grl_new[[exon]] <- exon.gr[exon.gr$ID %in% res$ID, ]
-
-        }
-        events_top[[paste0(type,"_","gr")]] <- grl_new
-
-        # Filter Event annotation
-        annot <- events[[paste0(type,"_","events")]]
-        events_top[[paste0(type,"_","events")]] <- dplyr::filter(annot,
-                                                              ID %in% res$ID)
-
-        #cat("Selecting  ", type, length(res$ID), " events\n")
+        
+        events_top <- c(events_top, filterByIds(type, events, res$ID))
 
     } #each event type
 
-    # Number of samples condition 1 and 2
-    events_top[["n_cond1"]] <- events[["n_cond1"]]
-    events_top[["n_cond2"]] <- events[["n_cond2"]]
+    events_top[["n_cond1"]] <- events$n_cond1
+    events_top[["n_cond2"]] <- events$n_cond2
+    events_top[["conditions"]] <- events$conditions
+    
+    class(events_top) <- "maser"
 
     return(events_top)
 
@@ -226,7 +148,7 @@ geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
   ID <- NULL
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  events_top <- events
+  events_top <- list()
   
   for (type in as_types){
     
@@ -236,42 +158,67 @@ geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
                          abs(IncLevelDifference) > deltaPSI)
     
     resAnnot <- dplyr::filter(annot, geneSymbol %in% geneS)
-    
     keepIDs <- intersect(res$ID,resAnnot$ID)
     
-    # filter read counts matrix
-    counts <- events[[paste0(type,"_","counts")]]
-    events_top[[paste0(type,"_","counts")]] <- 
-            counts[rownames(counts) %in% keepIDs, , drop = FALSE]
-    
-    # filter PSI matrix
-    PSI <- events[[paste0(type,"_","PSI")]]
-    events_top[[paste0(type,"_","PSI")]] <- 
-            PSI[ rownames(PSI) %in% keepIDs, , drop = FALSE]
-    
-    # filter rMATS stats
-    events_top[[paste0(type,"_","stats")]] <- 
-                dplyr::filter(stats, ID %in% keepIDs)
-    
-    # Filter Genomic ranges of alternative splicing events
-    grl <- events[[paste0(type,"_","gr")]]
-    grl_new <- grl
-    for (exon in names(grl)) {
-      
-      exon.gr <- grl[[exon]]
-      grl_new[[exon]] <- exon.gr[exon.gr$ID %in% keepIDs, ]
-      
-    }
-    events_top[[paste0(type,"_","gr")]] <- grl_new
-    
-    # Filter Event annotation
-    events_top[[paste0(type,"_","events")]] <- 
-                    dplyr::filter(annot, ID %in% keepIDs)
-    #cat("Selecting  ", type, length(keepIDs), " events\n")
-    
+    events_top <- c(events_top, filterByIds(type, events, keepIDs))
+
   } #each event type
   
+  events_top[["n_cond1"]] <- events$n_cond1
+  events_top[["n_cond2"]] <- events$n_cond2
+  events_top[["conditions"]] <- events$conditions
+  class(events_top) <- "maser"
+  
   return(events_top)
+  
+}
+
+#' Filter splicing events based on event identifier and type.
+#' 
+#' @param events a maser object.
+#' @param event_id numeric, event identifier.
+#' @param type character indicating splice type. Possible values are
+#'    \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}.
+#' @return a maser object.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' filterByEventId(hypoxia, 33208, "SE")
+#' @export
+
+filterByEventId <- function(events, event_id, type){
+  
+  if(!is.maser(events)){
+    stop("Parameter events has to be a maser object.")
+  }
+  
+  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+  if (!type %in% as_types){
+    stop(cat("\"type\" should be one of the following: ", as_types))
+  }
+  
+  annot <- events[[paste0(type,"_","events")]]
+  idx.event <- grep(as.numeric(event_id), annot$ID)
+  
+  if(length(idx.event)==0){
+    stop(cat("Event id not found."))
+  }
+  
+  event_filt <- list()
+  events_filt <- filterByIds(type, events, event_id)
+  
+  # Create empty slots for remaining types
+  for (atype in as_types[-1*grep(type, as_types)]){
+    events_filt <- c(events_filt, filterByIds(atype, events, 0))
+  }
+  
+  events_filt[["n_cond1"]] <- events$n_cond1
+  events_filt[["n_cond2"]] <- events$n_cond2
+  events_filt[["conditions"]] <- events$conditions
+  
+  class(events_filt) <- "maser"
+  
+  return(events_filt)
   
 }
 

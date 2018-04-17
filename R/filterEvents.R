@@ -228,17 +228,17 @@ countGeneEvents <- function(events, geneS){
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
   event_counts <- c()
-
-  for (type in as_types){
-    
+  
+  event_counts <- vapply(as_types, function(type) {
+  
     annot <- events[[paste0(type,"_","events")]]
     resAnnot <- dplyr::filter(annot, geneSymbol %in% geneS)
-    event_counts <- c(event_counts, length(resAnnot$ID))
-    
-  } #each event type
+    length(resAnnot$ID)
   
-  res <- data.frame(gene = geneS, type = as_types, count = event_counts)
-  return(res)
+    }, numeric(1)
+  )
+  
+  return(event_counts)
   
 }
 

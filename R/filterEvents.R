@@ -59,14 +59,10 @@ filterByIds <- function(type, events, res_id){
                                                          ID %in% res_id)
   
   # Filter Genomic ranges of alternative splicing events
-  grl <- events[[paste0(type,"_","gr")]]
-  grl_new <- grl
-  for (exon in names(grl)) {
-    
-    exon.gr <- grl[[exon]]
-    grl_new[[exon]] <- exon.gr[exon.gr$ID %in% res_id, ]
-    
-  }
+  grl <- events[[paste0(type,"_","gr")]]  
+  grl_new <- lapply(grl, function(exon) {
+    exon[exon$ID %in% res_id,]
+  })
   events_filt[[paste0(type,"_","gr")]] <- grl_new
   
   # Filter Event annotation

@@ -1,3 +1,39 @@
+#Internal function used by all public filtering functions
+filterByIds <- function(type, events, res_id){
+  
+  events_filt <- list()
+  
+  # filter read counts matrix
+  counts <- events[[paste0(type,"_","counts")]]
+  events_filt[[paste0(type,"_","counts")]] <-
+    counts[ rownames(counts) %in% res_id, , drop = FALSE]
+  
+  # filter PSI matrix
+  PSI <- events[[paste0(type,"_","PSI")]]
+  events_filt[[paste0(type,"_","PSI")]] <-
+    PSI[ rownames(PSI) %in% res_id, , drop = FALSE]
+  
+  # filter rMATS stats
+  stats <- events[[paste0(type,"_","stats")]]
+  events_filt[[paste0(type,"_","stats")]] <- dplyr::filter(stats,
+                                                           ID %in% res_id)
+  
+  # Filter Genomic ranges of alternative splicing events
+  grl <- events[[paste0(type,"_","gr")]]  
+  grl_new <- lapply(grl, function(exon) {
+    exon[exon$ID %in% res_id,]
+  })
+  events_filt[[paste0(type,"_","gr")]] <- grl_new
+  
+  # Filter Event annotation
+  annot <- events[[paste0(type,"_","events")]]
+  events_filt[[paste0(type,"_","events")]] <-
+    dplyr::filter(annot, ID %in% res_id)
+  
+  return(events_filt)
+  
+}
+
 #' Filter splicing events based on coverage.
 #' 
 #' @param events a maser object.
@@ -21,14 +57,12 @@ filterByCoverage <- function(events, avg_reads = 5){
     # Re-create events list by coverage filtering
     events_new <- list()
     
+    # Find event ids with avg_reads > threshold
     for (type in as_types){
-
-        # Find event ids with avg_reads > threshold
         counts <- events[[paste0(type,"_","counts")]]
         res_id <- rownames(counts)[rowMeans(counts) > avg_reads]
         events_new <- c(events_new, filterByIds(type, events, res_id))
-
-    } # for each event type
+    } 
     
     events_new[["n_cond1"]] <- events$n_cond1
     events_new[["n_cond2"]] <- events$n_cond2
@@ -39,40 +73,6 @@ filterByCoverage <- function(events, avg_reads = 5){
 
 }
 
-filterByIds <- function(type, events, res_id){
-  
-  events_filt <- list()
-  
-  # filter read counts matrix
-  counts <- events[[paste0(type,"_","counts")]]
-  events_filt[[paste0(type,"_","counts")]] <-
-   counts[ rownames(counts) %in% res_id, , drop = FALSE]
-  
-  # filter PSI matrix
-  PSI <- events[[paste0(type,"_","PSI")]]
-  events_filt[[paste0(type,"_","PSI")]] <-
-      PSI[ rownames(PSI) %in% res_id, , drop = FALSE]
-  
-  # filter rMATS stats
-  stats <- events[[paste0(type,"_","stats")]]
-  events_filt[[paste0(type,"_","stats")]] <- dplyr::filter(stats,
-                                                         ID %in% res_id)
-  
-  # Filter Genomic ranges of alternative splicing events
-  grl <- events[[paste0(type,"_","gr")]]  
-  grl_new <- lapply(grl, function(exon) {
-    exon[exon$ID %in% res_id,]
-  })
-  events_filt[[paste0(type,"_","gr")]] <- grl_new
-  
-  # Filter Event annotation
-  annot <- events[[paste0(type,"_","events")]]
-  events_filt[[paste0(type,"_","events")]] <-
-    dplyr::filter(annot, ID %in% res_id)
-  
-  return(events_filt)
-  
-}
 
 #' Filter splicing events based on false discovery rate and PSI change.
 #' 

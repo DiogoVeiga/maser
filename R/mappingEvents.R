@@ -72,18 +72,17 @@ mapProteinFeaturesToEvents <- function(events, tracks, by = c("feature",
     }
     
     df_filt <- dplyr::filter(df, Category %in% tracks)
-    features <- as.vector(df$Name)
+    features <- as.vector(df_filt$Name)
   }
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-    # Add UniprotKB features annotation
+  # Add UniprotKB features annotation
   events_with_features <- events
   
   # Create GRanges for each UniprotKB feature in features argument
-  features_Gr <- GRangesList()
-  for (i in 1:length(features)) {
-    features_Gr[[ features[i] ]] <- createGRangesUniprotKBtrack(features[i])
-  }
+  features_Gr <- lapply(features, createGRangesUniprotKBtrack)
+  features_Gr <- GRangesList(features_Gr)
+  names(features_Gr) <- features
   
   for (type in as_types){
     

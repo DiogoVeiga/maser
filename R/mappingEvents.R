@@ -48,11 +48,10 @@
 #' @import GenomicRanges
 
 
-mapProteinFeaturesToEvents <- function(events, tracks, by = "feature"){
+mapProteinFeaturesToEvents <- function(events, tracks, by = c("feature", 
+                                                              "category")){
   
-  if (!by %in% c("feature", "category")){
-    stop(cat("\"by\" arg is invalid."))
-  }
+  by <- match.arg(by)
   
   df <- availableFeaturesUniprotKB()
   

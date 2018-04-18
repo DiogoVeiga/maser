@@ -218,7 +218,9 @@ create_GRanges <- function(events, type){
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' @export
 maser <- function(path, cond_labels,
-                  rtype = "ReadsOnTargetAndJunction"){
+                  rtype = c("ReadsOnTargetAndJunction", "JunctionCountOnly")){
+  
+  rtype <- match.arg(rtype)
   
   rmats_out <- list.files(path, pattern = rtype, full.names = FALSE)
   mats <- list()
@@ -420,16 +422,13 @@ asDataFrame <- function(events, type){
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' head(PSI(hypoxia, "SE"))
 #' @export
-PSI <- function(events, type){
+PSI <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
   
   if(!is.maser(events)){
     stop("Parameter events has to be a maser object.")
   }
   
-  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  if (!type %in% as_types){
-    stop(cat("\"type\" should be one of the following: ", as_types))
-  }
+  type <- match.arg(type)
   
   return(events[[paste0(type,"_","PSI")]])
   
@@ -446,16 +445,13 @@ PSI <- function(events, type){
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' head(counts(hypoxia, "SE"))
 #' @export
-counts <- function(events, type){
+counts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
   
   if(!is.maser(events)){
     stop("Parameter events has to be a maser object.")
   }
   
-  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  if (!type %in% as_types){
-    stop(cat("\"type\" should be one of the following: ", as_types))
-  }
+  type <- match.arg(type)
   
   return(events[[paste0(type,"_","counts")]])
   
@@ -472,16 +468,13 @@ counts <- function(events, type){
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' head(annot(hypoxia, "SE"))
 #' @export
-annot <- function(events, type){
+annot <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
   
   if(!is.maser(events)){
     stop("Parameter events has to be a maser object.")
   }
   
-  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  if (!type %in% as_types){
-    stop(cat("\"type\" should be one of the following: ", as_types))
-  }
+  type <- match.arg(type)
   
   return(events[[paste0(type,"_","events")]])
   
@@ -498,16 +491,13 @@ annot <- function(events, type){
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' head(stats(hypoxia, "SE"))
 #' @export
-stats <- function(events, type){
+stats <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
   
   if(!is.maser(events)){
     stop("Parameter events has to be a maser object.")
   }
   
-  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  if (!type %in% as_types){
-    stop(cat("\"type\" should be one of the following: ", as_types))
-  }
+  type <- match.arg(type)
   
   return(asDataFrame(events, type))
   

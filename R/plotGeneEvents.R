@@ -15,17 +15,15 @@
 #' @export
 #' @importFrom ggplot2 ggplot
 
-plotGenePSI <- function(events, type, show_replicates = TRUE){
+plotGenePSI <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
+                        show_replicates = TRUE){
   
   if(!is.maser(events)){
     stop("Parameter events has to be a maser object.")
   }
   
-  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  if (!type %in% as_types){
-    stop(cat("\"type\" should be one of the following: ", as_types))
-  }
-  
+  type <- match.arg(type)
+
   annot <- events[[paste0(type,"_","events")]]
   if (length(unique(annot$geneSymbol)) > 1){
     stop(cat("Multiple genes found. Use geneEvents() to select AS events."))
@@ -171,8 +169,8 @@ plotGenePSI <- function(events, type, show_replicates = TRUE){
 #' @importFrom ggplot2 ggplot
 
 
-plotTranscripts <- function(events, type, event_id, gtf, 
-                            zoom = FALSE, show_PSI = TRUE){
+plotTranscripts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
+                            event_id, gtf, zoom = FALSE, show_PSI = TRUE){
   
   is_strict = TRUE #affects exon skipping, MXE, RI
   
@@ -195,10 +193,7 @@ plotTranscripts <- function(events, type, event_id, gtf,
     GenomeInfoDb::seqlevels(gtf, pruning.mode = "coarse" ) <- std_chr
   }
   
-  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  if (!type %in% as_types){
-    stop(cat("\"type\" should be one of the following: ", as_types))
-  }
+  type <- match.arg(type)
   
   annot <- events[[paste0(type,"_","events")]]
   if (length(unique(annot$geneSymbol)) > 1){
@@ -308,11 +303,12 @@ plotTranscripts <- function(events, type, event_id, gtf,
 #' @import GenomeInfoDb
 #' @importFrom ggplot2 ggplot
 
-plotUniprotKBFeatures <- function(events, type, event_id, gtf,
-                                  features, zoom = FALSE,
+plotUniprotKBFeatures <- function(events, 
+                                  type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
+                                  event_id, gtf, features, zoom = FALSE,
                                   show_transcripts = FALSE){
   
-  is_strict = FALSE
+  is_strict = TRUE
   options(ucscChromosomeNames=FALSE)
 
   if(!is.maser(events)){
@@ -334,11 +330,7 @@ plotUniprotKBFeatures <- function(events, type, event_id, gtf,
     GenomeInfoDb::seqlevels(gtf, pruning.mode = "coarse" ) <- std_chr
   }
   
-  
-  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  if (!type %in% as_types){
-    stop(cat("\"type\" should be one of the following: ", as_types))
-  }
+  type <- match.arg(type)
   
   annot <- events[[paste0(type,"_","events")]]
   if (length(unique(annot$geneSymbol)) > 1){

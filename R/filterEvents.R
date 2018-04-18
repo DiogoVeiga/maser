@@ -182,16 +182,14 @@ geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
 #' filterByEventId(hypoxia, 33208, "SE")
 #' @export
 
-filterByEventId <- function(events, event_id, type){
+filterByEventId <- function(events, event_id, 
+                            type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
   
   if(!is.maser(events)){
     stop("Parameter events has to be a maser object.")
   }
   
-  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  if (!type %in% as_types){
-    stop(cat("\"type\" should be one of the following: ", as_types))
-  }
+  type <- match.arg(type)
   
   annot <- events[[paste0(type,"_","events")]]
   idx.event <- grep(as.numeric(event_id), annot$ID)

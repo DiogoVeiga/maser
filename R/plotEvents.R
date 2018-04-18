@@ -13,13 +13,16 @@
 #' @import ggplot2
 #' @importFrom stats median
 
-boxplot_PSI_levels <- function(events, type){
+boxplot_PSI_levels <- function(events, type = c("A3SS", "A5SS", "SE", "RI",
+                                                "MXE")){
     
     Sample <- NULL
-    as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-    if (!type %in% as_types){
-        stop(cat("\"type\" should be one of the following: ", as_types))
+    
+    if(!is.maser(events)){
+      stop("Parameter events has to be a maser object.")
     }
+    
+    type <- match.arg(type)
 
     PSI <- events[[paste0(type,"_","PSI")]]
 
@@ -74,8 +77,12 @@ boxplot_PSI_levels <- function(events, type){
 #' @import ggplot2
 #' 
 splicingDistribution <- function(events, fdr = 0.05, deltaPSI = 0.1){
-
-    # Plot distribution of splicing events per condition
+    
+    if(!is.maser(events)){
+      stop("Parameter events has to be a maser object.")
+    }
+    
+  # Plot distribution of splicing events per condition
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
     nevents_cond1 <- rep(0, length(as_types))
     nevents_cond2 <- rep(0, length(as_types))
@@ -150,12 +157,14 @@ splicingDistribution <- function(events, fdr = 0.05, deltaPSI = 0.1){
 #' @export
 #' @import ggplot2
 #' 
-volcano <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
-
-    as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-    if (!type %in% as_types){
-        stop(cat("\"type\" should be one of the following: ", as_types))
+volcano <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
+                    fdr = 0.05, deltaPSI = 0.1){
+    
+    if(!is.maser(events)){
+      stop("Parameter events has to be a maser object.")
     }
+    
+    type <- match.arg(type)
     
     IncLevelDifference <- NULL
     Status <- NULL
@@ -221,12 +230,14 @@ volcano <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
 #' @export
 #' @import ggplot2
 
-dotplot <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
-
-    as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-    if (!type %in% as_types){
-       stop(cat("\"type\" should be one of the following: ", as_types))
+dotplot <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
+                    fdr = 0.05, deltaPSI = 0.1){
+    
+    if(!is.maser(events)){
+      stop("Parameter events has to be a maser object.")
     }
+    
+    type <- match.arg(type)
 
     FDR <- NULL
     IncLevelDifference <- NULL
@@ -292,12 +303,13 @@ dotplot <- function(events, type, fdr = 0.05, deltaPSI = 0.1){
 #' @import ggplot2
 #' @importFrom stats prcomp
 #' 
-pca <- function(events, type){
-
-    as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-    if (!type %in% as_types){
-        stop(cat("\"type\" should be one of the following: ", as_types))
+pca <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
+    
+    if(!is.maser(events)){
+      stop("Parameter events has to be a maser object.")
     }
+    
+    type <- match.arg(type)
 
     PC1 <- NULL
     PC2 <- NULL
@@ -359,12 +371,11 @@ pca <- function(events, type){
 
 viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI",
                                                   "MXE"), n = 20){
-  
-  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  if (any(!types %in% as_types)){
-    stop(cat("\"type\" should be one or a combination of the following: ",
-             as_types))
+  if(!is.maser(events)){
+    stop("Parameter events has to be a maser object.")
   }
+  
+  types <- match.arg(types, several.ok = TRUE)
   
   type <- NULL
   count <- NULL
@@ -425,16 +436,13 @@ viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI",
 #' hypoxia_top <- topEvents(hypoxia_filt)
 #' display(hypoxia_top, type = "SE")
 #' @export
-display <- function(events, type){
+display <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
   
   if(!is.maser(events)){
     stop("Parameter events has to be a maser object.")
   }
   
-  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  if (!type %in% as_types){
-    stop(cat("\"type\" should be one of the following: ", as_types))
-  }
+  type <- match.arg(type)
   
   data <- asDataFrame(events, type)
   DT::datatable(data, options = list(

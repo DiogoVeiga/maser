@@ -143,15 +143,10 @@ mapENSTtoUniprotKB <- function(enst_ids){
   }
   
   aux <- strsplit(enst_ids,",")[[1]]
-  
-  enst_trans <- rep("NA", length(aux))
-  unipKB_id <- rep("NA", length(aux))
-  
   tokens <- strsplit(aux, "\\.")
   
-  for (i in 1:length(aux)) {
-    enst_trans[i] <- tokens[[i]][[1]]  
-  }
+  enst_trans <- vapply(seq_along(aux),
+                       function(i) tokens[[i]][[1]], character(1))
   
   idx.map <- match(enst_trans, UKB_ENST_map$ENST_ID)
   

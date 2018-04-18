@@ -310,37 +310,34 @@ mapTranscriptsToEvents <- function(events, gtf){
     # Retrieve Events gene ranges
     grl <- events[[paste0(type,"_","gr")]]
     
-    list_txn_a <- c()
-    list_txn_b <- c()
+    list_txn_a <- rep("", nrow(annot))
+    list_txn_b <- rep("", nrow(annot))
     
     for (i in 1:nrow(annot)) {
       
       # Genomic ranges of alternative splicing events
-      eventGr <- GRangesList()
-      for (feature in names(grl)){
-        eventGr[[paste0(feature)]] <- grl[[paste0(feature)]][i]
-      }
+      eventGr <- lapply(names(grl), function(exon){
+        grl[[exon]][i]
+      })
+      eventGr <- GRangesList(eventGr)
+      names(eventGr) <- names(grl)
       
       if(type == "SE") {
         tx_ids <- mapTranscriptsSEevent(eventGr, gtf_exons, is_strict)
-        list_txn_a <- c(list_txn_a, paste(tx_ids$txn_3exons, collapse = ",") )
-        list_txn_b <- c(list_txn_b, paste(tx_ids$txn_2exons, collapse = ",") )
+        list_txn_a[i] <- paste(tx_ids$txn_3exons, collapse = ",")
+        list_txn_b[i] <- paste(tx_ids$txn_2exons, collapse = ",")
       }
       
       if(type == "MXE") {
         tx_ids <- mapTranscriptsMXEevent(eventGr, gtf_exons, is_strict)
-        list_txn_a <- c(list_txn_a, paste(tx_ids$txn_mxe_exon1, 
-                                          collapse = ",") )
-        list_txn_b <- c(list_txn_b, paste(tx_ids$txn_mxe_exon2, 
-                                          collapse = ",") )
+        list_txn_a[i] <- paste(tx_ids$txn_mxe_exon1, collapse = ",")
+        list_txn_b[i] <- paste(tx_ids$txn_mxe_exon2, collapse = ",")
       }
       
       if(type == "RI") {
         tx_ids <- mapTranscriptsRIevent(eventGr, gtf_exons, is_strict)
-        list_txn_a <- c(list_txn_a, paste(tx_ids$txn_nonRetention, 
-                                          collapse = ",") )
-        list_txn_b <- c(list_txn_b, paste(tx_ids$txn_retention, 
-                                          collapse = ",") )
+        list_txn_a[i] <- paste(tx_ids$txn_nonRetention, collapse = ",")
+        list_txn_b[i] <- paste(tx_ids$txn_retention, collapse = ",")
       }
       
       if(type == "A5SS") {
@@ -352,8 +349,8 @@ mapTranscriptsToEvents <- function(events, gtf){
           tx_ids <- mapTranscriptsA3SSevent(eventGr, gtf_exons)  
         }
         
-        list_txn_a <- c(list_txn_a, paste(tx_ids$txn_short, collapse = ",") )
-        list_txn_b <- c(list_txn_b, paste(tx_ids$txn_long, collapse = ",") )
+        list_txn_a[i] <- paste(tx_ids$txn_short, collapse = ",")
+        list_txn_b[i] <- paste(tx_ids$txn_long, collapse = ",")
       }
       
       if(type == "A3SS") {
@@ -365,9 +362,10 @@ mapTranscriptsToEvents <- function(events, gtf){
           tx_ids <- mapTranscriptsA5SSevent(eventGr, gtf_exons)  
         }
 
-        list_txn_a <- c(list_txn_a, paste(tx_ids$txn_short, collapse = ",") )
-        list_txn_b <- c(list_txn_b, paste(tx_ids$txn_long, collapse = ",") )
+        list_txn_a[i] <- paste(tx_ids$txn_short, collapse = ",")
+        list_txn_b[i] <- paste(tx_ids$txn_long, collapse = ",")
       }
+      
     } #for all events in annot
     
     annot[[names(tx_ids)[1]]] <- list_txn_a
@@ -385,8 +383,6 @@ mapTranscriptsToEvents <- function(events, gtf){
 }
 
 mapTranscriptsSEevent <- function(eventGr, gtf_exons, is_strict = TRUE){
-  
-  tx_ids <- list()
   
   # Transcripts overlapping with splicing event 
   ovl.e1 <- GenomicRanges::findOverlaps(eventGr$exon_upstream, 
@@ -447,6 +443,7 @@ mapTranscriptsSEevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   #mytx.ids.2exons <- setdiff(mytx.ids.2exons, mytx.ids.3exons)
   mytx.ids.2exons <- setdiff(mytx.ids.2exons, mytx.ids.intron.skipping)
   
+  tx_ids <- list()
   tx_ids[["txn_3exons"]] <- mytx.ids.3exons
   tx_ids[["txn_2exons"]] <- mytx.ids.2exons
   
@@ -455,8 +452,6 @@ mapTranscriptsSEevent <- function(eventGr, gtf_exons, is_strict = TRUE){
 }
 
 mapTranscriptsRIevent <- function(eventGr, gtf_exons, is_strict = TRUE){
-  
-  tx_ids <- list()
   
   # Transcripts overlapping with splicing event 
   ovl.e1 <- GenomicRanges::findOverlaps(eventGr$exon_upstream, 
@@ -495,16 +490,14 @@ mapTranscriptsRIevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   tx.ids.nonRetention <- setdiff(tx.ids.nonRetention, mytx.ids.intron)
   tx.ids.Retention <- mytx.ids.e2
   
+  tx_ids <- list()
   tx_ids[["txn_nonRetention"]] <- tx.ids.nonRetention
   tx_ids[["txn_retention"]] <- tx.ids.Retention
-  
   return(tx_ids)
   
 }
 
 mapTranscriptsMXEevent <- function(eventGr, gtf_exons, is_strict = TRUE){
-  
-  tx_ids <- list()
   
   # Transcripts overlapping with splicing event 
   ovl.e1 <- GenomicRanges::findOverlaps(eventGr$exon_1, 
@@ -578,17 +571,14 @@ mapTranscriptsMXEevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   mytx.ids.mxe.exon1 <- setdiff(mytx.ids.mxe.exon1, mytx.ids.intron1)
   mytx.ids.mxe.exon2 <- setdiff(mytx.ids.mxe.exon2, mytx.ids.intron2)
   
-  
+  tx_ids <- list()
   tx_ids[["txn_mxe_exon1"]] <- mytx.ids.mxe.exon1
   tx_ids[["txn_mxe_exon2"]] <- mytx.ids.mxe.exon2
-  
   return(tx_ids)
 
 }
 
 mapTranscriptsA5SSevent <- function(eventGr, gtf_exons){
-  
-  tx_ids <- list()
   
   # Transcripts overlapping with splicing event 
   ovl.e1 <- GenomicRanges::findOverlaps(eventGr$exon_short, 
@@ -637,16 +627,14 @@ mapTranscriptsA5SSevent <- function(eventGr, gtf_exons){
   mytx.ids.short <- setdiff(mytx.ids.short, mytx.ids.intron.short)
   mytx.ids.long <- setdiff(mytx.ids.long, mytx.ids.intron.long)
   
+  tx_ids <- list()
   tx_ids[["txn_short"]] <- mytx.ids.short
   tx_ids[["txn_long"]] <- mytx.ids.long
-  
   return(tx_ids)
   
 }
 
 mapTranscriptsA3SSevent <- function(eventGr, gtf_exons){
-  
-  tx_ids <- list()
   
   # Transcripts overlapping with splicing event 
   ovl.e1 <- GenomicRanges::findOverlaps(eventGr$exon_short, 
@@ -694,9 +682,9 @@ mapTranscriptsA3SSevent <- function(eventGr, gtf_exons){
   mytx.ids.short <- setdiff(mytx.ids.short, mytx.ids.intron.short)
   mytx.ids.long <- setdiff(mytx.ids.long, mytx.ids.intron.long)
   
+  tx_ids <- list()
   tx_ids[["txn_short"]] <- mytx.ids.short
   tx_ids[["txn_long"]] <- mytx.ids.long
-  
   return(tx_ids)
 }
   

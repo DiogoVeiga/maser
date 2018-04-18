@@ -171,18 +171,16 @@ mapProteinsToEvents <- function(events){
       next
     }
     
-    list_ptn_a <- c()
-    list_ptn_b <- c()
+    list_ptn_a <- rep("", nrow(annot))
+    list_ptn_b <- rep("", nrow(annot))
     
     for (i in 1:nrow(annot)) {
       
       
-      list_ptn_a <- c(list_ptn_a, paste(mapENSTtoUniprotKB(
-                                        annot[i,idx.cols[1]]), 
-                                        collapse = ","))
-      list_ptn_b <- c(list_ptn_b, paste(mapENSTtoUniprotKB(
-                                        annot[i,idx.cols[2]]), 
-                                        collapse = ","))
+      list_ptn_a[i] <- paste(mapENSTtoUniprotKB(annot[i,idx.cols[1]]), 
+                                        collapse = ",")
+      list_ptn_b[i] <- paste(mapENSTtoUniprotKB(annot[i,idx.cols[2]]), 
+                                        collapse = ",")
       
     } #for all events in annot
     

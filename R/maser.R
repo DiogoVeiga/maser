@@ -1,82 +1,53 @@
+create_GRanges_exon <- function(chr, start, end, strand, id, gene_id, 
+                                gene_symbol){
+  
+  if(any(!grepl("chr", chr))){
+    echr <- paste0("chr", chr)
+  }else{
+    echr <- chr
+  }
+  
+  exon <- GRanges(seqnames = echr, 
+    ranges = IRanges::IRanges(start = start, end = end), strand = strand,
+    ID = id, GeneID = gene_id, geneSymbol = gene_symbol)
+  
+  return(exon)
+  
+}
 
 create_GRanges_ASS <- function(events){
   
-  if(any(!grepl("chr", events$chr))){
-    echr <- paste0("chr", events$chr)
-  }else{
-    echr <- events$chr
-  }
+  exon_long <- create_GRanges_exon(events$chr, events$longExonStart_0base+1,
+    events$longExonEnd, events$strand, events$ID, events$GeneID, 
+    events$geneSymbol)
   
-  exon_long <- GRanges(
-    seqnames = echr,
-    ranges = IRanges::IRanges(start = events$longExonStart_0base+1,
-                     end = events$longExonEnd),
-    strand = events$strand,
-    ID = events$ID,
-    GeneID = events$GeneID,
-    geneSymbol = events$geneSymbol
-  )
-  exon_short <- GRanges(
-    seqnames = echr,
-    ranges = IRanges::IRanges(start = events$shortES+1,
-                     end = events$shortEE),
-    strand = events$strand,
-    ID = as.vector(events$ID),
-    GeneID = events$GeneID,
-    geneSymbol = events$geneSymbol
-    
-  )
-  exon_flanking <- GRanges(
-    seqnames = echr,
-    ranges = IRanges::IRanges(start = events$flankingES+1,
-                     end = events$flankingEE),
-    strand = events$strand,
-    ID = events$ID,
-    GeneID = events$GeneID,
-    geneSymbol = events$geneSymbol
-  )
+  exon_short <- create_GRanges_exon(events$chr, events$shortES+1, events$shortEE,
+              events$strand, events$ID, events$GeneID, events$geneSymbol)
+  
+  exon_flanking <- create_GRanges_exon(events$chr, events$flankingES+1, 
+              events$flankingEE, events$strand, events$ID, events$GeneID, 
+              events$geneSymbol)
+  
   grl <- GRangesList("exon_long" = exon_long, "exon_short" = exon_short,
                      "exon_flanking" = exon_flanking)
   return(grl)
+
 }
 
 create_GRanges_ES <- function(events){
   
-  if(any(!grepl("chr", events$chr))){
-    echr <- paste0("chr", events$chr)
-  }else{
-    echr <- events$chr
-  }
+ 
+  exon_target <- create_GRanges_exon(events$chr, events$exonStart_0base+1,
+              events$exonEnd, events$strand, events$ID, events$GeneID, 
+              events$geneSymbol)
   
-  exon_target <- GRanges(
-    seqnames = echr,
-    ranges = IRanges::IRanges(start = events$exonStart_0base+1,
-                     end = events$exonEnd),
-    strand = events$strand,
-    ID = events$ID,
-    GeneID = events$GeneID,
-    geneSymbol = events$geneSymbol
-  )
+  exon_upstream <- create_GRanges_exon(events$chr, events$upstreamES+1,
+              events$upstreamEE, events$strand, events$ID, events$GeneID, 
+              events$geneSymbol)
   
-  exon_upstream <- GRanges(
-    seqnames = echr,
-    ranges = IRanges::IRanges(start = events$upstreamES+1,
-                     end = events$upstreamEE),
-    strand = events$strand,
-    ID = events$ID,
-    GeneID = events$GeneID,
-    geneSymbol = events$geneSymbol
-  )
-  
-  exon_downstream <- GRanges(
-    seqnames = echr,
-    ranges = IRanges::IRanges(start = events$downstreamES+1,
-                     end = events$downstreamEE),
-    strand = events$strand,
-    ID = events$ID,
-    GeneID = events$GeneID,
-    geneSymbol = events$geneSymbol
-  )
+  exon_downstream <- create_GRanges_exon(events$chr, events$downstreamES+1,
+              events$downstreamEE, events$strand, events$ID, events$GeneID, 
+              events$geneSymbol)
   
   grl <- GRangesList("exon_target" = exon_target,
                      "exon_upstream" = exon_upstream,
@@ -86,41 +57,17 @@ create_GRanges_ES <- function(events){
 
 create_GRanges_IR <- function(events){
   
-  if(any(!grepl("chr", events$chr))){
-    echr <- paste0("chr", events$chr)
-  }else{
-    echr <- events$chr
-  }
+  exon_ir <- create_GRanges_exon(events$chr, events$riExonStart_0base+1,
+              events$riExonEnd, events$strand, events$ID, events$GeneID, 
+              events$geneSymbol)
   
-  exon_ir <- GRanges(
-    seqnames = echr,
-    ranges = IRanges::IRanges(start = events$riExonStart_0base+1,
-                     end = events$riExonEnd),
-    strand = events$strand,
-    ID = events$ID,
-    GeneID = events$GeneID,
-    geneSymbol = events$geneSymbol
-  )
+  exon_upstream <- create_GRanges_exon(events$chr, events$upstreamES+1,
+              events$upstreamEE, events$strand, events$ID, events$GeneID, 
+              events$geneSymbol)
   
-  exon_upstream <- GRanges(
-    seqnames = echr,
-    ranges = IRanges::IRanges(start = events$upstreamES+1,
-                     end = events$upstreamEE),
-    strand = events$strand,
-    ID = events$ID,
-    GeneID = events$GeneID,
-    geneSymbol = events$geneSymbol
-  )
-  
-  exon_downstream <- GRanges(
-    seqnames = echr,
-    ranges = IRanges::IRanges(start = events$downstreamES+1,
-                     end = events$downstreamEE),
-    strand = events$strand,
-    ID = events$ID,
-    GeneID = events$GeneID,
-    geneSymbol = events$geneSymbol
-  )
+  exon_downstream <- create_GRanges_exon(events$chr, events$downstreamES+1,
+              events$downstreamEE, events$strand, events$ID, events$GeneID, 
+              events$geneSymbol)
   
   grl <- GRangesList("exon_ir" = exon_ir,
                      "exon_upstream" = exon_upstream,
@@ -130,54 +77,23 @@ create_GRanges_IR <- function(events){
 
 create_GRanges_MXE <- function(events){
   
-  if(any(!grepl("chr", events$chr))){
-    echr <- paste0("chr", events$chr)
-  }else{
-    echr <- events$chr
-  }
+  exon1 <- create_GRanges_exon(events$chr, events$X1stExonStart_0base+1,
+                  events$X1stExonEnd, events$strand, events$ID, events$GeneID, 
+                  events$geneSymbol)
   
-  exon1 <- GRanges(
-    seqnames = echr,
-    ranges = IRanges::IRanges(start = events$X1stExonStart_0base+1,
-                     end = events$X1stExonEnd),
-    strand = events$strand,
-    ID = events$ID,
-    GeneID = events$GeneID,
-    geneSymbol = events$geneSymbol
-  )
+  exon2 <- create_GRanges_exon(events$chr, events$X2ndExonStart_0base+1,
+                  events$X2ndExonEnd, events$strand, events$ID, events$GeneID, 
+                  events$geneSymbol)
   
-  exon2 <- GRanges(
-    seqnames = echr,
-    ranges = IRanges::IRanges(start = events$X2ndExonStart_0base+1,
-                     end = events$X2ndExonEnd),
-    strand = events$strand,
-    ID = events$ID,
-    GeneID = events$GeneID,
-    geneSymbol = events$geneSymbol
-  )
+  exon_upstream <- create_GRanges_exon(events$chr, events$upstreamES+1,
+                  events$upstreamEE, events$strand, events$ID, events$GeneID, 
+                  events$geneSymbol)
   
-  exon_upstream <- GRanges(
-    seqnames = echr,
-    ranges = IRanges::IRanges(start = events$upstreamES+1,
-                     end = events$upstreamEE),
-    strand = events$strand,
-    ID = events$ID,
-    GeneID = events$GeneID,
-    geneSymbol = events$geneSymbol
-  )
-  
-  exon_downstream <- GRanges(
-    seqnames = echr,
-    ranges = IRanges::IRanges(start = events$downstreamES+1,
-                     end = events$downstreamEE),
-    strand = events$strand,
-    ID = events$ID,
-    GeneID = events$GeneID,
-    geneSymbol = events$geneSymbol
-  )
-  
-  grl <- GRangesList("exon_1" = exon1,
-                     "exon_2" = exon2,
+  exon_downstream <- create_GRanges_exon(events$chr, events$downstreamES+1,
+                  events$downstreamEE, events$strand, events$ID, events$GeneID, 
+                  events$geneSymbol)
+
+  grl <- GRangesList("exon_1" = exon1, "exon_2" = exon2,
                      "exon_upstream" = exon_upstream,
                      "exon_downstream" = exon_downstream)
   return(grl)

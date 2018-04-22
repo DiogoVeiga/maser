@@ -205,10 +205,12 @@ plotTranscripts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
   grl <- events[[paste0(type,"_","gr")]]
   idx.event <- grep(as.numeric(event_id), grl[[1]]$ID)
   
-  eventGr <- GRangesList()
-  for (feature in names(grl)){
-    eventGr[[paste0(feature)]] <- grl[[paste0(feature)]][idx.event]
-  }
+  eventGr <- lapply(names(grl), function(exon){
+    return(grl[[exon]][idx.event])
+  })
+  eventGr <- GRangesList(eventGr)
+  names(eventGr) <- names(grl)
+  
   eventTrack <- createAnnotationTrack_event(eventGr, type)
   
   gtf_exons <- gtf[gtf$type=="exon",]

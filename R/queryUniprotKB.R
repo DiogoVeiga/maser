@@ -18,14 +18,17 @@ createGRangesUniprotKBtrack <- function(track_name){
   colnames(bed)[1:6] <- c("chr", "start", "end", "Uniprot_ID", "V5", "strand") 
   res <- strsplit(bed$V14, ";")
   
-  name <- rep("NA", length(res))
-  for (i in 1:length(res)) {
-    if (length(unlist(res[i])) > 1){
-      name[i] <- paste0(bed$Uniprot_ID[i], ":", res[[i]][[2]])
-    }else{
-      name[i] <- paste0(bed$Uniprot_ID[i], ":", "NA")
-    }
-  }
+  name <- vapply(seq_along(res), function(i){
+
+      if (length(unlist(res[i])) > 1){
+        return(paste0(bed$Uniprot_ID[i], ":", res[[i]][[2]]))
+      }else{
+        return(paste0(bed$Uniprot_ID[i], ":", "NA"))
+      }
+
+    }, character(1)
+  )
+  
   bed <- cbind(bed, Name = name)
   bed.gr <- methods::as(bed, "GRanges")
   

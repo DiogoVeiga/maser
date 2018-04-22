@@ -158,19 +158,16 @@ maser <- function(path, cond_labels,
     inc1 <- strsplit(events[ , counts.col[1]], ",")
     inc2 <- strsplit(events[ , counts.col[2]], ",")
     
-    reads.mat <- matrix(0, nrow = length(inc1),
-                        ncol = length(inc1[[1]]) +
-                          length(inc2[[1]]))
-    for (i in 1:length(inc1)) {
-      reads.mat[i, ] <- suppressWarnings(
-                      c(as.numeric(inc1[[i]]), as.numeric(inc2[[i]]) )
-                      )
-    }
+    reads.inc1 <- suppressWarnings(matrix(as.numeric(unlist(inc1)), 
+                 nrow = length(inc1), ncol = length(inc1[[1]]), byrow = TRUE))
+    
+    reads.inc2 <- suppressWarnings(matrix(as.numeric(unlist(inc2)), 
+                 nrow = length(inc2), ncol = length(inc2[[1]]), byrow = TRUE))
+    
+    reads.mat <- cbind(reads.inc1, reads.inc2)
     rownames(reads.mat) <- events$ID
-    col_names <- c(paste0(cond_labels[1], "_",
-                          seq(1, length(inc1[[1]]), 1)),
-                   paste0(cond_labels[2], "_",
-                          seq(1, length(inc2[[1]]), 1)) )
+    col_names <- c(paste0(cond_labels[1], "_", seq(1, length(inc1[[1]]), 1)),
+                   paste0(cond_labels[2], "_", seq(1, length(inc2[[1]]), 1)) )
     
     colnames(reads.mat) <- col_names
     mats[[paste0(type,"_","counts")]] <- reads.mat
@@ -179,15 +176,14 @@ maser <- function(path, cond_labels,
     inc1 <- strsplit(events[ , "IncLevel1"], ",")
     inc2 <- strsplit(events[ , "IncLevel2"], ",")
     
-    reads.mat <- matrix(0, nrow = length(inc1),
-                        ncol = length(inc1[[1]]) +
-                          length(inc2[[1]]))
+    reads.inc1 <- suppressWarnings(matrix(as.numeric(unlist(inc1)), 
+                   nrow = length(inc1), ncol = length(inc1[[1]]), byrow = TRUE))
     
-    for (i in 1:length(inc1)) {
-      reads.mat[i, ] <- suppressWarnings(
-                          c(as.numeric(inc1[[i]]), as.numeric(inc2[[i]]) )
-                        )
-    }
+    reads.inc2 <- suppressWarnings(matrix(as.numeric(unlist(inc2)), 
+                   nrow = length(inc2), ncol = length(inc2[[1]]), byrow = TRUE))
+    
+    reads.mat <- cbind(reads.inc1, reads.inc2)
+    
     rownames(reads.mat) <- events$ID
     colnames(reads.mat) <- col_names
     mats[[paste0(type,"_","PSI")]] <- reads.mat

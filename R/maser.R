@@ -234,14 +234,14 @@ maser <- function(path, cond_labels,
 print.maser <- function(x, ...){
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  counts <- rep(0, length(as_types))
   total <- 0
   line_events <- ""
+  nevents <- 0
   
   for (type in as_types) {
     PSI <- x[[paste0(type,"_","PSI")]]
     nevents <- nrow(PSI)
-    line_events <- paste0(line_events, 
+    line_events <- paste0(line_events,
                           type, ".......... ", nevents, " events\n")
     total <- total + nevents
   }
@@ -293,16 +293,18 @@ asDataFrame <- function(events, type){
   df <- annot
   df <- cbind(df, stats[,2:4])
   
-  PSI_1 <- c("NA", nrow(df))
-  PSI_2 <- c("NA", nrow(df))
-  
   idx.cond1 <- seq(1, events$n_cond1, 1)
   idx.cond2 <- seq(events$n_cond1+1, events$n_cond1+events$n_cond2, 1)
   
-  for (i in 1:nrow(df)) {
-    PSI_1[i] <- paste(PSI[i, idx.cond1], collapse = ",")
-    PSI_2[i] <- paste(PSI[i, idx.cond2], collapse = ",")
-  } 
+  PSI_1 <- vapply(seq_along(PSI[,1]), function(i){
+    paste(PSI[i, idx.cond1], collapse = ",")
+    }, character(1)
+  )
+  
+  PSI_2 <- vapply(seq_along(PSI[,1]), function(i){
+    paste(PSI[i, idx.cond2], collapse = ",")
+  }, character(1)
+  )
   
   df <- cbind(df, PSI_1 = PSI_1, PSI_2 = PSI_2)
   

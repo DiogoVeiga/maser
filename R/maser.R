@@ -238,13 +238,13 @@ print.maser <- function(x, ...){
   line_events <- ""
   nevents <- 0
   
-  for (type in as_types) {
+  lapply(as_types, function(type){
     PSI <- x[[paste0(type,"_","PSI")]]
     nevents <- nrow(PSI)
-    line_events <- paste0(line_events,
+    line_events <<- paste0(line_events,
                           type, ".......... ", nevents, " events\n")
-    total <- total + nevents
-  }
+    total <<- total + nevents
+  })
   
   line1 <- paste0("A maser object with ", total, " splicing events.\n\n")
   line2 <- paste0("Samples description: \n", "Label=", x$conditions[1],
@@ -311,13 +311,11 @@ asDataFrame <- function(events, type){
   exon_df <- data.frame(Chr = as.character(seqnames(grl[[1]])),
                         Strand = as.character(strand(grl[[1]])))
   
-  for (i in 1:length(names(grl))) {
+  lapply(seq_along(grl), function(i){
     res <- as.data.frame(grl[[i]])
     coord <- paste0(res$start, "-", res$end)  
-    label <- names(grl[i])
-    exon_df <- cbind(exon_df, Exon = coord)
-  }
-  
+    exon_df <<- cbind(exon_df, Exon = coord)
+  })
   colnames(exon_df) <- c("Chr", "Strand", names(grl))
   
   df <- cbind(df, exon_df)

@@ -382,21 +382,23 @@ viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI",
   desc <- NULL
   total <- NULL
   
-  geneList <- c()
-  for (atype in types){
+  geneList <- lapply(types, function(atype){
     annot <- events[[paste0(atype,"_","events")]]
-    geneList <- c(geneList, annot$geneSymbol)
-  }
-  geneList <- unique(geneList)
+    return(annot$geneSymbol)
+  })
+  geneList <- unique(unlist(geneList))
   
-  geneList_counts <- data.frame()
-  for (gene in geneList) {
-    gene_counts <- countGeneEvents(events, gene)
-    geneList_counts <- rbind(geneList_counts, gene_counts)
-  }
+  geneList_counts <- data.frame(gene = rep(geneList, each = length(as_types)), 
+                            type = rep(as_types, length(geneList)), 
+                            counts = rep(0, length(geneList)*length(as_types)))
   
+  counts <- lapply(seq_along(geneList), function(i){
+    gene_counts <- countGeneEvents(events, geneList[i])
+    return(gene_counts$count)
+  })
+  geneList_counts$count <- unlist(counts)
+
   geneList_counts_filt <- dplyr::filter(geneList_counts, type %in% types)
-  
   res <- dplyr::group_by(geneList_counts_filt, gene)
   res2 <- dplyr::summarise(res, total = sum(count)) 
   rankedGenes <- dplyr::arrange(res2, desc(total))

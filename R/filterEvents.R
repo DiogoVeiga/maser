@@ -236,7 +236,9 @@ countGeneEvents <- function(events, geneS){
     }, numeric(1)
   )
   
-  return(event_counts)
+  return(data.frame(gene = geneS, type = names(event_counts), 
+                    count = event_counts))
+  #return(event_counts)
   
 }
 

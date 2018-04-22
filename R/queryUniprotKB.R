@@ -53,22 +53,19 @@ availableFeaturesUniprotKB <- function(){
   
   track_df <- data.frame()
   
-  for (i in 1:length(data)){
-    
+  track_meta <- lapply(seq_along(data), function(i){
     aux <- gsub("\"", "", data[i])
     tokens <- strsplit(aux, split = "=", fixed = FALSE)
-    
     values <- tokens[[1]]
     
     trackName <- gsub(" description", "", values[2])
     trackName <- gsub("UniProtKB ", "", trackName)
-    
     trackDesc <- gsub(" type", "", values[3])
+    return(data.frame(Name = trackName, Description = trackDesc))
     
-    track_df <- rbind(track_df, 
-                      data.frame(Name = trackName, Description = trackDesc))
-
-  }
+  })
+  track_df <- do.call(rbind, track_meta)
+  
   
   track_df_filt <- dplyr::filter(track_df, 
                                  !Name %in% c("non_std_aa", "peptide",
@@ -108,7 +105,7 @@ urlTracksUniprotKB <- function(){
   
   track_df <- data.frame()
   
-  for (i in 1:length(data)){
+  track_meta <- lapply(seq_along(data), function(i){
     
     aux <- gsub("\"", "", data[i])
     tokens <- strsplit(aux, split = "=", fixed = FALSE)
@@ -125,11 +122,11 @@ urlTracksUniprotKB <- function(){
     trackUrl <- gsub(".bb", ".bed", trackUrl)
     trackUrl <- gsub("/hg38", "", trackUrl)
     
-    track_df <- rbind(track_df, 
-                      data.frame(Name = trackName, Description = trackDesc, 
-                                 URL = as.character(trackUrl)))
+    return(data.frame(Name = trackName, Description = trackDesc, 
+                      URL = as.character(trackUrl)))
     
-  }
+  })
+  track_df <- do.call(rbind, track_meta)
   
   return(track_df)
 }

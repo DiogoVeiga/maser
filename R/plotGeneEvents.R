@@ -168,6 +168,7 @@ plotGenePSI <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
 #' @import GenomeInfoDb
 #' @import ggplot2
 #' @import Gviz
+#' @import rtracklayer
 
 
 plotTranscripts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),

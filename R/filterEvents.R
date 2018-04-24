@@ -1,4 +1,4 @@
-#Internal function used by all public filtering functions
+#' @importFrom dplyr filter
 filterByIds <- function(type, events, res_id){
   
   events_filt <- list()
@@ -87,6 +87,7 @@ filterByCoverage <- function(events, avg_reads = 5){
 #' ## To select all events with minimum 10% change in PSI, and FDR < 0.01 
 #' hypoxia_top <- topEvents(hypoxia, fdr = 0.01, deltaPSI = 0.1)
 #' @export
+#' @importFrom dplyr filter
 topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
     
     if(!is.maser(events)){
@@ -132,6 +133,7 @@ topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' hypoxia_mib2 <- geneEvents(hypoxia, "MIB2")
 #' @export
+#' @importFrom dplyr filter
 geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
   
   if(!is.maser(events)){
@@ -190,6 +192,7 @@ filterByEventId <- function(events, event_id,
   }
   
   type <- match.arg(type)
+  as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
   
   annot <- events[[paste0(type,"_","events")]]
   idx.event <- grep(as.numeric(event_id), annot$ID)
@@ -216,6 +219,7 @@ filterByEventId <- function(events, event_id,
   
 }
 
+#' @importFrom dplyr filter
 countGeneEvents <- function(events, geneS){
   
   geneSymbol <- NULL
@@ -238,8 +242,7 @@ countGeneEvents <- function(events, geneS){
   
   return(data.frame(gene = geneS, type = names(event_counts), 
                     count = event_counts))
-  #return(event_counts)
-  
+
 }
 
 

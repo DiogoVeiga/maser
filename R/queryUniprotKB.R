@@ -1,6 +1,7 @@
 
 #' @importFrom utils read.table
 #' @importFrom methods as
+#' @importFrom dplyr filter
 createGRangesUniprotKBtrack <- function(track_name){
   
   Name <- NULL
@@ -45,6 +46,7 @@ createGRangesUniprotKBtrack <- function(track_name){
 #' @examples
 #' head(availableFeaturesUniprotKB(), 10)
 #' @export
+#' @importFrom dplyr filter
 availableFeaturesUniprotKB <- function(){
   
   Name <- NULL
@@ -134,6 +136,8 @@ urlTracksUniprotKB <- function(){
   return(track_df)
 }
 
+#' @import GenomicRanges
+#' @import GenomeInfoDb
 overlappingFeatures <- function(feature_gr, eventGr){
   
   #Define region around splicing event

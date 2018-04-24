@@ -4,7 +4,8 @@
 \alias{plotTranscripts}
 \title{Mapping and visualization of Ensembl transcripts affected by splicing.}
 \usage{
-plotTranscripts(events, type, event_id, gtf, zoom = FALSE, show_PSI = TRUE)
+plotTranscripts(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"), event_id,
+  gtf, zoom = FALSE, show_PSI = TRUE)
 }
 \arguments{
 \item{events}{a maser object.}

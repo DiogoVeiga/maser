@@ -4,7 +4,7 @@
 \alias{pca}
 \title{Prinicipal component analysis of PSI distributions.}
 \usage{
-pca(events, type)
+pca(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"))
 }
 \arguments{
 \item{events}{a maser object.}

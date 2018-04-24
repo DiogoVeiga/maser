@@ -46,6 +46,7 @@
 #' @seealso \code{\link{plotUniprotKBFeatures}}
 #' @export
 #' @import GenomicRanges
+#' @importFrom dplyr filter
 
 
 mapProteinFeaturesToEvents <- function(events, tracks, by = c("feature", 
@@ -269,6 +270,7 @@ mapProteinsToEvents <- function(events){
 #' @seealso \code{\link{plotTranscripts}}
 #' @export
 #' @import GenomicRanges
+#' @importFrom GenomeInfoDb seqlevels
 #' 
 mapTranscriptsToEvents <- function(events, gtf){
   
@@ -380,6 +382,7 @@ mapTranscriptsToEvents <- function(events, gtf){
   
 }
 
+#' @import GenomicRanges
 mapTranscriptsSEevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   
   # Transcripts overlapping with splicing event 
@@ -449,6 +452,7 @@ mapTranscriptsSEevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   
 }
 
+#' @import GenomicRanges
 mapTranscriptsRIevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   
   # Transcripts overlapping with splicing event 
@@ -495,6 +499,7 @@ mapTranscriptsRIevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   
 }
 
+#' @import GenomicRanges
 mapTranscriptsMXEevent <- function(eventGr, gtf_exons, is_strict = TRUE){
   
   # Transcripts overlapping with splicing event 
@@ -576,6 +581,7 @@ mapTranscriptsMXEevent <- function(eventGr, gtf_exons, is_strict = TRUE){
 
 }
 
+#' @import GenomicRanges
 mapTranscriptsA5SSevent <- function(eventGr, gtf_exons){
   
   # Transcripts overlapping with splicing event 
@@ -632,6 +638,7 @@ mapTranscriptsA5SSevent <- function(eventGr, gtf_exons){
   
 }
 
+#' @import GenomicRanges
 mapTranscriptsA3SSevent <- function(eventGr, gtf_exons){
   
   # Transcripts overlapping with splicing event 

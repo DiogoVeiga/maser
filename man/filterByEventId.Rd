@@ -4,7 +4,7 @@
 \alias{filterByEventId}
 \title{Filter splicing events based on event identifier and type.}
 \usage{
-filterByEventId(events, event_id, type)
+filterByEventId(events, event_id, type = c("A3SS", "A5SS", "SE", "RI", "MXE"))
 }
 \arguments{
 \item{events}{a maser object.}

@@ -4,7 +4,7 @@
 \alias{annot}
 \title{Retrieve annotation of splicing events from a maser object.}
 \usage{
-annot(events, type)
+annot(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"))
 }
 \arguments{
 \item{events}{a maser object.}

@@ -4,7 +4,8 @@
 \alias{plotGenePSI}
 \title{Boxplots of Percent spliced-in levels for gene events.}
 \usage{
-plotGenePSI(events, type, show_replicates = TRUE)
+plotGenePSI(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
+  show_replicates = TRUE)
 }
 \arguments{
 \item{events}{a maser object.}

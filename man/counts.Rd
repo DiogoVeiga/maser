@@ -4,7 +4,7 @@
 \alias{counts}
 \title{Retrieve raw read counts values from a maser object.}
 \usage{
-counts(events, type)
+counts(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"))
 }
 \arguments{
 \item{events}{a maser object.}

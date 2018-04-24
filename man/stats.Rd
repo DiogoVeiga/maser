@@ -4,7 +4,7 @@
 \alias{stats}
 \title{Retrieve rMATS stats of differential splicing from a maser object.}
 \usage{
-stats(events, type)
+stats(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"))
 }
 \arguments{
 \item{events}{a maser object.}

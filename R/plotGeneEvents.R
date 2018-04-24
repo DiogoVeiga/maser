@@ -13,7 +13,7 @@
 #' hypoxia_mib2 <- geneEvents(hypoxia_filt, geneS = "MIB2")
 #' plotGenePSI(hypoxia_mib2, type = "SE", show_replicates = TRUE)
 #' @export
-#' @importFrom ggplot2 ggplot
+#' @import ggplot2
 
 plotGenePSI <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
                         show_replicates = TRUE){
@@ -166,7 +166,8 @@ plotGenePSI <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
 #' @export
 #' @import GenomicRanges
 #' @import GenomeInfoDb
-#' @importFrom ggplot2 ggplot
+#' @import ggplot2
+#' @import Gviz
 
 
 plotTranscripts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
@@ -303,7 +304,8 @@ plotTranscripts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
 #' @export
 #' @import GenomicRanges
 #' @import GenomeInfoDb
-#' @importFrom ggplot2 ggplot
+#' @import ggplot2
+#' @import Gviz
 
 plotUniprotKBFeatures <- function(events, 
                                   type = c("A3SS", "A5SS", "SE", "RI", "MXE"),

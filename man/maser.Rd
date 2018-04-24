@@ -4,7 +4,8 @@
 \alias{maser}
 \title{Create a maser object by importing rMATS splicing events.}
 \usage{
-maser(path, cond_labels, rtype = "ReadsOnTargetAndJunction")
+maser(path, cond_labels, rtype = c("ReadsOnTargetAndJunction",
+  "JunctionCountOnly"))
 }
 \arguments{
 \item{path}{a character specifiying the folder containing rMATS output files.}

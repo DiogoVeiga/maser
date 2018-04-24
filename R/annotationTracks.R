@@ -72,6 +72,8 @@ createExonTable <- function(gtf_exons, ids){
   return(res.df)
 }
 
+#' @importFrom Gviz GeneRegionTrack
+#' @importFrom GenomicRanges GRanges
 createTxnTrack <- function(res.df, trackLabel, featureName){
   
   if (nrow(res.df) > 0){ 
@@ -192,6 +194,8 @@ createAnnotationTrackA3SS_transcripts <- function(eventGr, gtf_exons){
   
 }
 
+#' @importFrom Gviz AnnotationTrack
+#' @importFrom Gviz feature
 createAnnotationTrackSE_event <- function(eventGr){
   
   transcript_id <- NULL
@@ -210,6 +214,8 @@ createAnnotationTrackSE_event <- function(eventGr){
   
 }
 
+#' @importFrom Gviz AnnotationTrack
+#' @importFrom Gviz feature
 createAnnotationTrackRI_event <- function(eventGr){
   
   transcript_id <- NULL
@@ -230,6 +236,9 @@ createAnnotationTrackRI_event <- function(eventGr){
   
 }
 
+#' @importFrom Gviz AnnotationTrack
+#' @importFrom Gviz feature
+#' 
 createAnnotationTrackMXE_event <- function(eventGr){
   
   trackGr <- c(eventGr$exon_upstream, eventGr$exon_1, 
@@ -250,6 +259,8 @@ createAnnotationTrackMXE_event <- function(eventGr){
   
 }
 
+#' @importFrom Gviz AnnotationTrack
+#' @importFrom Gviz feature
 createAnnotationTrackA5SS_event <- function(eventGr){
   
   trackGr <- c(eventGr$exon_short, eventGr$exon_flanking,
@@ -267,6 +278,8 @@ createAnnotationTrackA5SS_event <- function(eventGr){
   
 }
 
+#' @importFrom Gviz AnnotationTrack
+#' @importFrom Gviz feature
 createAnnotationTrackA3SS_event <- function(eventGr){
   
   trackGr <- c(eventGr$exon_flanking, eventGr$exon_short,
@@ -284,7 +297,8 @@ createAnnotationTrackA3SS_event <- function(eventGr){
   
 }
 
-
+#' @importFrom Gviz AnnotationTrack
+#' @importFrom GenomicRanges GRanges
 createUniprotKBtracks <- function(eventGr, features, protein_ids){
   
   uniprotTracks <- list()
@@ -350,6 +364,11 @@ createPSITrack_event <- function(eventGr, PSI_event, groups, type, zoom){
   
 }
 
+#' @importFrom Gviz DataTrack
+#' @importFrom GenomicRanges ranges
+#' @importFrom GenomicRanges start
+#' @importFrom GenomicRanges end
+#' @importFrom GenomicRanges values
 createPSIDataTrack <- function(eventGr, PSI_event, groups, zoom, exonGr){
 
   if(zoom){
@@ -374,7 +393,11 @@ createPSIDataTrack <- function(eventGr, PSI_event, groups, zoom, exonGr){
 }
 
 
-
+#' @importFrom Gviz DataTrack
+#' @importFrom GenomicRanges ranges
+#' @importFrom GenomicRanges start
+#' @importFrom GenomicRanges end
+#' @importFrom GenomicRanges values
 createPSITrackMXE_event <- function(eventGr, PSI_event, groups, zoom){
   
   if(zoom){

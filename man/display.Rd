@@ -4,7 +4,7 @@
 \alias{display}
 \title{Visualization of splicing events annotation using an interactive data table.}
 \usage{
-display(events, type)
+display(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"))
 }
 \arguments{
 \item{events}{a maser object.}

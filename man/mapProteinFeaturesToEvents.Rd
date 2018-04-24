@@ -4,7 +4,7 @@
 \alias{mapProteinFeaturesToEvents}
 \title{Mapping of splice events to UniprotKB protein features.}
 \usage{
-mapProteinFeaturesToEvents(events, tracks, by = "feature")
+mapProteinFeaturesToEvents(events, tracks, by = c("feature", "category"))
 }
 \arguments{
 \item{events}{a maser object with transcript and protein identifiers.}

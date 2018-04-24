@@ -4,7 +4,7 @@
 \alias{boxplot_PSI_levels}
 \title{Boxplots of PSI distributions by splicing type.}
 \usage{
-boxplot_PSI_levels(events, type)
+boxplot_PSI_levels(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"))
 }
 \arguments{
 \item{events}{a maser object.}

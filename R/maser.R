@@ -1,3 +1,5 @@
+#' @importFrom GenomicRanges GRanges
+#' @importFrom IRanges IRanges
 create_GRanges_exon <- function(chr, start, end, strand, id, gene_id, 
                                 gene_symbol){
   

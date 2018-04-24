@@ -4,8 +4,8 @@
 \alias{plotUniprotKBFeatures}
 \title{Mapping and visualization of UniprotKB protein features affected by splicing.}
 \usage{
-plotUniprotKBFeatures(events, type, event_id, gtf, features, zoom = FALSE,
-  show_transcripts = FALSE)
+plotUniprotKBFeatures(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
+  event_id, gtf, features, zoom = FALSE, show_transcripts = FALSE)
 }
 \arguments{
 \item{events}{a maser object.}

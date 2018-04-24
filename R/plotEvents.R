@@ -156,7 +156,7 @@ splicingDistribution <- function(events, fdr = 0.05, deltaPSI = 0.1){
 #' volcano(hypoxia_filt, type = "SE")
 #' @export
 #' @import ggplot2
-#' 
+#' @importFrom dplyr filter
 volcano <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
                     fdr = 0.05, deltaPSI = 0.1){
     
@@ -229,6 +229,7 @@ volcano <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
 #' dotplot(hypoxia_filt, type = "SE")
 #' @export
 #' @import ggplot2
+#' @importFrom dplyr filter
 
 dotplot <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
                     fdr = 0.05, deltaPSI = 0.1){
@@ -369,6 +370,8 @@ pca <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
 
 }
 
+#' @importFrom dplyr filter
+#' @import ggplot2
 viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI",
                                                   "MXE"), n = 20){
   if(!is.maser(events)){
@@ -438,6 +441,7 @@ viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI",
 #' hypoxia_top <- topEvents(hypoxia_filt)
 #' display(hypoxia_top, type = "SE")
 #' @export
+#' @importFrom DT datatable
 display <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
   
   if(!is.maser(events)){

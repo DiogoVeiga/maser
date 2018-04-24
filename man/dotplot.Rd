@@ -4,7 +4,8 @@
 \alias{dotplot}
 \title{Dotplot representation of splicing events.}
 \usage{
-dotplot(events, type, fdr = 0.05, deltaPSI = 0.1)
+dotplot(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"), fdr = 0.05,
+  deltaPSI = 0.1)
 }
 \arguments{
 \item{events}{a maser object.}

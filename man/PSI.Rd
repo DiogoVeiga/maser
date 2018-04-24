@@ -4,7 +4,7 @@
 \alias{PSI}
 \title{Retrieve PSI (percent spliced in) values from a maser object.}
 \usage{
-PSI(events, type)
+PSI(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"))
 }
 \arguments{
 \item{events}{a maser object.}

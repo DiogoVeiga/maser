@@ -141,7 +141,7 @@ maser <- function(path, cond_labels,
   rtype <- match.arg(rtype)
   
   rmats_out <- list.files(path, pattern = rtype, full.names = FALSE)
-  mats <- list()
+  mats <- maser_empty()
   
   if(rtype == "JunctionCountOnly"){
     counts.col <- c("IJC_SAMPLE_1", "IJC_SAMPLE_2")
@@ -283,6 +283,28 @@ is.maser <- function(x){
     return(TRUE)    
   }
   
+}
+
+#' @importFrom GenomicRanges GRangesList
+maser_empty <- function(){
+  
+  as_types = c("A3SS", "A5SS", "SE", "RI", "MXE")
+  x <- list()
+  
+  for (type in as_types) {
+    x[[paste0(type,"_","counts")]] <- matrix(nrow = 0, ncol = 0)
+    x[[paste0(type,"_","PSI")]] <- matrix(nrow = 0, ncol = 0)
+    x[[paste0(type,"_","stats")]] <- data.frame()
+    x[[paste0(type,"_","events")]] <- data.frame()
+    x[[paste0(type,"_","gr")]] <- GRangesList()
+  }
+  x$n_cond1 <- NA
+  x$n_cond2 <- NA
+  x$conditions <- "NA"
+  
+  class(x) <- "maser"
+  return(x)
+
 }
 
 asDataFrame <- function(events, type){

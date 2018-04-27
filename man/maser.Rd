@@ -4,8 +4,8 @@
 \alias{maser}
 \title{Create a maser object by importing rMATS splicing events.}
 \usage{
-maser(path, cond_labels, rtype = c("ReadsOnTargetAndJunction",
-  "JunctionCountOnly"))
+maser(path, cond_labels, ftype = c("ReadsOnTargetAndJunctionCounts",
+  "JunctionCountOnly", "JCEC", "JC"))
 }
 \arguments{
 \item{path}{a character specifiying the folder containing rMATS output files.}
@@ -13,14 +13,21 @@ maser(path, cond_labels, rtype = c("ReadsOnTargetAndJunction",
 \item{cond_labels}{a character vector of length 2 describing labels for 
 experimental conditions.}
 
-\item{rtype}{a character indicating the read type. Possible values 
-are \code{c("ReadsOnTargetAndJunction", "JunctionCountOnly")}.}
+\item{ftype}{a character indicating the rMATS file type.
+Possible values are \code{c("ReadsOnTargetAndJunctionCounts",
+"JunctionCountOnly", "JCEC", "JC")}.}
 }
 \value{
 A maser object.
 }
 \description{
 Create a maser object by importing rMATS splicing events.
+}
+\details{
+This function creates a maser object by importing rMATS output. 
+\code{ftype} indicates which rMATS files to import. 
+\code{ReadsOnTargetandJunction or JunctionCountOnly} are used in rMATS 3.2.5 
+or lower. Newer versions (>4.0.1) use \code{"JCEC" or "JC"} nomenclature.
 }
 \examples{
 path <- system.file("extdata", file.path("MATS_output"), package = "maser")

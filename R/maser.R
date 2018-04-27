@@ -128,31 +128,43 @@ create_GRanges <- function(events, type){
 #' @param path a character specifiying the folder containing rMATS output files.
 #' @param cond_labels a character vector of length 2 describing labels for 
 #' experimental conditions.
-#' @param rtype a character indicating the read type. Possible values 
-#' are \code{c("ReadsOnTargetAndJunction", "JunctionCountOnly")}. 
+#' @param ftype a character indicating the rMATS file type.
+#' Possible values are \code{c("ReadsOnTargetAndJunctionCounts",
+#' "JunctionCountOnly", "JCEC", "JC")}. 
 #' @return A maser object.
+#' @details This function creates a maser object by importing rMATS output. 
+#' \code{ftype} indicates which rMATS files to import. 
+#' \code{ReadsOnTargetandJunction or JunctionCountOnly} are used in rMATS 3.2.5 
+#' or lower. Newer versions (>4.0.1) use \code{"JCEC" or "JC"} nomenclature.
 #' @examples
 #' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' @export
 maser <- function(path, cond_labels,
-                  rtype = c("ReadsOnTargetAndJunction", "JunctionCountOnly")){
+                  ftype = c("ReadsOnTargetAndJunctionCounts", 
+                            "JunctionCountOnly",
+                            "JCEC", "JC")){
   
-  rtype <- match.arg(rtype)
+  ftype <- match.arg(ftype)
   
-  rmats_out <- list.files(path, pattern = rtype, full.names = FALSE)
+  rmats_out <- list.files(path, pattern = paste0(ftype, ".txt"),
+                          full.names = FALSE)
   mats <- maser_empty()
   
-  if(rtype == "JunctionCountOnly"){
-    counts.col <- c("IJC_SAMPLE_1", "IJC_SAMPLE_2")
-  }else{
+  if(ftype == "ReadsOnTargetAndJunctionCounts"){
     counts.col <- c("IC_SAMPLE_1", "IC_SAMPLE_2")
+  }else{
+    counts.col <- c("IJC_SAMPLE_1", "IJC_SAMPLE_2")    
+  }
+  
+  if(!grepl("/$", path)){
+    path <- paste0(path, "/")
   }
   
   # For each AS type
   for (f in rmats_out) {
     
-    events <- read.table(paste0(path,"/",f), sep = "\t",
+    events <- read.table(paste0(path, f), sep = "\t",
                          stringsAsFactors = FALSE, header = TRUE)
     type <-  unlist(strsplit(f, ".", fixed = TRUE))[1]
     

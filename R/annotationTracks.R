@@ -301,7 +301,6 @@ createAnnotationTrackA3SS_event <- function(eventGr){
 #' @importFrom GenomicRanges GRanges
 createUniprotKBtracks <- function(eventGr, features, protein_ids){
   
-  uniprotTracks <- list()
   options(ucscChromosomeNames=FALSE)
   
   uniprotTracks <- lapply(seq_along(features), function(i){

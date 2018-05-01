@@ -54,6 +54,7 @@ filterByCoverage <- function(events, avg_reads = 5){
     }
   
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+    
     # Re-create events list by coverage filtering
     events_new <- list()
     
@@ -229,8 +230,7 @@ countGeneEvents <- function(events, geneS){
   }
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  event_counts <- c()
-  
+
   event_counts <- vapply(as_types, function(type) {
   
     annot <- events[[paste0(type,"_","events")]]

@@ -13,7 +13,7 @@ PSI(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"))
 are  \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}.}
 }
 \value{
-a data.frame.
+a matrix.
 }
 \description{
 Retrieve PSI (percent spliced in) values from a maser object.

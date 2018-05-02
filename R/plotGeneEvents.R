@@ -14,16 +14,18 @@
 #' plotGenePSI(hypoxia_mib2, type = "SE", show_replicates = TRUE)
 #' @export
 #' @import ggplot2
+#' @import methods
 
 plotGenePSI <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
                         show_replicates = TRUE){
   
-  if(!is.maser(events)){
+  if(!is(events, "Maser")){
     stop("Parameter events has to be a maser object.")
   }
   
   type <- match.arg(type)
 
+  events <- as.list(events)
   annot <- events[[paste0(type,"_","events")]]
   if (length(unique(annot$geneSymbol)) > 1){
     stop(cat("Multiple genes found. Use geneEvents() to select AS events."))
@@ -169,6 +171,7 @@ plotGenePSI <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
 #' @import ggplot2
 #' @import Gviz
 #' @import rtracklayer
+#' @import methods
 
 
 plotTranscripts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
@@ -176,7 +179,7 @@ plotTranscripts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
   
   is_strict = TRUE #affects exon skipping, MXE, RI
   
-  if(!is.maser(events)){
+  if(!is(events, "Maser")){
     stop("Parameter events has to be a maser object.")
   }
   
@@ -197,6 +200,7 @@ plotTranscripts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
   
   type <- match.arg(type)
   
+  events <- as.list(events)
   annot <- events[[paste0(type,"_","events")]]
   if (length(unique(annot$geneSymbol)) > 1){
     stop(cat("Multiple genes found. Use geneEvents() to select 
@@ -307,6 +311,7 @@ plotTranscripts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
 #' @import GenomeInfoDb
 #' @import ggplot2
 #' @import Gviz
+#' @import methods
 
 plotUniprotKBFeatures <- function(events, 
                                   type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
@@ -316,7 +321,7 @@ plotUniprotKBFeatures <- function(events,
   is_strict = TRUE
   options(ucscChromosomeNames=FALSE)
 
-  if(!is.maser(events)){
+  if(!is(events, "Maser")){
     stop("Parameter events has to be a maser object.")
   }
   
@@ -337,6 +342,7 @@ plotUniprotKBFeatures <- function(events,
   
   type <- match.arg(type)
   
+  events <- as.list(events)
   annot <- events[[paste0(type,"_","events")]]
   if (length(unique(annot$geneSymbol)) > 1){
     stop(cat("Multiple genes found. Use geneEvents() to select gene-specific

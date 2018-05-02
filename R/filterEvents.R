@@ -23,6 +23,8 @@ filterByIds <- function(type, events, res_id){
   grl_new <- lapply(grl, function(exon) {
     exon[exon$ID %in% res_id,]
   })
+  grl_new <- GRangesList(grl_new)
+  
   events_filt[[paste0(type,"_","gr")]] <- grl_new
   
   # Filter Event annotation
@@ -44,16 +46,18 @@ filterByIds <- function(type, events, res_id){
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 #' @export
+#' @import methods
 
 filterByCoverage <- function(events, avg_reads = 5){
     
     ID <- NULL
     
-    if(!is.maser(events)){
+    if(!is(events, "Maser")){
       stop("Parameter events has to be a maser object.")
     }
   
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+    events <- as.list(events)
     
     # Re-create events list by coverage filtering
     events_new <- list()
@@ -69,8 +73,7 @@ filterByCoverage <- function(events, avg_reads = 5){
     events_new[["n_cond2"]] <- events$n_cond2
     events_new[["conditions"]] <- events$conditions
     
-    class(events_new) <- "maser"
-    return(events_new)
+    return(as.maser(events_new))
 
 }
 
@@ -89,9 +92,10 @@ filterByCoverage <- function(events, avg_reads = 5){
 #' hypoxia_top <- topEvents(hypoxia, fdr = 0.01, deltaPSI = 0.1)
 #' @export
 #' @importFrom dplyr filter
+#' @import methods
 topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
     
-    if(!is.maser(events)){
+    if(!is(events, "Maser")){
       stop("Parameter events has to be a maser object.")
     }
     
@@ -100,6 +104,7 @@ topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
     ID <- NULL  
   
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+    events <- as.list(events)
     events_top <- list()
 
     for (type in as_types){
@@ -116,9 +121,7 @@ topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
     events_top[["n_cond2"]] <- events$n_cond2
     events_top[["conditions"]] <- events$conditions
     
-    class(events_top) <- "maser"
-
-    return(events_top)
+    return(as.maser(events_top))
 
 }
 
@@ -135,9 +138,10 @@ topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
 #' hypoxia_mib2 <- geneEvents(hypoxia, "MIB2")
 #' @export
 #' @importFrom dplyr filter
+#' @import methods
 geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
   
-  if(!is.maser(events)){
+  if(!is(events, "Maser")){
     stop("Parameter events has to be a maser object.")
   }
   
@@ -147,6 +151,7 @@ geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
   ID <- NULL
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+  events <- as.list(events)
   events_top <- list()
   
   for (type in as_types){
@@ -166,9 +171,8 @@ geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
   events_top[["n_cond1"]] <- events$n_cond1
   events_top[["n_cond2"]] <- events$n_cond2
   events_top[["conditions"]] <- events$conditions
-  class(events_top) <- "maser"
-  
-  return(events_top)
+
+  return(as.maser(events_top))
   
 }
 
@@ -184,16 +188,18 @@ geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' filterByEventId(hypoxia, 33208, "SE")
 #' @export
+#' @import methods
 
 filterByEventId <- function(events, event_id, 
                             type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
   
-  if(!is.maser(events)){
+  if(!is(events, "Maser")){
     stop("Parameter events has to be a maser object.")
   }
   
   type <- match.arg(type)
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+  events <- as.list(events)
   
   annot <- events[[paste0(type,"_","events")]]
   idx.event <- grep(as.numeric(event_id), annot$ID)
@@ -214,23 +220,23 @@ filterByEventId <- function(events, event_id,
   events_filt[["n_cond2"]] <- events$n_cond2
   events_filt[["conditions"]] <- events$conditions
   
-  class(events_filt) <- "maser"
-  
-  return(events_filt)
+  return(as.maser(events_filt))
   
 }
 
 #' @importFrom dplyr filter
+#' @import methods
 countGeneEvents <- function(events, geneS){
   
   geneSymbol <- NULL
   
-  if(!is.maser(events)){
+  if(!is(events, "Maser")){
     stop("Parameter events has to be a maser object.")
   }
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-
+  events <- as.list(events)
+  
   event_counts <- vapply(as_types, function(type) {
   
     annot <- events[[paste0(type,"_","events")]]

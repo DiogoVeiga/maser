@@ -47,12 +47,16 @@
 #' @export
 #' @import GenomicRanges
 #' @importFrom dplyr filter
-
+#' @import methods
 
 mapProteinFeaturesToEvents <- function(events, tracks, by = c("feature", 
                                                               "category")){
   
   by <- match.arg(by)
+  
+  if(!is(events, "Maser")){
+    stop("Parameter events has to be a maser object.")
+  }
   
   df <- availableFeaturesUniprotKB()
   
@@ -77,6 +81,8 @@ mapProteinFeaturesToEvents <- function(events, tracks, by = c("feature",
   }
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+  events <- as.list(events)
+  
   # Add UniprotKB features annotation
   events_with_features <- events
   
@@ -133,7 +139,7 @@ mapProteinFeaturesToEvents <- function(events, tracks, by = c("feature",
 
   }#all types
   
-  return(events_with_features)
+  return(as.maser(events_with_features))
 }
 
 
@@ -271,12 +277,13 @@ mapProteinsToEvents <- function(events){
 #' @export
 #' @import GenomicRanges
 #' @importFrom GenomeInfoDb seqlevels
+#' @import methods
 #' 
 mapTranscriptsToEvents <- function(events, gtf){
   
   is_strict = TRUE
   
-  if(!is.maser(events)){
+  if(!is(events, "Maser")){
     stop("Parameter events has to be a maser object.")
   }
   
@@ -294,6 +301,7 @@ mapTranscriptsToEvents <- function(events, gtf){
   gtf_exons <- gtf[gtf$type=="exon",]
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
+  events <- as.list(events)
   
   # Add transcripts to events using mapping functions based on sequence overlap 
   events_with_txn <- events
@@ -378,7 +386,7 @@ mapTranscriptsToEvents <- function(events, gtf){
   
   events_with_ptn <- mapProteinsToEvents(events_with_txn)
   
-  return(events_with_ptn)
+  return(as.maser(events_with_ptn))
   
 }
 

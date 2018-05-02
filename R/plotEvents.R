@@ -12,18 +12,20 @@
 #' @export
 #' @import ggplot2
 #' @importFrom stats median
+#' @import methods
 
 boxplot_PSI_levels <- function(events, type = c("A3SS", "A5SS", "SE", "RI",
                                                 "MXE")){
     
     Sample <- NULL
     
-    if(!is.maser(events)){
+    if(!is(events, "Maser")){
       stop("Parameter events has to be a maser object.")
     }
     
     type <- match.arg(type)
-
+    
+    events <- as.list(events)
     PSI <- events[[paste0(type,"_","PSI")]]
 
     PSI_long <- reshape2::melt(PSI)
@@ -75,12 +77,15 @@ boxplot_PSI_levels <- function(events, type = c("A3SS", "A5SS", "SE", "RI",
 #' splicingDistribution(hypoxia_filt)
 #' @export
 #' @import ggplot2
+#' @import methods
 #' 
 splicingDistribution <- function(events, fdr = 0.05, deltaPSI = 0.1){
     
-    if(!is.maser(events)){
+    if(!is(events, "Maser")){
       stop("Parameter events has to be a maser object.")
     }
+    
+    events <- as.list(events)
     
   # Plot distribution of splicing events per condition
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
@@ -157,14 +162,17 @@ splicingDistribution <- function(events, fdr = 0.05, deltaPSI = 0.1){
 #' @export
 #' @import ggplot2
 #' @importFrom dplyr filter
+#' @import methods
 volcano <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
                     fdr = 0.05, deltaPSI = 0.1){
     
-    if(!is.maser(events)){
+    if(!is(events, "Maser")){
       stop("Parameter events has to be a maser object.")
     }
     
     type <- match.arg(type)
+    
+    events <- as.list(events)
     
     IncLevelDifference <- NULL
     Status <- NULL
@@ -230,16 +238,18 @@ volcano <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
 #' @export
 #' @import ggplot2
 #' @importFrom dplyr filter
+#' @import methods
 
 dotplot <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
                     fdr = 0.05, deltaPSI = 0.1){
     
-    if(!is.maser(events)){
+    if(!is(events, "Maser")){
       stop("Parameter events has to be a maser object.")
     }
     
     type <- match.arg(type)
-
+    
+    events <- as.list(events)
     FDR <- NULL
     IncLevelDifference <- NULL
     Status <- NULL
@@ -303,14 +313,16 @@ dotplot <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
 #' @export
 #' @import ggplot2
 #' @importFrom stats prcomp
+#' @import methods
 #' 
 pca <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
     
-    if(!is.maser(events)){
+    if(!is(events, "Maser")){
       stop("Parameter events has to be a maser object.")
     }
     
     type <- match.arg(type)
+    events <- as.list(events)
 
     PC1 <- NULL
     PC2 <- NULL
@@ -372,13 +384,15 @@ pca <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
 
 #' @importFrom dplyr filter
 #' @import ggplot2
+#' @import methods
 viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI",
                                                   "MXE"), n = 20){
-  if(!is.maser(events)){
+  if(!is(events, "Maser")){
     stop("Parameter events has to be a maser object.")
   }
   
   types <- match.arg(types, several.ok = TRUE)
+  events <- as.list(events)
   
   type <- NULL
   count <- NULL
@@ -396,7 +410,7 @@ viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI",
                             counts = rep(0, length(geneList)*length(as_types)))
   
   counts <- lapply(seq_along(geneList), function(i){
-    gene_counts <- countGeneEvents(events, geneList[i])
+    gene_counts <- countGeneEvents(as.maser(events), geneList[i])
     return(gene_counts$count)
   })
   geneList_counts$count <- unlist(counts)
@@ -442,15 +456,17 @@ viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI",
 #' display(hypoxia_top, type = "SE")
 #' @export
 #' @importFrom DT datatable
+#' @import methods
 display <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
   
-  if(!is.maser(events)){
+  if(!is(events, "Maser")){
     stop("Parameter events has to be a maser object.")
   }
   
   type <- match.arg(type)
+  events <- as.list(events)
   
-  data <- asDataFrame(events, type)
+  data <- create_stats(as.maser(events), type)
   DT::datatable(data, options = list(
                         pageLength = 10,
                         filter = "none",

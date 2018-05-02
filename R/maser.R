@@ -140,6 +140,7 @@ create_GRanges <- function(events, type){
 #' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' @export
+#' @import methods
 maser <- function(path, cond_labels,
                   ftype = c("ReadsOnTargetAndJunctionCounts", 
                             "JunctionCountOnly",
@@ -149,7 +150,7 @@ maser <- function(path, cond_labels,
   
   rmats_out <- list.files(path, pattern = paste0(ftype, ".txt"),
                           full.names = FALSE)
-  mats <- maser_empty()
+  mats <- new("Maser")
   
   if(ftype == "ReadsOnTargetAndJunctionCounts"){
     counts.col <- c("IC_SAMPLE_1", "IC_SAMPLE_2")
@@ -184,7 +185,7 @@ maser <- function(path, cond_labels,
                    paste0(cond_labels[2], "_", seq(1, length(inc2[[1]]), 1)) )
     
     colnames(reads.mat) <- col_names
-    mats[[paste0(type,"_","counts")]] <- reads.mat
+    slot(mats, paste0(type,"_","counts")) <- reads.mat
     
     # prepare PSI matrix
     inc1 <- strsplit(events[ , "IncLevel1"], ",")
@@ -200,52 +201,62 @@ maser <- function(path, cond_labels,
     
     rownames(reads.mat) <- events$ID
     colnames(reads.mat) <- col_names
-    mats[[paste0(type,"_","PSI")]] <- reads.mat
+    slot(mats, paste0(type,"_","PSI")) <- reads.mat
     
     # Number of samples condition 1 and 2
-    mats[["n_cond1"]] <- length(inc1[[1]])
-    mats[["n_cond2"]] <- length(inc2[[1]])
-    
-    mats[["conditions"]] <- cond_labels
-    
-    
+    mats@n_cond1 <- length(inc1[[1]])
+    mats@n_cond2 <- length(inc2[[1]])
+    mats@conditions <- cond_labels
+
     # rMATS stats
-    mats[[paste0(type,"_","stats")]] <-
+    slot(mats, paste0(type,"_","stats")) <-
       events[ , c("ID", "PValue", "FDR", "IncLevelDifference")]
     
     # Genomic ranges of alternative splicing events
     grl <- create_GRanges(events, type)
-    mats[[paste0(type,"_","gr")]] <- grl
+    slot(mats, paste0(type,"_","gr")) <- grl
     
     # Event annotation
-    mats[[paste0(type,"_","events")]] <-
+    slot(mats, paste0(type,"_","events")) <-
       events[ , c("ID", "GeneID", "geneSymbol")]
     
-    #cat("Importing ", f, " \n")
-    
-    
+
   }
-  
-  class(mats) <- "maser"
+
   return(mats)
   
 }
 
+setClass("Maser",
+         slots = list(A3SS_counts = "matrix", A3SS_PSI = "matrix",
+                      A3SS_stats = "data.frame", A3SS_events = "data.frame",
+                      A3SS_gr = "GRangesList",
+                      A5SS_counts = "matrix", A5SS_PSI = "matrix",
+                      A5SS_stats = "data.frame", A5SS_events = "data.frame",
+                      A5SS_gr = "GRangesList",
+                      SE_counts = "matrix", SE_PSI = "matrix",
+                      SE_stats = "data.frame", SE_events = "data.frame",
+                      SE_gr = "GRangesList",
+                      RI_counts = "matrix", RI_PSI = "matrix",
+                      RI_stats = "data.frame", RI_events = "data.frame",
+                      RI_gr = "GRangesList",
+                      MXE_counts = "matrix", MXE_PSI = "matrix",
+                      MXE_stats = "data.frame", MXE_events = "data.frame",
+                      MXE_gr = "GRangesList",
+                      n_cond1 = "numeric",
+                      n_cond2 = "numeric",
+                      conditions = "character"
+                      )
+  )
 
-#summary.maser <- function(x) "maser"
-#print.maser <- function(x) "maser"
+setValidity2("Maser", function(object){
+  if(!length(object@conditions) == 2){
+    return("'conditions' slot must be a character vector of size 2.")
+  }
+  TRUE
+})
 
-#' Print a maser object.
-#' 
-#' @param x a maser object.
-#' @param ... further arguments.
-#' @return a character.
-#' @examples
-#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
-#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
-#' print(hypoxia)
-#' @export
-print.maser <- function(x, ...){
+setMethod("show", "Maser", function(object){
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
   total <- 0
@@ -253,84 +264,74 @@ print.maser <- function(x, ...){
   nevents <- 0
   
   lapply(as_types, function(type){
-    PSI <- x[[paste0(type,"_","PSI")]]
+    
+    PSI <- slot(object, paste0(type,"_","PSI"))
     nevents <- nrow(PSI)
     line_events <<- paste0(line_events,
-                          type, ".......... ", nevents, " events\n")
+                           type, ".......... ", nevents, " events\n")
     total <<- total + nevents
   })
   
-  line1 <- paste0("A maser object with ", total, " splicing events.\n\n")
-  line2 <- paste0("Samples description: \n", "Label=", x$conditions[1],
-                  "     n=", x$n_cond1, 
+  conditions <- slot(object, "conditions")
+  line1 <- paste0("A Maser object with ", total, " splicing events.\n\n")
+  line2 <- paste0("Samples description: \n", "Label=", conditions[1],
+                  "     n=", slot(object, "n_cond1"), 
                   " replicates\n")
-  line3 <- paste0( "Label=", x$conditions[2], "     n=", x$n_cond1, 
+  line3 <- paste0( "Label=", conditions[2], "     n=", slot(object, "n_cond2"), 
                    " replicates\n\n")
   line4 <- paste0("Splicing events: \n")
   
   cat(paste0(line1, line2, line3, line4, line_events))
   
-}
+  
+})
 
-summary.maser <- function(x){
-  
-  print.maser(x)
-}
+setMethod("as.list", signature(x="Maser"), function(x) {
+  mapply(function(y) {
+    #apply as.list if the slot is again an user-defined object
+    #therefore, as.list gets applied recursively
+    if (inherits(slot(x,y),"Maser")) {
+      as.list(slot(x,y))
+    } else {
+      #otherwise just return the slot
+      slot(x,y)
+    }
+  },
+  slotNames(class(x)),
+  SIMPLIFY=FALSE)
+})
 
-is.maser <- function(x){
+setGeneric("as.maser", function(x){
+  standardGeneric("as.maser")
+})
+
+setMethod("as.maser", signature(x="list"), function(x){
   
-  attributes <- c("A3SS_counts", "A3SS_PSI", "n_cond1", "n_cond2", "conditions",
-                  "A3SS_stats", "A3SS_gr", "A3SS_events", "A5SS_counts", 
-                  "A5SS_PSI",  "A5SS_stats", "A5SS_gr", "A5SS_events",
-                  "MXE_counts", "MXE_PSI", "MXE_stats", "MXE_gr", "MXE_events",
-                  "RI_counts", "RI_PSI", "RI_stats", "RI_gr", "RI_events",
-                  "SE_counts", "SE_PSI", "SE_stats", "SE_gr", "SE_events")
-  
-  #check if all elements are allowed attributes, and that all attributes are
-  # present and has been created using the constructor maser()
-  if (any(!names(x) %in% attributes)  || any(!attributes %in% names(x)) || 
-      !class(x) == "maser"){
-    return(FALSE)
-  }else{
-    return(TRUE)    
+  y <- new("Maser")
+  if (!any(names(x) %in% slotNames(y))){
+    return("Invalid slot names.")
   }
   
-}
+  lapply(names(x), function(aslot){
+    slot(y, paste0(aslot)) <<- x[[paste0(aslot)]]
+  })
+  return(y)
+  
+})
 
-#' @importFrom GenomicRanges GRangesList
-maser_empty <- function(){
+#' @import methods
+create_stats <- function(events, type){
   
-  as_types = c("A3SS", "A5SS", "SE", "RI", "MXE")
-  x <- list()
-  
-  for (type in as_types) {
-    x[[paste0(type,"_","counts")]] <- matrix(nrow = 0, ncol = 0)
-    x[[paste0(type,"_","PSI")]] <- matrix(nrow = 0, ncol = 0)
-    x[[paste0(type,"_","stats")]] <- data.frame()
-    x[[paste0(type,"_","events")]] <- data.frame()
-    x[[paste0(type,"_","gr")]] <- GRangesList()
-  }
-  x$n_cond1 <- NA
-  x$n_cond2 <- NA
-  x$conditions <- "NA"
-  
-  class(x) <- "maser"
-  return(x)
-
-}
-
-asDataFrame <- function(events, type){
-  
-  annot <- events[[paste0(type,"_","events")]]
-  stats <- events[[paste0(type,"_","stats")]]
-  PSI <- events[[paste0(type,"_","PSI")]]
-  grl <- events[[paste0(type,"_","gr")]]
+  annot <- slot(events, paste0(type,"_","events"))
+  stats <- slot(events, paste0(type,"_","stats"))
+  PSI <- slot(events, paste0(type,"_","PSI"))
+  grl <- slot(events, paste0(type,"_","gr"))
   
   df <- annot
   df <- cbind(df, stats[,2:4])
   
-  idx.cond1 <- seq(1, events$n_cond1, 1)
-  idx.cond2 <- seq(events$n_cond1+1, events$n_cond1+events$n_cond2, 1)
+  idx.cond1 <- seq(1, events@n_cond1, 1)
+  idx.cond2 <- seq(events@n_cond1+1, events@n_cond1+events@n_cond2, 1)
   
   PSI_1 <- vapply(seq_along(PSI[,1]), function(i){
     paste(PSI[i, idx.cond1], collapse = ",")
@@ -364,21 +365,21 @@ asDataFrame <- function(events, type){
 #' @param events a maser object.
 #' @param type a character indicating the splice type. Possible values 
 #' are  \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}. 
-#' @return a data.frame.
+#' @return a matrix.
 #' @examples
 #' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' head(PSI(hypoxia, "SE"))
 #' @export
+#' @import methods
 PSI <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
   
-  if(!is.maser(events)){
-    stop("Parameter events has to be a maser object.")
+  if(!is(events, "Maser")){
+    stop("Parameter events has to be a Maser object.")
   }
   
   type <- match.arg(type)
-  
-  return(events[[paste0(type,"_","PSI")]])
+  return(slot(events, paste0(type,"_","PSI")))
   
 }
 
@@ -387,22 +388,23 @@ PSI <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
 #' @param events a maser object.
 #' @param type a character indicating the splice type. Possible values 
 #' are  \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}. 
-#' @return a data.frame.
+#' @return a matrix.
 #' @examples
 #' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' head(counts(hypoxia, "SE"))
 #' @export
+#' @import methods
 counts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
   
-  if(!is.maser(events)){
-    stop("Parameter events has to be a maser object.")
+  if(!is(events, "Maser")){
+    stop("Parameter events has to be a Maser object.")
   }
   
   type <- match.arg(type)
   
-  return(events[[paste0(type,"_","counts")]])
-  
+  return(slot(events, paste0(type,"_","counts")))
+
 }
 
 #' Retrieve annotation of splicing events from a maser object.
@@ -416,16 +418,17 @@ counts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' head(annot(hypoxia, "SE"))
 #' @export
+#' @import methods
 annot <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
   
-  if(!is.maser(events)){
-    stop("Parameter events has to be a maser object.")
+  if(!is(events, "Maser")){
+    stop("Parameter events has to be a Maser object.")
   }
   
   type <- match.arg(type)
-  
-  return(events[[paste0(type,"_","events")]])
-  
+
+  return(slot(events, paste0(type,"_","events")))
+
 }
 
 #' Retrieve rMATS stats of differential splicing from a maser object.
@@ -439,15 +442,38 @@ annot <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' head(stats(hypoxia, "SE"))
 #' @export
+#' @import methods
 stats <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
   
-  if(!is.maser(events)){
-    stop("Parameter events has to be a maser object.")
+  if(!is(events, "Maser")){
+    stop("Parameter events has to be a Maser object.")
   }
   
   type <- match.arg(type)
+  return(create_stats(events, type))
+
+}
+
+#' Retrieve genomic ranges of splicing events from a maser object.
+#' 
+#' @param events a maser object.
+#' @param type a character indicating the splice type. Possible values 
+#' are  \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}. 
+#' @return a GRangesList.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' head(gr(hypoxia, "SE"))
+#' @export
+#' @import methods
+gr <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
   
-  return(asDataFrame(events, type))
+  if(!is(events, "Maser")){
+    stop("Parameter events has to be a Maser object.")
+  }
+  
+  type <- match.arg(type)
+  return(slot(events, paste0(type,"_","gr")))
   
 }
 

@@ -62,12 +62,16 @@ filterByCoverage <- function(events, avg_reads = 5){
     # Re-create events list by coverage filtering
     events_new <- list()
     
-    # Find event ids with avg_reads > threshold
-    for (type in as_types){
-        counts <- events[[paste0(type,"_","counts")]]
-        res_id <- rownames(counts)[rowMeans(counts) > avg_reads]
-        events_new <- c(events_new, filterByIds(type, events, res_id))
-    } 
+    lapply(as_types, function(type){
+      counts <- events[[paste0(type,"_","counts")]]
+      res_id <- rownames(counts)[rowMeans(counts) > avg_reads]
+      slots <- filterByIds(type, events, res_id)
+      
+      lapply(names(slots), function(attrib){
+        events_new[[paste0(attrib)]] <<- slots[[paste0(attrib)]]
+      })
+      
+    })
     
     events_new[["n_cond1"]] <- events$n_cond1
     events_new[["n_cond2"]] <- events$n_cond2

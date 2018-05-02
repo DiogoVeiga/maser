@@ -111,15 +111,17 @@ topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
     events <- as.list(events)
     events_top <- list()
 
-    for (type in as_types){
+    lapply(as_types, function(type){
+      stats <- events[[paste0(type,"_","stats")]]
+      res <- dplyr::filter(stats, FDR < fdr,
+                           abs(IncLevelDifference) > deltaPSI)
+      slots <- filterByIds(type, events, res$ID)
 
-        stats <- events[[paste0(type,"_","stats")]]
-        res <- dplyr::filter(stats, FDR < fdr,
-                         abs(IncLevelDifference) > deltaPSI)
-        
-        events_top <- c(events_top, filterByIds(type, events, res$ID))
+      lapply(names(slots), function(attrib){
+        events_top[[paste0(attrib)]] <<- slots[[paste0(attrib)]]
+      })
 
-    } #each event type
+    })
 
     events_top[["n_cond1"]] <- events$n_cond1
     events_top[["n_cond2"]] <- events$n_cond2
@@ -158,8 +160,7 @@ geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
   events <- as.list(events)
   events_top <- list()
   
-  for (type in as_types){
-    
+  lapply(as_types, function(type){
     annot <- events[[paste0(type,"_","events")]]
     stats <- events[[paste0(type,"_","stats")]]
     res <- dplyr::filter(stats, FDR < fdr,
@@ -167,10 +168,14 @@ geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
     
     resAnnot <- dplyr::filter(annot, geneSymbol %in% geneS)
     keepIDs <- intersect(res$ID,resAnnot$ID)
+    slots <- filterByIds(type, events, keepIDs)
     
-    events_top <- c(events_top, filterByIds(type, events, keepIDs))
-
-  } #each event type
+    lapply(names(slots), function(attrib){
+      events_top[[paste0(attrib)]] <<- slots[[paste0(attrib)]]
+    })
+    
+  })
+  
   
   events_top[["n_cond1"]] <- events$n_cond1
   events_top[["n_cond2"]] <- events$n_cond2

@@ -57,7 +57,7 @@ filterByCoverage <- function(events, avg_reads = 5){
     }
   
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-    events <- as.list(events)
+    events <- as(events, "list")
     
     # Re-create events list by coverage filtering
     events_new <- list()
@@ -77,7 +77,7 @@ filterByCoverage <- function(events, avg_reads = 5){
     events_new[["n_cond2"]] <- events$n_cond2
     events_new[["conditions"]] <- events$conditions
     
-    return(as.maser(events_new))
+    return(as(events_new, "Maser"))
 
 }
 
@@ -108,7 +108,7 @@ topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
     ID <- NULL  
   
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-    events <- as.list(events)
+    events <- as(events, "list")
     events_top <- list()
 
     lapply(as_types, function(type){
@@ -127,7 +127,7 @@ topEvents <- function(events, fdr = 0.05, deltaPSI = 0.1){
     events_top[["n_cond2"]] <- events$n_cond2
     events_top[["conditions"]] <- events$conditions
     
-    return(as.maser(events_top))
+    return(as(events_top, "Maser"))
 
 }
 
@@ -157,7 +157,7 @@ geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
   ID <- NULL
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  events <- as.list(events)
+  events <- as(events, "list")
   events_top <- list()
   
   lapply(as_types, function(type){
@@ -181,7 +181,7 @@ geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
   events_top[["n_cond2"]] <- events$n_cond2
   events_top[["conditions"]] <- events$conditions
 
-  return(as.maser(events_top))
+  return(as(events_top, "Maser"))
   
 }
 
@@ -208,7 +208,7 @@ filterByEventId <- function(events, event_id,
   
   type <- match.arg(type)
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  events <- as.list(events)
+  events <- as(events, "list")
   
   annot <- events[[paste0(type,"_","events")]]
   idx.event <- grep(as.numeric(event_id), annot$ID)
@@ -229,7 +229,7 @@ filterByEventId <- function(events, event_id,
   events_filt[["n_cond2"]] <- events$n_cond2
   events_filt[["conditions"]] <- events$conditions
   
-  return(as.maser(events_filt))
+  return(as(events_filt, "Maser"))
   
 }
 
@@ -244,7 +244,7 @@ countGeneEvents <- function(events, geneS){
   }
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  events <- as.list(events)
+  events <- as(events, "list")
   
   event_counts <- vapply(as_types, function(type) {
   

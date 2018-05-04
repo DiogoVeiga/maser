@@ -286,37 +286,51 @@ setMethod("show", "Maser", function(object){
   
 })
 
-setMethod("as.list", signature(x="Maser"), function(x) {
+setAs("Maser", "list", function(from){
+  
   mapply(function(y) {
     #apply as.list if the slot is again an user-defined object
     #therefore, as.list gets applied recursively
-    if (inherits(slot(x,y),"Maser")) {
-      as.list(slot(x,y))
+    if (inherits(slot(from,y),"Maser")) {
+      as.list(slot(from,y))
     } else {
       #otherwise just return the slot
-      slot(x,y)
+      slot(from,y)
     }
   },
-  slotNames(class(x)),
+  slotNames(class(from)),
   SIMPLIFY=FALSE)
-})
-
-setGeneric("as.maser", function(x){
-  standardGeneric("as.maser")
-})
-
-setMethod("as.maser", signature(x="list"), function(x){
   
+})
+
+# setGeneric("as.maser", function(x){
+#   standardGeneric("as.maser")
+# })
+# 
+# setMethod("as.maser", signature(x="list"), function(x){
+#   
+#   y <- new("Maser")
+#   if (!any(names(x) %in% slotNames(y))){
+#     return("Invalid slot names.")
+#   }
+#   
+#   lapply(names(x), function(aslot){
+#     slot(y, paste0(aslot)) <<- x[[paste0(aslot)]]
+#   })
+#   return(y)
+#   
+# })
+
+setAs("list", "Maser", function(from){
   y <- new("Maser")
-  if (!any(names(x) %in% slotNames(y))){
+  if (!any(names(from) %in% slotNames(y))){
     return("Invalid slot names.")
   }
   
-  lapply(names(x), function(aslot){
-    slot(y, paste0(aslot)) <<- x[[paste0(aslot)]]
+  lapply(names(from), function(aslot){
+    slot(y, paste0(aslot)) <<- from[[paste0(aslot)]]
   })
   return(y)
-  
 })
 
 #' @import methods

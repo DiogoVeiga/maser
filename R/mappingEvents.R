@@ -81,7 +81,7 @@ mapProteinFeaturesToEvents <- function(events, tracks, by = c("feature",
   }
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  events <- as.list(events)
+  events <- as(events, "list")
   
   # Add UniprotKB features annotation
   events_with_features <- events
@@ -139,7 +139,7 @@ mapProteinFeaturesToEvents <- function(events, tracks, by = c("feature",
 
   }#all types
   
-  return(as.maser(events_with_features))
+  return(as(events_with_features, "Maser"))
 }
 
 
@@ -301,7 +301,7 @@ mapTranscriptsToEvents <- function(events, gtf){
   gtf_exons <- gtf[gtf$type=="exon",]
   
   as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
-  events <- as.list(events)
+  events <- as(events, "list")
   
   # Add transcripts to events using mapping functions based on sequence overlap 
   events_with_txn <- events
@@ -386,7 +386,7 @@ mapTranscriptsToEvents <- function(events, gtf){
   
   events_with_ptn <- mapProteinsToEvents(events_with_txn)
   
-  return(as.maser(events_with_ptn))
+  return(as(events_with_ptn, "Maser"))
   
 }
 

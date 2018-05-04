@@ -25,7 +25,7 @@ plotGenePSI <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
   
   type <- match.arg(type)
 
-  events <- as.list(events)
+  events <- as(events, "list")
   annot <- events[[paste0(type,"_","events")]]
   if (length(unique(annot$geneSymbol)) > 1){
     stop(cat("Multiple genes found. Use geneEvents() to select AS events."))
@@ -200,7 +200,7 @@ plotTranscripts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
   
   type <- match.arg(type)
   
-  events <- as.list(events)
+  events <- as(events, "list")
   annot <- events[[paste0(type,"_","events")]]
   if (length(unique(annot$geneSymbol)) > 1){
     stop(cat("Multiple genes found. Use geneEvents() to select 
@@ -342,7 +342,7 @@ plotUniprotKBFeatures <- function(events,
   
   type <- match.arg(type)
   
-  events <- as.list(events)
+  events <- as(events, "list")
   annot <- events[[paste0(type,"_","events")]]
   if (length(unique(annot$geneSymbol)) > 1){
     stop(cat("Multiple genes found. Use geneEvents() to select gene-specific

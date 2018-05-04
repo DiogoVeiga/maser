@@ -25,7 +25,7 @@ boxplot_PSI_levels <- function(events, type = c("A3SS", "A5SS", "SE", "RI",
     
     type <- match.arg(type)
     
-    events <- as.list(events)
+    events <- as(events, "list")
     PSI <- events[[paste0(type,"_","PSI")]]
 
     PSI_long <- reshape2::melt(PSI)
@@ -85,7 +85,7 @@ splicingDistribution <- function(events, fdr = 0.05, deltaPSI = 0.1){
       stop("Parameter events has to be a maser object.")
     }
     
-    events <- as.list(events)
+    events <- as(events, "list")
     
   # Plot distribution of splicing events per condition
     as_types <- c("A3SS", "A5SS", "SE", "RI", "MXE")
@@ -172,7 +172,7 @@ volcano <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
     
     type <- match.arg(type)
     
-    events <- as.list(events)
+    events <- as(events, "list")
     
     IncLevelDifference <- NULL
     Status <- NULL
@@ -249,7 +249,7 @@ dotplot <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
     
     type <- match.arg(type)
     
-    events <- as.list(events)
+    events <- as(events, "list")
     FDR <- NULL
     IncLevelDifference <- NULL
     Status <- NULL
@@ -322,7 +322,7 @@ pca <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
     }
     
     type <- match.arg(type)
-    events <- as.list(events)
+    events <- as(events, "list")
 
     PC1 <- NULL
     PC2 <- NULL
@@ -392,7 +392,7 @@ viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI",
   }
   
   types <- match.arg(types, several.ok = TRUE)
-  events <- as.list(events)
+  events <- as(events, "list")
   
   type <- NULL
   count <- NULL
@@ -410,7 +410,7 @@ viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI",
                             counts = rep(0, length(geneList)*length(as_types)))
   
   counts <- lapply(seq_along(geneList), function(i){
-    gene_counts <- countGeneEvents(as.maser(events), geneList[i])
+    gene_counts <- countGeneEvents(as(events, "Maser"), geneList[i])
     return(gene_counts$count)
   })
   geneList_counts$count <- unlist(counts)
@@ -464,9 +464,9 @@ display <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
   }
   
   type <- match.arg(type)
-  events <- as.list(events)
+  events <- as(events, "list")
   
-  data <- create_stats(as.maser(events), type)
+  data <- create_stats(as(events, "Maser"), type)
   DT::datatable(data, options = list(
                         pageLength = 10,
                         filter = "none",

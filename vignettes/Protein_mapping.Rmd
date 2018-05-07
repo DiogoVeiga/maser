@@ -102,16 +102,16 @@ srsf6_mapped <- mapTranscriptsToEvents(srsf6_events, ens_gtf)
 If transcript mapping worked correctly, Ensembl and Uniprot identifiers will be added to splicing events. Possible `NA` values indicates non-protein coding transcripts. In this case, the splicing involves two Ensembl transcripts coding for the Q13247 isoform of SRSF6. 
 
 ```{r, warning = FALSE, message = FALSE, eval=FALSE}
-head(annot(srsf6_mapped, "SE"))
+head(annotation(srsf6_mapped, "SE"))
 ```
 
 ```{r, warning = FALSE, message = FALSE, echo=FALSE}
 knitr::kable(
-  head(annot(srsf6_mapped, "SE"))
+  head(annotation(srsf6_mapped, "SE"))
 )
 ```
 
-Now we are ready to call `mapProteinFeaturesToEvents()` for annotation. Feature annotation can be interactively displayed in a web browser using `display()` or retrieved as a `data.frame` using `annot()`.  
+Now we are ready to call `mapProteinFeaturesToEvents()` for annotation. Feature annotation can be interactively displayed in a web browser using `display()` or retrieved as a `data.frame` using `annotation()`.  
 
 `mapProteinFeaturesToEvents()` will add extra columns describing the feature name, feature description and protein identifiers for which the annotation has been assigned. Possible `NA` values indicate the particular feature is not annotated for the splice event.
 
@@ -122,12 +122,12 @@ srsf6_annot <- mapProteinFeaturesToEvents(srsf6_mapped, c("Domain_and_Sites", "T
 ```
 
 ```{r, warning = FALSE, message = FALSE, eval=FALSE}
-head(annot(srsf6_annot, "SE"))
+head(annotation(srsf6_annot, "SE"))
 ```
 
 ```{r, warning = FALSE, message = FALSE, echo=FALSE}
 knitr::kable(
-  head(annot(srsf6_annot, "SE"))
+  head(annotation(srsf6_annot, "SE"))
 )
 
 ```

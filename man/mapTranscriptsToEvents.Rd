@@ -80,7 +80,7 @@ srsf6_events <- geneEvents(hypoxia_filt, geneS = "SRSF6")
 
 ## Map splicing events to transcripts
 srsf6_mapped <- mapTranscriptsToEvents(srsf6_events, ens_gtf)
-head(annot(srsf6_mapped, "SE"))
+head(annotation(srsf6_mapped, "SE"))
 
 }
 \seealso{

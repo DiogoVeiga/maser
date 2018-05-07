@@ -41,7 +41,7 @@
 #' 
 #' ## Annotate splice events with protein domains
 #' srsf6_annot <- mapProteinFeaturesToEvents(srsf6_mapped, tracks = "domain")
-#' head(annot(srsf6_annot, "SE"))
+#' head(annotation(srsf6_annot, "SE"))
 #' 
 #' @seealso \code{\link{plotUniprotKBFeatures}}
 #' @export
@@ -271,7 +271,7 @@ mapProteinsToEvents <- function(events){
 #' 
 #' ## Map splicing events to transcripts
 #' srsf6_mapped <- mapTranscriptsToEvents(srsf6_events, ens_gtf)
-#' head(annot(srsf6_mapped, "SE"))
+#' head(annotation(srsf6_mapped, "SE"))
 #' 
 #' @seealso \code{\link{plotTranscripts}}
 #' @export

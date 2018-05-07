@@ -72,15 +72,15 @@ hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 hypoxia
 ```
 
-Splicing events have genomic locations, raw counts, PSI levels and statistics (p-values) regarding their differential splicing between conditions. Access to different data types is done using `annot()`, `counts()`, `PSI()`, and `stats()`, which takes as argument the `maser` object and event type.
+Splicing events have genomic locations, raw counts, PSI levels and statistics (p-values) regarding their differential splicing between conditions. Access to different data types is done using `annotation()`, `counts()`, `PSI()`, and `summary()`, which takes as argument the `maser` object and event type.
 
 ```{r, warning = FALSE, message = FALSE, eval=FALSE}
-head(stats(hypoxia, type = "SE")[, 1:8])
+head(summary(hypoxia, type = "SE")[, 1:8])
 ```
 
 ```{r, warning = FALSE, message = FALSE, echo=FALSE}
 knitr::kable(
-  head(stats(hypoxia, type = "SE")[, 1:8])
+  head(summary(hypoxia, type = "SE")[, 1:8])
 )
 ```
 

@@ -57,7 +57,7 @@ srsf6_mapped <- mapTranscriptsToEvents(srsf6_events, ens_gtf)
 
 ## Annotate splice events with protein domains
 srsf6_annot <- mapProteinFeaturesToEvents(srsf6_mapped, tracks = "domain")
-head(annot(srsf6_annot, "SE"))
+head(annotation(srsf6_annot, "SE"))
 
 }
 \seealso{

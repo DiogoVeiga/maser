@@ -22,7 +22,8 @@ Imports:
     stats,
     utils,
     IRanges,
-    methods
+    methods,
+    BiocGenerics
 Suggests:
     testthat,
     knitr,

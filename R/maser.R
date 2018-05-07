@@ -227,6 +227,8 @@ maser <- function(path, cond_labels,
   
 }
 
+#' S4 class to represent splicing events imported from rMATS.
+#'
 setClass("Maser",
          slots = list(A3SS_counts = "matrix", A3SS_PSI = "matrix",
                       A3SS_stats = "data.frame", A3SS_events = "data.frame",
@@ -303,24 +305,6 @@ setAs("Maser", "list", function(from){
   
 })
 
-# setGeneric("as.maser", function(x){
-#   standardGeneric("as.maser")
-# })
-# 
-# setMethod("as.maser", signature(x="list"), function(x){
-#   
-#   y <- new("Maser")
-#   if (!any(names(x) %in% slotNames(y))){
-#     return("Invalid slot names.")
-#   }
-#   
-#   lapply(names(x), function(aslot){
-#     slot(y, paste0(aslot)) <<- x[[paste0(aslot)]]
-#   })
-#   return(y)
-#   
-# })
-
 setAs("list", "Maser", function(from){
   y <- new("Maser")
   if (!any(names(from) %in% slotNames(y))){
@@ -386,20 +370,37 @@ create_stats <- function(events, type){
 #' head(PSI(hypoxia, "SE"))
 #' @export
 #' @import methods
-PSI <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
-  
-  if(!is(events, "Maser")){
-    stop("Parameter events has to be a Maser object.")
-  }
-  
-  type <- match.arg(type)
-  return(slot(events, paste0(type,"_","PSI")))
-  
-}
+setGeneric("PSI", function(events, type) standardGeneric("PSI"))
+
+#' Retrieve PSI (percent spliced in) values from a maser object.
+#' 
+#' @param events a maser object.
+#' @param type a character indicating the splice type. Possible values 
+#' are  \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}. 
+#' @return a matrix.
+#' @examples
+#' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
+#' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+#' head(PSI(hypoxia, "SE"))
+#' @export
+#' @import methods
+setMethod("PSI", signature(events="Maser", type="character"),
+    function(events, type) {
+    
+            if(!is(events, "Maser")){
+              stop("Parameter events has to be a Maser object.")
+            }
+            if(!type %in%  c("A3SS", "A5SS", "SE", "RI", "MXE")){
+              stop("Invalid type argument.")
+            }
+            return(slot(events, paste0(type,"_","PSI")))            
+      
+})
+
 
 #' Retrieve raw read counts values from a maser object.
 #' 
-#' @param events a maser object.
+#' @param object a maser object.
 #' @param type a character indicating the splice type. Possible values 
 #' are  \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}. 
 #' @return a matrix.
@@ -409,87 +410,96 @@ PSI <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
 #' head(counts(hypoxia, "SE"))
 #' @export
 #' @import methods
-counts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
-  
-  if(!is(events, "Maser")){
-    stop("Parameter events has to be a Maser object.")
-  }
-  
-  type <- match.arg(type)
-  
-  return(slot(events, paste0(type,"_","counts")))
+#' @importMethodsFrom BiocGenerics counts
 
-}
+setMethod("counts", "Maser", 
+      function(object, type)  {
+        
+        if(!is(object, "Maser")){
+          stop("Parameter events has to be a Maser object.")
+        }
+        if(!type %in%  c("A3SS", "A5SS", "SE", "RI", "MXE")){
+          stop("Invalid type argument.")
+        }
+        return(slot(object, paste0(type,"_","counts")))
+})
+
 
 #' Retrieve annotation of splicing events from a maser object.
 #' 
-#' @param events a maser object.
+#' @param object a maser object.
 #' @param type a character indicating the splice type. Possible values 
 #' are  \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}. 
 #' @return a data.frame.
 #' @examples
 #' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
-#' head(annot(hypoxia, "SE"))
+#' head(annotation(hypoxia, "SE"))
 #' @export
 #' @import methods
-annot <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
-  
-  if(!is(events, "Maser")){
-    stop("Parameter events has to be a Maser object.")
-  }
-  
-  type <- match.arg(type)
+#' @importMethodsFrom BiocGenerics annotation
 
-  return(slot(events, paste0(type,"_","events")))
+setMethod("annotation", "Maser", 
+      function(object, type)  {
 
-}
+        if(!is(object, "Maser")){
+          stop("Parameter events has to be a Maser object.")
+        }
+        if(!type %in%  c("A3SS", "A5SS", "SE", "RI", "MXE")){
+          stop("Invalid type argument.")
+        }
+        return(slot(object, paste0(type,"_","events")))
+})
+
 
 #' Retrieve rMATS stats of differential splicing from a maser object.
 #' 
-#' @param events a maser object.
+#' @param object a maser object.
 #' @param type a character indicating the splice type. Possible values 
 #' are  \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}. 
 #' @return a data.frame.
 #' @examples
 #' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
-#' head(stats(hypoxia, "SE"))
+#' head(summary(hypoxia, "SE"))
 #' @export
 #' @import methods
-stats <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
-  
-  if(!is(events, "Maser")){
-    stop("Parameter events has to be a Maser object.")
-  }
-  
-  type <- match.arg(type)
-  return(create_stats(events, type))
-
-}
+setMethod("summary", "Maser", 
+    function(object, type)  {
+            
+      if(!is(object, "Maser")){
+        stop("Parameter events has to be a Maser object.")
+      }
+      if(!type %in%  c("A3SS", "A5SS", "SE", "RI", "MXE")){
+        stop("Invalid type argument.")
+      }
+      return(create_stats(object, type))
+})
 
 #' Retrieve genomic ranges of splicing events from a maser object.
 #' 
-#' @param events a maser object.
+#' @param x a maser object.
 #' @param type a character indicating the splice type. Possible values 
 #' are  \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}. 
+#' @param ... additional arguments.
 #' @return a GRangesList.
 #' @examples
 #' path <- system.file("extdata", file.path("MATS_output"), package = "maser")
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
-#' head(gr(hypoxia, "SE"))
-#' @export
+#' head(granges(hypoxia, type = "SE"))
 #' @import methods
-gr <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")){
-  
-  if(!is(events, "Maser")){
-    stop("Parameter events has to be a Maser object.")
-  }
-  
-  type <- match.arg(type)
-  return(slot(events, paste0(type,"_","gr")))
-  
-}
+setMethod("granges", "Maser", 
+    function(x, type, ...)  {
+      
+      if(!is(x, "Maser")){
+        stop("Parameter events has to be a Maser object.")
+      }
+      if(!type %in%  c("A3SS", "A5SS", "SE", "RI", "MXE")){
+        stop("Invalid type argument.")
+      }
+      return(slot(x, paste0(type,"_","gr")))
+})
+
 
 .onAttach <- function(libname, pkgname) {
   packageStartupMessage("Welcome to maser")

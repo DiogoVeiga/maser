@@ -5,7 +5,8 @@
 \alias{PSI,Maser,character-method}
 \title{Retrieve PSI (percent spliced in) values from a maser object.}
 \usage{
-\S4method{PSI}{Maser,character}(events, type)
+\S4method{PSI}{Maser,character}(events, type = c("A3SS", "A5SS", "SE", "RI",
+  "MXE"))
 }
 \arguments{
 \item{events}{a maser object.}

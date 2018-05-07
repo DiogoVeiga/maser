@@ -385,15 +385,10 @@ setGeneric("PSI", function(events, type) standardGeneric("PSI"))
 #' @export
 #' @import methods
 setMethod("PSI", signature(events="Maser", type="character"),
-    function(events, type) {
+    function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE")) {
     
-            if(!is(events, "Maser")){
-              stop("Parameter events has to be a Maser object.")
-            }
-            if(!type %in%  c("A3SS", "A5SS", "SE", "RI", "MXE")){
-              stop("Invalid type argument.")
-            }
-            return(slot(events, paste0(type,"_","PSI")))            
+      type <- match.arg(type)
+      return(slot(events, paste0(type,"_","PSI")))            
       
 })
 
@@ -413,14 +408,9 @@ setMethod("PSI", signature(events="Maser", type="character"),
 #' @importMethodsFrom BiocGenerics counts
 
 setMethod("counts", "Maser", 
-      function(object, type)  {
+      function(object, type = c("A3SS", "A5SS", "SE", "RI", "MXE"))  {
         
-        if(!is(object, "Maser")){
-          stop("Parameter events has to be a Maser object.")
-        }
-        if(!type %in%  c("A3SS", "A5SS", "SE", "RI", "MXE")){
-          stop("Invalid type argument.")
-        }
+        type <- match.arg(type)
         return(slot(object, paste0(type,"_","counts")))
 })
 
@@ -440,14 +430,9 @@ setMethod("counts", "Maser",
 #' @importMethodsFrom BiocGenerics annotation
 
 setMethod("annotation", "Maser", 
-      function(object, type)  {
+      function(object, type = c("A3SS", "A5SS", "SE", "RI", "MXE"))  {
 
-        if(!is(object, "Maser")){
-          stop("Parameter events has to be a Maser object.")
-        }
-        if(!type %in%  c("A3SS", "A5SS", "SE", "RI", "MXE")){
-          stop("Invalid type argument.")
-        }
+        type <- match.arg(type)
         return(slot(object, paste0(type,"_","events")))
 })
 
@@ -465,14 +450,9 @@ setMethod("annotation", "Maser",
 #' @export
 #' @import methods
 setMethod("summary", "Maser", 
-    function(object, type)  {
+    function(object, type = c("A3SS", "A5SS", "SE", "RI", "MXE"))  {
             
-      if(!is(object, "Maser")){
-        stop("Parameter events has to be a Maser object.")
-      }
-      if(!type %in%  c("A3SS", "A5SS", "SE", "RI", "MXE")){
-        stop("Invalid type argument.")
-      }
+      type <- match.arg(type)
       return(create_stats(object, type))
 })
 
@@ -489,14 +469,9 @@ setMethod("summary", "Maser",
 #' head(granges(hypoxia, type = "SE"))
 #' @import methods
 setMethod("granges", "Maser", 
-    function(x, type, ...)  {
+    function(x, type = c("A3SS", "A5SS", "SE", "RI", "MXE"), ...)  {
       
-      if(!is(x, "Maser")){
-        stop("Parameter events has to be a Maser object.")
-      }
-      if(!type %in%  c("A3SS", "A5SS", "SE", "RI", "MXE")){
-        stop("Invalid type argument.")
-      }
+      type <- match.arg(type)
       return(slot(x, paste0(type,"_","gr")))
 })
 

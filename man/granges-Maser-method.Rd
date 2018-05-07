@@ -5,7 +5,7 @@
 \alias{granges,Maser-method}
 \title{Retrieve genomic ranges of splicing events from a maser object.}
 \usage{
-\S4method{granges}{Maser}(x, type, ...)
+\S4method{granges}{Maser}(x, type = c("A3SS", "A5SS", "SE", "RI", "MXE"), ...)
 }
 \arguments{
 \item{x}{a maser object.}

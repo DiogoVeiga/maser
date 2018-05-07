@@ -5,7 +5,8 @@
 \alias{annotation,Maser-method}
 \title{Retrieve annotation of splicing events from a maser object.}
 \usage{
-\S4method{annotation}{Maser}(object, type)
+\S4method{annotation}{Maser}(object, type = c("A3SS", "A5SS", "SE", "RI",
+  "MXE"))
 }
 \arguments{
 \item{object}{a maser object.}

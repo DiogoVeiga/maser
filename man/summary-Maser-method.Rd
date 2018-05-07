@@ -5,7 +5,7 @@
 \alias{summary,Maser-method}
 \title{Retrieve rMATS stats of differential splicing from a maser object.}
 \usage{
-\S4method{summary}{Maser}(object, type)
+\S4method{summary}{Maser}(object, type = c("A3SS", "A5SS", "SE", "RI", "MXE"))
 }
 \arguments{
 \item{object}{a maser object.}

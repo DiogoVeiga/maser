@@ -5,7 +5,7 @@
 \alias{counts,Maser-method}
 \title{Retrieve raw read counts values from a maser object.}
 \usage{
-\S4method{counts}{Maser}(object, type)
+\S4method{counts}{Maser}(object, type = c("A3SS", "A5SS", "SE", "RI", "MXE"))
 }
 \arguments{
 \item{object}{a maser object.}

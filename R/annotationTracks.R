@@ -312,7 +312,8 @@ createUniprotKBtracks <- function(eventGr, features, protein_ids, ncores = 1){
     
     feature_gr <- createGRangesUniprotKBtrack(features[i])
     ovl_gr <- overlappingFeatures(feature_gr, eventGr)
-    ovl_gr_filt <- ovl_gr[ovl_gr$Uniprot_ID %in% protein_ids, ] 
+    #ovl_gr_filt <- ovl_gr[ovl_gr$Uniprot_ID %in% protein_ids, ] 
+    ovl_gr_filt <- ovl_gr
     
     uniq_features <- match(unique(as.vector(ovl_gr_filt$Name)), 
                            as.vector(ovl_gr_filt$Name))

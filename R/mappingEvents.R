@@ -114,7 +114,7 @@ mapProteinFeaturesToEvents <- function(events, tracks, by = c("feature",
     annot_uniprotkb <- matrix("NA", nrow = nrow(annot), ncol = length(features))
     colnames(annot_uniprotkb) <- features
     
-    mclapply(seq(1, nrow(annot)), function(i){ #for each event
+    lapply(seq(1, nrow(annot)), function(i){ #for each event
       
       eventGr <- GRangesList()
       for (exon in names(grl)){
@@ -126,7 +126,8 @@ mapProteinFeaturesToEvents <- function(events, tracks, by = c("feature",
       lapply(seq_along(features), function(j){ #for each feature
         
         ovl_gr <- overlappingFeatures(features_Gr[[j]], eventGr)
-        ovl_gr_filt <- ovl_gr[ovl_gr$Uniprot_ID %in% protein_ids, ] 
+        #ovl_gr_filt <- ovl_gr[ovl_gr$Uniprot_ID %in% protein_ids, ]
+        ovl_gr_filt <- ovl_gr
         
         aux <- unique(as.character(ovl_gr_filt$Name))
         aux <- gsub(" ", "", aux)
@@ -137,7 +138,7 @@ mapProteinFeaturesToEvents <- function(events, tracks, by = c("feature",
         
       })
       
-    }, mc.cores = ncores)
+    })
     
     # for (i in 1:nrow(annot)) {
     #   
@@ -313,6 +314,7 @@ mapProteinsToEvents <- function(events){
 #' @import GenomicRanges
 #' @importFrom GenomeInfoDb seqlevels
 #' @importFrom parallel mclapply
+#' @importFrom dplyr inner_join
 #' @import methods
 #' 
 mapTranscriptsToEvents <- function(events, gtf, ncores = 1){
@@ -357,11 +359,7 @@ mapTranscriptsToEvents <- function(events, gtf, ncores = 1){
     # Retrieve Events gene ranges
     grl <- events[[paste0(type,"_","gr")]]
     
-    list_txn_a <- rep("", nrow(annot))
-    list_txn_b <- rep("", nrow(annot))
-    tx_ids <- list()
-    
-    mclapply(seq(1, nrow(annot)), function(i) {
+    list_txn <- mclapply(seq_along(annot$ID), function(i) {
       
       # Genomic ranges of alternative splicing events
       eventGr <- lapply(names(grl), function(exon){
@@ -371,21 +369,31 @@ mapTranscriptsToEvents <- function(events, gtf, ncores = 1){
       names(eventGr) <- names(grl)
       
       if(type == "SE") {
-        tx_ids <<- mapTranscriptsSEevent(eventGr, gtf_exons, is_strict)
-        list_txn_a[i] <<- paste(tx_ids$txn_3exons, collapse = ",")
-        list_txn_b[i] <<- paste(tx_ids$txn_2exons, collapse = ",")
+        tx_ids <- mapTranscriptsSEevent(eventGr, gtf_exons, is_strict)
+        return(data.frame(ID = annot$ID[i],
+                  txn_3exons = paste(tx_ids$txn_3exons, collapse = ","),
+                  txn_2exons = paste(tx_ids$txn_2exons, collapse = ","),
+                  stringsAsFactors = FALSE)
+               )
+        
       }
       
       if(type == "MXE") {
-        tx_ids <<- mapTranscriptsMXEevent(eventGr, gtf_exons, is_strict)
-        list_txn_a[i] <<- paste(tx_ids$txn_mxe_exon1, collapse = ",")
-        list_txn_b[i] <<- paste(tx_ids$txn_mxe_exon2, collapse = ",")
+        tx_ids <- mapTranscriptsMXEevent(eventGr, gtf_exons, is_strict)
+        return(data.frame(ID = annot$ID[i],
+                  txn_mxe_exon1 = paste(tx_ids$txn_mxe_exon1, collapse = ","),
+                  txn_mxe_exon2 = paste(tx_ids$txn_mxe_exon2, collapse = ","),
+                  stringsAsFactors = FALSE)
+        )
       }
       
       if(type == "RI") {
-        tx_ids <<- mapTranscriptsRIevent(eventGr, gtf_exons, is_strict)
-        list_txn_a[i] <<- paste(tx_ids$txn_nonRetention, collapse = ",")
-        list_txn_b[i] <<- paste(tx_ids$txn_retention, collapse = ",")
+        tx_ids <- mapTranscriptsRIevent(eventGr, gtf_exons, is_strict)
+        return(data.frame(ID = annot$ID[i],
+          txn_nonRetention = paste(tx_ids$txn_nonRetention, collapse = ","),
+          txn_retention = paste(tx_ids$txn_retention, collapse = ","),
+          stringsAsFactors = FALSE)
+        )
       }
       
       if(type == "A5SS") {
@@ -397,8 +405,12 @@ mapTranscriptsToEvents <- function(events, gtf, ncores = 1){
           tx_ids <<- mapTranscriptsA3SSevent(eventGr, gtf_exons)  
         }
         
-        list_txn_a[i] <<- paste(tx_ids$txn_short, collapse = ",")
-        list_txn_b[i] <<- paste(tx_ids$txn_long, collapse = ",")
+        return(data.frame(ID = annot$ID[i],
+                txn_short = paste(tx_ids$txn_short, collapse = ","),
+                txn_long = paste(tx_ids$txn_long, collapse = ","),
+                stringsAsFactors = FALSE)
+        )
+        
       }
       
       if(type == "A3SS") {
@@ -410,13 +422,18 @@ mapTranscriptsToEvents <- function(events, gtf, ncores = 1){
           tx_ids <<- mapTranscriptsA5SSevent(eventGr, gtf_exons)  
         }
         
-        list_txn_a[i] <<- paste(tx_ids$txn_short, collapse = ",")
-        list_txn_b[i] <<- paste(tx_ids$txn_long, collapse = ",")
+        return(data.frame(ID = annot$ID[i],
+                  txn_short = paste(tx_ids$txn_short, collapse = ","),
+                  txn_long = paste(tx_ids$txn_long, collapse = ","),
+                  stringsAsFactors = FALSE)
+        )
+        
       }
 
     }, mc.cores = ncores) #for all events in annot
     
-    
+    df_txn <- do.call(rbind, list_txn)
+
     # for (i in 1:nrow(annot)) {
     #   
     #   # Genomic ranges of alternative splicing events
@@ -472,10 +489,10 @@ mapTranscriptsToEvents <- function(events, gtf, ncores = 1){
     #   
     # } #for all events in annot
     
-    annot[[names(tx_ids)[1]]] <- list_txn_a
-    annot[[names(tx_ids)[2]]] <- list_txn_b
     
-    events_with_txn[[paste0(type,"_","events")]] <- annot
+    # Update Events annotation
+    annot_new <- dplyr::inner_join(annot, df_txn, by = "ID")
+    events_with_txn[[paste0(type,"_","events")]] <- annot_new
       
   
   } #for each event type

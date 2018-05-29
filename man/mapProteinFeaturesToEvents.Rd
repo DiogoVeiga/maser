@@ -4,7 +4,8 @@
 \alias{mapProteinFeaturesToEvents}
 \title{Mapping of splice events to UniprotKB protein features.}
 \usage{
-mapProteinFeaturesToEvents(events, tracks, by = c("feature", "category"))
+mapProteinFeaturesToEvents(events, tracks, by = c("feature", "category"),
+  ncores = 1)
 }
 \arguments{
 \item{events}{a maser object with transcript and protein identifiers.}
@@ -14,6 +15,9 @@ categories.}
 
 \item{by}{a character vector, possible values 
 are \code{c("feature", "category")}.}
+
+\item{ncores}{number of cores for multithreading (available only in OSX and Linux 
+machines). If Windows, \code{ncores} will be set to 1 automatically.}
 }
 \value{
 a maser object with protein feature annotation.

@@ -23,7 +23,9 @@ Imports:
     utils,
     IRanges,
     methods,
-    BiocGenerics
+    BiocGenerics,
+    parallel,
+    data.table
 Suggests:
     testthat,
     knitr,

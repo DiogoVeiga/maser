@@ -1,5 +1,5 @@
 
-#' @importFrom utils read.table
+#' @importFrom data.table fread
 #' @importFrom methods as
 #' @importFrom dplyr filter
 createGRangesUniprotKBtrack <- function(track_name){
@@ -12,9 +12,13 @@ createGRangesUniprotKBtrack <- function(track_name){
   }
   
   track <- dplyr::filter(track_df, Name %in% track_name)
-  bed <- read.table(as.character(track$URL), header = FALSE, sep = "\t", 
-                    quote = NULL,
-                    stringsAsFactors = FALSE)
+  # bed <- read.table(as.character(track$URL), header = FALSE, sep = "\t", 
+  #                   quote = NULL,
+  #                   stringsAsFactors = FALSE)
+  
+  bed <- data.table::fread(as.character(track$URL), header = FALSE, sep = "\t", 
+                           quote = "", stringsAsFactors = FALSE,
+                           data.table = FALSE, showProgress = FALSE)
   
   colnames(bed)[1:6] <- c("chr", "start", "end", "Uniprot_ID", "V5", "strand") 
   res <- strsplit(bed$V14, ";")
@@ -35,7 +39,6 @@ createGRangesUniprotKBtrack <- function(track_name){
   
   GenomeInfoDb::genome(bed.gr) <- "hg38"
 
-  
   return(bed.gr)
   
 }

@@ -299,11 +299,16 @@ createAnnotationTrackA3SS_event <- function(eventGr){
 
 #' @importFrom Gviz AnnotationTrack
 #' @importFrom GenomicRanges GRanges
-createUniprotKBtracks <- function(eventGr, features, protein_ids){
+#' @importFrom parallel mclapply
+createUniprotKBtracks <- function(eventGr, features, protein_ids, ncores = 1){
   
   options(ucscChromosomeNames=FALSE)
   
-  uniprotTracks <- lapply(seq_along(features), function(i){
+  if(.Platform$OS.type == "windows"){
+    ncores = 1
+  }
+  
+  uniprotTracks <- mclapply(seq_along(features), function(i){
     
     feature_gr <- createGRangesUniprotKBtrack(features[i])
     ovl_gr <- overlappingFeatures(feature_gr, eventGr)
@@ -330,7 +335,7 @@ createUniprotKBtracks <- function(eventGr, features, protein_ids){
     
     return(track)
     
-  })
+  }, mc.cores = ncores)
 
   return(uniprotTracks)  
   

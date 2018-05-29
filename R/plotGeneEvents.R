@@ -272,6 +272,8 @@ plotTranscripts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
 #' @param features a character vector indicating valid UniprotKB features.
 #' @param zoom logical, zoom to the genomic coordinates of the splice event.
 #' @param show_transcripts logical, display transcripts track.
+#' @param ncores number of cores for multithreading (available only in OSX and Linux 
+#' machines). If Windows, \code{ncores} will be set to 1 automatically.
 #' @return a Gviz object.
 #' @details This is a wrapper function for performing both mapping and 
 #' visualization of protein features affected by the splice event. This function
@@ -316,13 +318,17 @@ plotTranscripts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
 plotUniprotKBFeatures <- function(events, 
                                   type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
                                   event_id, gtf, features, zoom = FALSE,
-                                  show_transcripts = FALSE){
+                                  show_transcripts = FALSE, ncores = 1){
   
   is_strict = TRUE
   options(ucscChromosomeNames=FALSE)
 
   if(!is(events, "Maser")){
     stop("Parameter events has to be a maser object.")
+  }
+  
+  if(.Platform$OS.type == "windows"){
+    ncores = 1
   }
   
   if (!class(gtf) == "GRanges"){
@@ -365,7 +371,7 @@ plotUniprotKBFeatures <- function(events,
   idx.cols <- grep("^list_ptn_", colnames(annot))
   protein_ids <- unique(c(annot[idx.event, idx.cols[1]], 
                           annot[idx.event, idx.cols[2]]))
-  uniprotTracks <- createUniprotKBtracks(eventGr, features, protein_ids)
+  uniprotTracks <- createUniprotKBtracks(eventGr, features, protein_ids, ncores)
   
   if (show_transcripts){
     txnTracks <- createAnnotationTrack_transcripts(eventGr, gtf_exons,

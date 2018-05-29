@@ -4,13 +4,16 @@
 \alias{mapTranscriptsToEvents}
 \title{Mapping of splice events to Ensembl transcripts.}
 \usage{
-mapTranscriptsToEvents(events, gtf)
+mapTranscriptsToEvents(events, gtf, ncores = 1)
 }
 \arguments{
 \item{events}{a maser object.}
 
 \item{gtf}{a \code{GRanges} object obtained from an Ensembl or Gencode GTF
 file using the hg38 build of the human genome.}
+
+\item{ncores}{number of cores for multithreading (available only in OSX and Linux 
+machines). If Windows, \code{ncores} will be set to 1 automatically.}
 }
 \value{
 a maser object with transcript and protein identifiers.
@@ -71,8 +74,8 @@ hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 
 ## Ensembl GTF annotation for SRSF6
-gtf_path <- system.file("extdata", file.path("GTF", "SRSF6_Ensembl85.gtf"),
- package = "maser")
+gtf_path <- system.file("extdata", file.path("GTF", 
+ "Ensembl85_examples.gtf.gz"), package = "maser")
 ens_gtf <- rtracklayer::import.gff(gtf_path)
  
 ## Retrieve gene specific splice events

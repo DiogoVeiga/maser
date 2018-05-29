@@ -5,7 +5,8 @@
 \title{Mapping and visualization of UniprotKB protein features affected by splicing.}
 \usage{
 plotUniprotKBFeatures(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
-  event_id, gtf, features, zoom = FALSE, show_transcripts = FALSE)
+  event_id, gtf, features, zoom = FALSE, show_transcripts = FALSE,
+  ncores = 1)
 }
 \arguments{
 \item{events}{a maser object.}
@@ -23,6 +24,9 @@ the human genome.}
 \item{zoom}{logical, zoom to the genomic coordinates of the splice event.}
 
 \item{show_transcripts}{logical, display transcripts track.}
+
+\item{ncores}{number of cores for multithreading (available only in OSX and Linux 
+machines). If Windows, \code{ncores} will be set to 1 automatically.}
 }
 \value{
 a Gviz object.

@@ -5,6 +5,8 @@
 #' categories.
 #' @param by a character vector, possible values 
 #' are \code{c("feature", "category")}.
+#' @param ncores number of cores for multithreading (available only in OSX and Linux 
+#' machines). If Windows, \code{ncores} will be set to 1 automatically.
 #' @return a maser object with protein feature annotation.
 #' @details This function performs mapping of splicing events to protein
 #'  features available in the UniprotKB database. Annotation tracks of protein
@@ -47,15 +49,20 @@
 #' @export
 #' @import GenomicRanges
 #' @importFrom dplyr filter
+#' @importFrom parallel mclapply
 #' @import methods
 
 mapProteinFeaturesToEvents <- function(events, tracks, by = c("feature", 
-                                                              "category")){
+                                        "category"), ncores = 1){
   
   by <- match.arg(by)
   
   if(!is(events, "Maser")){
     stop("Parameter events has to be a maser object.")
+  }
+  
+  if(.Platform$OS.type == "windows"){
+    ncores = 1
   }
   
   df <- availableFeaturesUniprotKB()
@@ -87,7 +94,8 @@ mapProteinFeaturesToEvents <- function(events, tracks, by = c("feature",
   events_with_features <- events
   
   # Create GRanges for each UniprotKB feature in features argument
-  features_Gr <- lapply(features, createGRangesUniprotKBtrack)
+  features_Gr <- mclapply(features, createGRangesUniprotKBtrack, 
+                          mc.cores = ncores)
   features_Gr <- GRangesList(features_Gr)
   names(features_Gr) <- features
   
@@ -106,9 +114,8 @@ mapProteinFeaturesToEvents <- function(events, tracks, by = c("feature",
     annot_uniprotkb <- matrix("NA", nrow = nrow(annot), ncol = length(features))
     colnames(annot_uniprotkb) <- features
     
-    for (i in 1:nrow(annot)) {
+    mclapply(seq(1, nrow(annot)), function(i){ #for each event
       
-      # Genomic ranges of alternative splicing event
       eventGr <- GRangesList()
       for (exon in names(grl)){
         eventGr[[paste0(exon)]] <- grl[[paste0(exon)]][i]
@@ -116,8 +123,8 @@ mapProteinFeaturesToEvents <- function(events, tracks, by = c("feature",
       
       protein_ids <- unique(c(annot[i, idx.cols[1]], annot[i, idx.cols[2]]))
       
-      
-      for (j in 1:length(features)) {
+      lapply(seq_along(features), function(j){ #for each feature
+        
         ovl_gr <- overlappingFeatures(features_Gr[[j]], eventGr)
         ovl_gr_filt <- ovl_gr[ovl_gr$Uniprot_ID %in% protein_ids, ] 
         
@@ -125,13 +132,39 @@ mapProteinFeaturesToEvents <- function(events, tracks, by = c("feature",
         aux <- gsub(" ", "", aux)
         res <- paste0(aux, collapse = ",")
         if (!res == ""){
-          annot_uniprotkb[i,j] <- res  
+          annot_uniprotkb[i,j] <<- res  
         }
         
-      } #all features
+      })
       
-      
-    }#all events
+    }, mc.cores = ncores)
+    
+    # for (i in 1:nrow(annot)) {
+    #   
+    #   # Genomic ranges of alternative splicing event
+    #   eventGr <- GRangesList()
+    #   for (exon in names(grl)){
+    #     eventGr[[paste0(exon)]] <- grl[[paste0(exon)]][i]
+    #   }
+    #   
+    #   protein_ids <- unique(c(annot[i, idx.cols[1]], annot[i, idx.cols[2]]))
+    #   
+    #   
+    #   for (j in 1:length(features)) {
+    #     ovl_gr <- overlappingFeatures(features_Gr[[j]], eventGr)
+    #     ovl_gr_filt <- ovl_gr[ovl_gr$Uniprot_ID %in% protein_ids, ] 
+    #     
+    #     aux <- unique(as.character(ovl_gr_filt$Name))
+    #     aux <- gsub(" ", "", aux)
+    #     res <- paste0(aux, collapse = ",")
+    #     if (!res == ""){
+    #       annot_uniprotkb[i,j] <- res  
+    #     }
+    #     
+    #   } #all features
+    #   
+    #   
+    # }#all events
     
     #write annotation to maser object
     events_with_features[[paste0(type,"_","events")]] <- 
@@ -209,6 +242,8 @@ mapProteinsToEvents <- function(events){
 #' @param events a maser object.
 #' @param gtf a \code{GRanges} object obtained from an Ensembl or Gencode GTF
 #'  file using the hg38 build of the human genome.
+#' @param ncores number of cores for multithreading (available only in OSX and Linux 
+#' machines). If Windows, \code{ncores} will be set to 1 automatically.
 #' @return a maser object with transcript and protein identifiers.
 #' @details This function performs mapping of splice events in the maser object
 #'  to Ensembl transcripts by overlapping exons involved in the splice event to
@@ -262,8 +297,8 @@ mapProteinsToEvents <- function(events){
 #' hypoxia_filt <- filterByCoverage(hypoxia, avg_reads = 5)
 #' 
 #' ## Ensembl GTF annotation for SRSF6
-#' gtf_path <- system.file("extdata", file.path("GTF", "SRSF6_Ensembl85.gtf"),
-#'  package = "maser")
+#' gtf_path <- system.file("extdata", file.path("GTF", 
+#'  "Ensembl85_examples.gtf.gz"), package = "maser")
 #' ens_gtf <- rtracklayer::import.gff(gtf_path)
 #'  
 #' ## Retrieve gene specific splice events
@@ -277,9 +312,10 @@ mapProteinsToEvents <- function(events){
 #' @export
 #' @import GenomicRanges
 #' @importFrom GenomeInfoDb seqlevels
+#' @importFrom parallel mclapply
 #' @import methods
 #' 
-mapTranscriptsToEvents <- function(events, gtf){
+mapTranscriptsToEvents <- function(events, gtf, ncores = 1){
   
   is_strict = TRUE
   
@@ -291,6 +327,9 @@ mapTranscriptsToEvents <- function(events, gtf){
     stop(cat("\"gtf\" should be a GRanges object."))
   }
   
+  if(.Platform$OS.type == "windows"){
+    ncores = 1
+  }
 
   #Add chr to seqnames - necessary for Gviz plots and compatible with maser()
   if(any(!grepl("chr", GenomeInfoDb::seqlevels(gtf)))){
@@ -320,8 +359,9 @@ mapTranscriptsToEvents <- function(events, gtf){
     
     list_txn_a <- rep("", nrow(annot))
     list_txn_b <- rep("", nrow(annot))
+    tx_ids <- list()
     
-    for (i in 1:nrow(annot)) {
+    mclapply(seq(1, nrow(annot)), function(i) {
       
       # Genomic ranges of alternative splicing events
       eventGr <- lapply(names(grl), function(exon){
@@ -331,50 +371,106 @@ mapTranscriptsToEvents <- function(events, gtf){
       names(eventGr) <- names(grl)
       
       if(type == "SE") {
-        tx_ids <- mapTranscriptsSEevent(eventGr, gtf_exons, is_strict)
-        list_txn_a[i] <- paste(tx_ids$txn_3exons, collapse = ",")
-        list_txn_b[i] <- paste(tx_ids$txn_2exons, collapse = ",")
+        tx_ids <<- mapTranscriptsSEevent(eventGr, gtf_exons, is_strict)
+        list_txn_a[i] <<- paste(tx_ids$txn_3exons, collapse = ",")
+        list_txn_b[i] <<- paste(tx_ids$txn_2exons, collapse = ",")
       }
       
       if(type == "MXE") {
-        tx_ids <- mapTranscriptsMXEevent(eventGr, gtf_exons, is_strict)
-        list_txn_a[i] <- paste(tx_ids$txn_mxe_exon1, collapse = ",")
-        list_txn_b[i] <- paste(tx_ids$txn_mxe_exon2, collapse = ",")
+        tx_ids <<- mapTranscriptsMXEevent(eventGr, gtf_exons, is_strict)
+        list_txn_a[i] <<- paste(tx_ids$txn_mxe_exon1, collapse = ",")
+        list_txn_b[i] <<- paste(tx_ids$txn_mxe_exon2, collapse = ",")
       }
       
       if(type == "RI") {
-        tx_ids <- mapTranscriptsRIevent(eventGr, gtf_exons, is_strict)
-        list_txn_a[i] <- paste(tx_ids$txn_nonRetention, collapse = ",")
-        list_txn_b[i] <- paste(tx_ids$txn_retention, collapse = ",")
+        tx_ids <<- mapTranscriptsRIevent(eventGr, gtf_exons, is_strict)
+        list_txn_a[i] <<- paste(tx_ids$txn_nonRetention, collapse = ",")
+        list_txn_b[i] <<- paste(tx_ids$txn_retention, collapse = ",")
       }
       
       if(type == "A5SS") {
         
         #reverse strand becomes A3SS
         if (as.character(strand(eventGr[1])) == "+"){
-          tx_ids <- mapTranscriptsA5SSevent(eventGr, gtf_exons)  
+          tx_ids <<- mapTranscriptsA5SSevent(eventGr, gtf_exons)  
         }else{
-          tx_ids <- mapTranscriptsA3SSevent(eventGr, gtf_exons)  
+          tx_ids <<- mapTranscriptsA3SSevent(eventGr, gtf_exons)  
         }
         
-        list_txn_a[i] <- paste(tx_ids$txn_short, collapse = ",")
-        list_txn_b[i] <- paste(tx_ids$txn_long, collapse = ",")
+        list_txn_a[i] <<- paste(tx_ids$txn_short, collapse = ",")
+        list_txn_b[i] <<- paste(tx_ids$txn_long, collapse = ",")
       }
       
       if(type == "A3SS") {
         
         #reverse strand becomes A5SS
         if (as.character(strand(eventGr[1])) == "+"){
-          tx_ids <- mapTranscriptsA3SSevent(eventGr, gtf_exons)  
+          tx_ids <<- mapTranscriptsA3SSevent(eventGr, gtf_exons)  
         }else{
-          tx_ids <- mapTranscriptsA5SSevent(eventGr, gtf_exons)  
+          tx_ids <<- mapTranscriptsA5SSevent(eventGr, gtf_exons)  
         }
-
-        list_txn_a[i] <- paste(tx_ids$txn_short, collapse = ",")
-        list_txn_b[i] <- paste(tx_ids$txn_long, collapse = ",")
+        
+        list_txn_a[i] <<- paste(tx_ids$txn_short, collapse = ",")
+        list_txn_b[i] <<- paste(tx_ids$txn_long, collapse = ",")
       }
-      
-    } #for all events in annot
+
+    }, mc.cores = ncores) #for all events in annot
+    
+    
+    # for (i in 1:nrow(annot)) {
+    #   
+    #   # Genomic ranges of alternative splicing events
+    #   eventGr <- lapply(names(grl), function(exon){
+    #     grl[[exon]][i]
+    #   })
+    #   eventGr <- GRangesList(eventGr)
+    #   names(eventGr) <- names(grl)
+    #   
+    #   if(type == "SE") {
+    #     tx_ids <- mapTranscriptsSEevent(eventGr, gtf_exons, is_strict)
+    #     list_txn_a[i] <- paste(tx_ids$txn_3exons, collapse = ",")
+    #     list_txn_b[i] <- paste(tx_ids$txn_2exons, collapse = ",")
+    #   }
+    #   
+    #   if(type == "MXE") {
+    #     tx_ids <- mapTranscriptsMXEevent(eventGr, gtf_exons, is_strict)
+    #     list_txn_a[i] <- paste(tx_ids$txn_mxe_exon1, collapse = ",")
+    #     list_txn_b[i] <- paste(tx_ids$txn_mxe_exon2, collapse = ",")
+    #   }
+    #   
+    #   if(type == "RI") {
+    #     tx_ids <- mapTranscriptsRIevent(eventGr, gtf_exons, is_strict)
+    #     list_txn_a[i] <- paste(tx_ids$txn_nonRetention, collapse = ",")
+    #     list_txn_b[i] <- paste(tx_ids$txn_retention, collapse = ",")
+    #   }
+    #   
+    #   if(type == "A5SS") {
+    #     
+    #     #reverse strand becomes A3SS
+    #     if (as.character(strand(eventGr[1])) == "+"){
+    #       tx_ids <- mapTranscriptsA5SSevent(eventGr, gtf_exons)  
+    #     }else{
+    #       tx_ids <- mapTranscriptsA3SSevent(eventGr, gtf_exons)  
+    #     }
+    #     
+    #     list_txn_a[i] <- paste(tx_ids$txn_short, collapse = ",")
+    #     list_txn_b[i] <- paste(tx_ids$txn_long, collapse = ",")
+    #   }
+    #   
+    #   if(type == "A3SS") {
+    #     
+    #     #reverse strand becomes A5SS
+    #     if (as.character(strand(eventGr[1])) == "+"){
+    #       tx_ids <- mapTranscriptsA3SSevent(eventGr, gtf_exons)  
+    #     }else{
+    #       tx_ids <- mapTranscriptsA5SSevent(eventGr, gtf_exons)  
+    #     }
+    # 
+    #     list_txn_a[i] <- paste(tx_ids$txn_short, collapse = ",")
+    #     list_txn_b[i] <- paste(tx_ids$txn_long, collapse = ",")
+    #   }
+    #   
+    # } #for all events in annot
     
     annot[[names(tx_ids)[1]]] <- list_txn_a
     annot[[names(tx_ids)[2]]] <- list_txn_b

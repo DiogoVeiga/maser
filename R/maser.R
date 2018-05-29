@@ -141,6 +141,7 @@ create_GRanges <- function(events, type){
 #' hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
 #' @export
 #' @import methods
+#' @importFrom utils read.table
 maser <- function(path, cond_labels,
                   ftype = c("ReadsOnTargetAndJunctionCounts", 
                             "JunctionCountOnly",

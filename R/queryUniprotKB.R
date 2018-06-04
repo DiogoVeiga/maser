@@ -26,7 +26,8 @@ createGRangesUniprotKBtrack <- function(track_name){
   name <- vapply(seq_along(res), function(i){
 
       if (length(unlist(res[i])) > 1){
-        return(paste0(bed$Uniprot_ID[i], ":", res[[i]][[2]]))
+        #return(paste0(bed$Uniprot_ID[i], ":", res[[i]][[2]]))
+        return(paste0(bed$Uniprot_ID[i], ":", bed$V14[i]))
       }else{
         return(paste0(bed$Uniprot_ID[i], ":", "NA"))
       }

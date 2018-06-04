@@ -350,15 +350,13 @@ plotUniprotKBFeatures <- function(events,
   
   events <- as(events, "list")
   annot <- events[[paste0(type,"_","events")]]
-  if (length(unique(annot$geneSymbol)) > 1){
-    stop(cat("Multiple genes found. Use geneEvents() to select gene-specific
-             AS events."))
-  }
   
-
   # Genomic ranges of alternative splicing events
   grl <- events[[paste0(type,"_","gr")]]
   idx.event <- grep(as.numeric(event_id), annot$ID)
+  if (length(idx.event) == 0){
+    stop(cat("Event id not found."))
+  }
   
   eventGr <- GRangesList()
   for (feature in names(grl)){

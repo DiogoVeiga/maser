@@ -138,7 +138,7 @@ By inspecting the results, we see that the SRSF6 exon skipping event is annotate
 
 # Plot splice event, transcripts and protein features
 plotUniprotKBFeatures(srsf6_mapped, "SE", event_id = 33209, gtf = ens_gtf, 
-   features = c("domain", "chain", "mod-res"), show_transcripts = TRUE)
+   features = c("domain", "chain"), show_transcripts = TRUE)
 
 ```
 

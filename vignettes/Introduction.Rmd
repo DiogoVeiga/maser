@@ -54,7 +54,9 @@ Throughout the text we use the following abbreviations to describe different typ
 We demonstrate the package with data generated to investigate alternative splicing in colorectal cancer cells undergoing hypoxia <link>
 [publication](https://doi.org/10.1038/npjgenmed.2016.20). RNA-seq was collected at 0h and 24h after hypoxia in the HCT116 cell line. We applied [rMATS](http://rnaseq-mats.sourceforge.net/) to detect splicing events using the release 25 GTF (GRCh38 build) from the Gencode [website](ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_25/gencode.v25.annotation.gtf.gz). The example dataset was reduced because of size constraints.  
 
-To import splicing events, we use the constructor function `maser()` indicating the path containing rMATS files, and labels for conditions. The `maser()` constructor returns an object containing all events quantified by rMATS. 
+To import splicing events, we use the constructor function `maser()` indicating the path containing rMATS files, and labels for conditions. The `maser()` constructor returns an object containing all events quantified by rMATS.  
+
+**Note**: The argument `ftype` indicates which rMATS output files to import. Newer rMATS versions (>4.0.1) use `JCEC` or `JC` nomenclature, while `ReadsOnTargetandJunction` or `JunctionCountOnly` are used in rMATS 3.2.5 or lower. See `?maser` for a description of parameters. 
 
 
 ```{r, warning = FALSE, message = FALSE}
@@ -64,7 +66,7 @@ library(rtracklayer)
 # path to Hypoxia data
 path <- system.file("extdata", file.path("MATS_output"),
                     package = "maser")
-hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"))
+hypoxia <- maser(path, c("Hypoxia 0h", "Hypoxia 24h"), ftype = "ReadsOnTargetAndJunctionCounts")
 ```
 
 

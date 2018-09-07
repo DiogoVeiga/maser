@@ -272,6 +272,7 @@ plotTranscripts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
 #' @param features a character vector indicating valid UniprotKB features.
 #' @param zoom logical, zoom to the genomic coordinates of the splice event.
 #' @param show_transcripts logical, display transcripts track.
+#' @param show_PSI logical, display the PSI  track.
 #' @param ncores number of cores for multithreading (available only in OSX and Linux 
 #' machines). If Windows, \code{ncores} will be set to 1 automatically.
 #' @return a Gviz object.
@@ -318,7 +319,8 @@ plotTranscripts <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
 plotUniprotKBFeatures <- function(events, 
                                   type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
                                   event_id, gtf, features, zoom = FALSE,
-                                  show_transcripts = FALSE, ncores = 1){
+                                  show_transcripts = FALSE, show_PSI = TRUE,
+                                  ncores = 1){
   
   is_strict = TRUE
   options(ucscChromosomeNames=FALSE)
@@ -371,16 +373,30 @@ plotUniprotKBFeatures <- function(events,
                           annot[idx.event, idx.cols[2]]))
   uniprotTracks <- createUniprotKBtracks(eventGr, features, protein_ids, ncores)
   
+  if (show_PSI){
+    PSI <- events[[paste0(type,"_","PSI")]]
+    PSI_event <- PSI[idx.event, , drop = FALSE]
+    groups <- factor(c(rep(events$conditions[1], events$n_cond1),
+                       rep(events$conditions[2], events$n_cond2)),
+                     levels = events$conditions)
+
+    psiTrack <- createPSITrack_event(eventGr, PSI_event, groups, type, zoom)  
+    trackList <- c(psiTrack, eventTrack)  
+  }else {
+    trackList <- c(eventTrack)
+  }
+  
   if (show_transcripts){
     txnTracks <- createAnnotationTrack_transcripts(eventGr, gtf_exons,
                                                    type, is_strict)
-    trackList <- c(list(eventTrack, txnTracks$inclusionTrack, 
+    trackList <- c(trackList, list(txnTracks$inclusionTrack, 
                       txnTracks$skippingTrack),
                    uniprotTracks)
   }else {
-    trackList <- c(list(eventTrack), uniprotTracks)
+    trackList <- c(trackList, uniprotTracks)
   }
   
+
   if (zoom){
     Gviz::plotTracks(trackList, 
                      col.line = NULL, col = NULL,
@@ -393,7 +409,6 @@ plotUniprotKBFeatures <- function(events,
                      to = end(range(unlist(eventGr))) + 500)  
   }else {
     Gviz::plotTracks(trackList, 
-                     col.line = NULL, col = NULL,
                      Inclusion = "orange", Skipping = "purple",
                      Retention = "orange", Non_Retention = "purple",
                      MXE_Exon1 = "orange", MXE_Exon2 = "purple",

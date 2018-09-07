@@ -9,7 +9,7 @@ filterByEventId(events, event_id, type = c("A3SS", "A5SS", "SE", "RI", "MXE"))
 \arguments{
 \item{events}{a maser object.}
 
-\item{event_id}{numeric, event identifier.}
+\item{event_id}{numeric vector of event identifiers.}
 
 \item{type}{character indicating splice type. Possible values are
 \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}.}

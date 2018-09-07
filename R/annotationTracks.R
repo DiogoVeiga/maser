@@ -80,11 +80,15 @@ createTxnTrack <- function(res.df, trackLabel, featureName){
     res.df$feature <- featureName
     txnTrack <- Gviz::GeneRegionTrack(range = res.df, 
                                             name = trackLabel, 
-                                            transcriptAnnotation = "transcript")  
+                                            transcriptAnnotation = "transcript",
+                                            col = NULL,
+                                            col.line = NULL)  
   }else {
     txnTrack <- Gviz::GeneRegionTrack(range = GRanges(),
                                             name = trackLabel, 
-                                            transcriptAnnotation = "transcript")  
+                                            transcriptAnnotation = "transcript",
+                                            col = NULL,
+                                            col.line = NULL)  
   }
   return(txnTrack)
   
@@ -207,7 +211,9 @@ createAnnotationTrackSE_event <- function(eventGr){
                                        groupAnnotation = "group", 
                                        shape = "box",
                                        stacking = "squish", 
-                                       id = "Exon skipping")
+                                       id = "Exon skipping",
+                                       col = NULL,
+                                       col.line = NULL)
   Gviz::feature(event_track) <- rep(c("Inclusion", "Skipping"), c(3, 2))
 
   return(event_track)
@@ -225,8 +231,12 @@ createAnnotationTrackRI_event <- function(eventGr){
   trackGr$type <- rep("Intron retention", 3)
   
   event_track <- Gviz::AnnotationTrack(trackGr, name = "Event", 
-                          groupAnnotation = "group", shape = "box",
-                          stacking = "squish", id = "Intron retention")
+                          groupAnnotation = "group", 
+                          shape = "box",
+                          stacking = "squish", 
+                          id = "Intron retention",
+                          col = NULL,
+                          col.line = NULL)
   
   Gviz::feature(event_track) <- rep(c("Retention", "Non_Retention"),
                                     c(1, 2))
@@ -250,7 +260,10 @@ createAnnotationTrackMXE_event <- function(eventGr){
   
   event_track <- Gviz::AnnotationTrack(trackGr, name = "Event", 
                       groupAnnotation = "group", shape = "box",
-                      stacking = "squish", id = "Mutually Exclusive Exons")
+                      stacking = "squish", 
+                      id = "Mutually Exclusive Exons",
+                      col = NULL,
+                      col.line = NULL)
   
   Gviz::feature(event_track) <- rep(c("MXE_Exon1", "MXE_Exon2"), c(3, 3))
   
@@ -269,8 +282,11 @@ createAnnotationTrackA5SS_event <- function(eventGr){
   trackGr$type <- rep("A5SS", 4)
   
   event_track <- Gviz::AnnotationTrack(trackGr, name = "Event", 
-                                groupAnnotation = "group", shape = "box",
-                                stacking = "squish", id = "A5SS")
+                                groupAnnotation = "group", 
+                                shape = "box",
+                                stacking = "squish", id = "A5SS",
+                                col = NULL,
+                                col.line = NULL)
   Gviz::feature(event_track) <- rep(c("A5SS_Short", "A5SS_Long"), c(2, 2))
   
   
@@ -288,8 +304,12 @@ createAnnotationTrackA3SS_event <- function(eventGr){
   trackGr$type <- rep("A3SS", 4)
   
   event_track <- Gviz::AnnotationTrack(trackGr, name = "Event", 
-                                groupAnnotation = "group", shape = "box",
-                                stacking = "squish", id = "A3SS")
+                                groupAnnotation = "group", 
+                                shape = "box",
+                                stacking = "squish", 
+                                id = "A3SS",
+                                col = NULL,
+                                col.line = NULL)
   Gviz::feature(event_track) <- rep(c("A3SS_Short", "A3SS_Long"), c(2, 2))
   
   
@@ -328,7 +348,9 @@ createUniprotKBtracks <- function(eventGr, features, protein_ids, ncores = 1){
                                      showFeatureId = TRUE,
                                      fontcolor.feature = "darkblue",
                                      #fill = "aliceblue", 
-                                     shape = "box")  
+                                     shape = "box",
+                                     col = NULL,
+                                     col.line = NULL)  
       
     }else {
       track <- Gviz::AnnotationTrack(range = GRanges(), name = features[i])
@@ -389,10 +411,13 @@ createPSIDataTrack <- function(eventGr, PSI_event, groups, zoom, exonGr){
   psi_track <- Gviz::DataTrack(trackGr, 
                                name = "PSI", 
                                groups = groups,
+                               feature = groups,
                                legend = TRUE,
                                type = c("boxplot"),
-                               fill = c("blue", "red"),
-                               col = c("blue", "red"))
+                               fill = c("#0000ff", "#ff0000"),
+                               col = c("#0000ff", "#ff0000"),
+                               col.line = c("#0000ff", "#ff0000"))
+  
   return(psi_track)
   
 }

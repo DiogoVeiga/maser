@@ -188,7 +188,7 @@ geneEvents <- function(events, geneS, fdr = 0.05, deltaPSI = 0.1){
 #' Filter splicing events based on event identifier and type.
 #' 
 #' @param events a maser object.
-#' @param event_id numeric, event identifier.
+#' @param event_id numeric vector of event identifiers.
 #' @param type character indicating splice type. Possible values are
 #'    \code{c("A3SS", "A5SS", "SE", "RI", "MXE")}.
 #' @return a maser object.
@@ -211,14 +211,16 @@ filterByEventId <- function(events, event_id,
   events <- as(events, "list")
   
   annot <- events[[paste0(type,"_","events")]]
-  idx.event <- grep(as.numeric(event_id), annot$ID)
+  #idx.event <- grep(as.numeric(event_id), annot$ID)
   
-  if(length(idx.event)==0){
+  is.event <- event_id %in% annot$ID 
+  
+  if(sum(is.event)==0){
     stop(cat("Event id not found."))
   }
   
   event_filt <- list()
-  events_filt <- filterByIds(type, events, event_id)
+  events_filt <- filterByIds(type, events, event_id[is.event])
   
   # Create empty slots for remaining types
   for (atype in as_types[-1*grep(type, as_types)]){

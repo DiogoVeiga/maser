@@ -41,9 +41,9 @@ boxplot_PSI_levels <- function(events, type = c("A3SS", "A5SS", "SE", "RI",
 
     PSI_long <- cbind(PSI_long, Condition)
 
-    ggplot(PSI_long, aes(x = Sample, y = PSI, fill = Condition)) +
-        geom_boxplot() +
-        #geom_violin(trim = FALSE) +
+    ggplot(PSI_long, aes(x = Sample, y = PSI, fill = Condition, color = Condition)) +
+        #geom_boxplot() +
+        geom_violin(trim = FALSE, alpha = 0.8) +
         stat_summary(fun.y=median, geom="point", size=2, color="black") +
         theme_bw() +
         theme(axis.text.x = element_text(size=12, angle = 45, hjust = 1),
@@ -58,8 +58,8 @@ boxplot_PSI_levels <- function(events, type = c("A3SS", "A5SS", "SE", "RI",
         ylab(paste(type, "PSI")) +
         xlab("Sample") +
         scale_y_continuous(limits=c(-0.1, 1.05)) +
-        scale_fill_manual(values = c("blue", "red") )
-
+        scale_fill_manual(values = c("blue", "red") ) +
+        scale_color_manual(values = c("blue", "red") )
 
 
 }
@@ -122,7 +122,7 @@ splicingDistribution <- function(events, fdr = 0.05, deltaPSI = 0.1){
 
     ggplot(df.plot, aes(x = Condition, y = Proportion,
                         colour = Type, fill = Type)) +
-        geom_bar(stat = "identity") +
+        geom_bar(stat = "identity", alpha = 0.6) +
         theme_bw() +
         theme(axis.text.y = element_text(size=12, angle = 0, hjust = 0.5,
                                          face = "plain"),
@@ -139,8 +139,8 @@ splicingDistribution <- function(events, fdr = 0.05, deltaPSI = 0.1){
         ) +
         ylab("Proportion of splicing events") +
         xlab("") +
-        scale_fill_brewer(palette="BrBG") +
-        scale_color_brewer(palette="BrBG") +
+        scale_fill_brewer(palette="Set2") +
+        scale_color_brewer(palette="Set2") +
         coord_flip()
 
 
@@ -405,9 +405,9 @@ viewTopSplicedGenes <- function(events, types = c("A3SS", "A5SS", "SE", "RI",
   })
   geneList <- unique(unlist(geneList))
   
-  geneList_counts <- data.frame(gene = rep(geneList, each = length(as_types)), 
-                            type = rep(as_types, length(geneList)), 
-                            counts = rep(0, length(geneList)*length(as_types)))
+  geneList_counts <- data.frame(gene = rep(geneList, each = length(types)), 
+                            type = rep(types, length(geneList)), 
+                            counts = rep(0, length(geneList)*length(types)))
   
   counts <- lapply(seq_along(geneList), function(i){
     gene_counts <- countGeneEvents(as(events, "Maser"), geneList[i])

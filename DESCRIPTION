@@ -1,11 +1,12 @@
 Package: maser
 Type: Package
-Title: Mapping Alternative Splicing Events to pRoteins
+Title: Mapping Alternative Splicing Events to Proteins
 Version: 0.99.16
-Authors@R: person("Diogo", "Veiga", email = "diogof.veiga@gmail.com",
+Authors@R: person("Diogo", "F.T. Veiga", email = "diogof.veiga@gmail.com",
                   role = c("aut", "cre"))
-Description: This package provides functionalities for analysis, annotation and 
-    visualizaton of alternative splicing events.
+Description: This package provides functionalities for downstream analysis, 
+    annotation and visualizaton of alternative splicing events generated 
+    by rMATS.
 Depends: R (>= 3.5.0),
     ggplot2,
     GenomicRanges

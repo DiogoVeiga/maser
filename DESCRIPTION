@@ -1,7 +1,7 @@
 Package: maser
 Type: Package
-Title: Mapping Alternative Splicing Events to Proteins
-Version: 0.99.16
+Title: Mapping Alternative Splicing Events to pRoteins
+Version: 1.1.0
 Authors@R: person("Diogo", "F.T. Veiga", email = "diogof.veiga@gmail.com",
                   role = c("aut", "cre"))
 Description: This package provides functionalities for downstream analysis, 

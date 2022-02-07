@@ -218,8 +218,8 @@ volcano <- function(events, type = c("A3SS", "A5SS", "SE", "RI", "MXE"),
               panel.grid.minor = element_blank(),
               plot.background = element_blank()
         ) +
-        labs(title="", x = "Log10 Adj. Pvalue",
-             y = "Delta PSI" )
+        labs(title="", x = "Delta PSI",
+             y = "Log10 Adj. Pvalue" )
 }
 
 #' Dotplot representation of splicing events.

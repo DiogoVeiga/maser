@@ -55,85 +55,18 @@ createGRangesUniprotKBtrack <- function(track_name){
 #' @importFrom dplyr arrange
 availableFeaturesUniprotKB <- function(){
   
-  Name <- NULL
-  Category <- NULL
+  track_df <- read.csv("https://raw.githubusercontent.com/DiogoVeiga/maser_aux/main/FeaturesUniprotKB.csv")
+  track_df <- dplyr::arrange(track_df, Category, Name)
+  track_df <- dplyr::select(track_df, c("Name", "Description", "Category"))
   
-  track_df <- urlTracksUniprotKB()
-  track_df <- dplyr::select(track_df, c("Name", "Description"))
-  
-  track_df_filt <- dplyr::filter(track_df, 
-                                 !Name %in% c("non_std_aa", "peptide",
-                                            "UP000005640_9606_proteome",
-                                            "UP000005640_9606_variants"))
-  
-  dm_sites <- c("act-site", "binding", "Ca-binding", "coiled", "DNA-bind",
-                "domain", "metal", "motif", "NP bind", "region", "repeat",
-                "site", "Zn-fing")
-  mp <- c("chain", "signal", "transit", "propep", "init_meth")
-  mut <- c("mutagen")
-  ptm <- c("carbohyd", "crosslnk", "disulfide", "lipid", "mod-res")
-  sf <- c("helix", "turn", "strand")
-  topo <- c("intramem", "topo-dom", "transmem")
-  
-  category <- rep("NA", nrow(track_df_filt))
-  
-  category[track_df_filt$Name %in% dm_sites] <- "Domain_and_Sites"
-  category[track_df_filt$Name %in% mp] <- "Molecule_Processing"
-  category[track_df_filt$Name %in% mut] <- "Mutagenesis"
-  category[track_df_filt$Name %in% ptm] <- "PTM"
-  category[track_df_filt$Name %in% sf] <- "Structural_Features"
-  category[track_df_filt$Name %in% topo] <- "Topology"
-  
-  track_df_filt <- cbind(track_df_filt, Category = category)
-  track_df_filt <- dplyr::arrange(track_df_filt, Category, Name)
-  
-  return(track_df_filt)
+  return(track_df)
 }
 
 #' @importFrom dplyr filter
 urlTracksUniprotKB <- function(){
   
-  trackMetadata <- paste0("ftp://ftp.uniprot.org/pub/databases/uniprot/",
-    "current_release/knowledgebase/genome_annotation_tracks/",
-    "UP000005640_9606_tracks.txt")
-  
-  data <- readLines(trackMetadata)
-  
-  track_df <- data.frame()
-  
-  track_meta <- lapply(seq_along(data), function(i){
-    
-    #read 1st line metadata
-    aux <- gsub("\"", "", data[(i*2)-1])
-    tokens <- strsplit(aux, split = "=", fixed = FALSE)
-    values <- tokens[[1]]
-    
-    #read 2nd line metadata
-    aux <- gsub("\"", "", data[i*2])
-    tokens <- strsplit(aux, split = "=", fixed = FALSE)
-    values2 <- tokens[[1]]
-    
-    trackName <- gsub(" description", "", values[2])
-    trackName <- gsub("UniProtKB ", "", trackName)
-    
-    trackDesc <- gsub(" type", "", values[3])
-    
-    trackFolder <- gsub(" url", "", values[8])
-    trackFolder <- gsub("_hub", "_beds", trackFolder)
-    trackFolder <- gsub("/hg38", "", trackFolder)
-    
-    trackFile <- gsub(" description", "", values2[2])
-    trackFile <- gsub(".bb", ".bed", trackFile)
-    
-    ftp <- "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/genome_annotation_tracks/"
-    trackUrl <- paste0(ftp, trackFolder, "/", trackFile)
-    
-    return(data.frame(Name = trackName, Description = trackDesc, 
-                      URL = as.character(trackUrl)))
-    
-  })
-  track_df <- do.call(rbind, track_meta)
-  track_df <- dplyr::filter(track_df, !is.na(Name))
+  track_df <- read.csv("https://raw.githubusercontent.com/DiogoVeiga/maser_aux/main/FeaturesUniprotKB.csv")
+  track_df <- dplyr::select(track_df, c("Name", "Description", "URL"))
   
   return(track_df)
 }

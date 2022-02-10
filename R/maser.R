@@ -171,8 +171,8 @@ maser <- function(path, cond_labels,
     type <-  unlist(strsplit(f, ".", fixed = TRUE))[1]
     
     # prepare read counts matrix
-    inc1 <- strsplit(events[ , counts.col[1]], ",")
-    inc2 <- strsplit(events[ , counts.col[2]], ",")
+    inc1 <- strsplit(as.character(events[ , counts.col[1]]), ",")
+    inc2 <- strsplit(as.character(events[ , counts.col[2]]), ",")
     
     reads.inc1 <- suppressWarnings(matrix(as.numeric(unlist(inc1)), 
                  nrow = length(inc1), ncol = length(inc1[[1]]), byrow = TRUE))
@@ -189,8 +189,8 @@ maser <- function(path, cond_labels,
     slot(mats, paste0(type,"_","counts")) <- reads.mat
     
     # prepare PSI matrix
-    inc1 <- strsplit(events[ , "IncLevel1"], ",")
-    inc2 <- strsplit(events[ , "IncLevel2"], ",")
+    inc1 <- strsplit(as.character(events[ , "IncLevel1"]), ",")
+    inc2 <- strsplit(as.character(events[ , "IncLevel2"]), ",")
     
     reads.inc1 <- suppressWarnings(matrix(as.numeric(unlist(inc1)), 
                    nrow = length(inc1), ncol = length(inc1[[1]]), byrow = TRUE))
